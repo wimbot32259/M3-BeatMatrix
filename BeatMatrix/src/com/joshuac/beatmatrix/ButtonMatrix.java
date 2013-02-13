@@ -3,12 +3,9 @@ package com.joshuac.beatmatrix;
 
 import android.app.Activity;
 import android.app.DialogFragment;
-import android.database.Cursor;
 import android.graphics.Point;
 import android.graphics.drawable.TransitionDrawable;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.Menu;
@@ -54,6 +51,7 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
     }
 
 	@Override
+	//this is run when the app is started, put on back stack, etc
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
@@ -230,31 +228,7 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 		ChooseFileDialog.setContext(this);
 		DialogFragment newFragment = ChooseFileDialog.newInstance(R.string.chooseFileDialogTitle);
 	    newFragment.show(getFragmentManager(), "dialog");
-	 }
-	
-	//DELETE test
-	void playAudio2()
-	{
-		String[] STAR = { "*" };     
-		Uri allaudiosong = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-		String audioselection = MediaStore.Audio.Media.IS_MUSIC + " != 0";
-		Cursor cursor;
-		cursor = managedQuery(allaudiosong, STAR, audioselection, null, null);
-
-		if (cursor != null) {
-		    if (cursor.moveToFirst()) {
-		        do {
-		           
-		            String fullpath = cursor.getString(cursor
-		                    .getColumnIndex(MediaStore.Audio.Media.DATA));
-		            System.out.println("Audio Song FullPth= "+fullpath); 
-		            Toast toast = Toast.makeText(getApplicationContext(), fullpath, Toast.LENGTH_SHORT);
-		    		toast.show();
-
-		        } while (cursor.moveToNext());
-		    }
-		}
-	}//end playAudio2
+	 }	
 	
 	
 	/*

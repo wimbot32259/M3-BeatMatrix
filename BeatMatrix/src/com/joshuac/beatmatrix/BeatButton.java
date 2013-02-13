@@ -82,8 +82,9 @@ public class BeatButton extends ImageButton
 	    public void onClick(View v) {
 	    	
 	    	// do something when the button is clicked
+	    	//reqs: map button not on. track mapped. play button on.
 	    	if(!ButtonMatrix.getMapButtonStatus() && MAPPED && ButtonMatrix.getPlayButtonStatus())
-	    	{	//play music
+	    	{	//double click have
 		    	long pressTime = System.currentTimeMillis();
 		    	if (pressTime - lastPressTime <= DOUBLE_PRESS_INTERVAL)
 		    	{	//button was double tapped
@@ -91,7 +92,7 @@ public class BeatButton extends ImageButton
 		    		manager.pause(buttonId);
 		    	}
 		    	else if(state==WAITING)
-		    	{
+		    	{	//first time ever clicked
 		    		state = PLAYING;
 		    		TransitionDrawable transition = (TransitionDrawable)
 		    	            getResources().getDrawable(R.drawable.playonce);
@@ -100,7 +101,7 @@ public class BeatButton extends ImageButton
 		    	    manager.play(buttonId);
 		    	}
 		    	else if(state==PLAYING)
-		    	{
+		    	{ 	//restart
 		    		TransitionDrawable transition = (TransitionDrawable)
 		    	            getResources().getDrawable(R.drawable.playonce);
 		    	    thisButton.setImageDrawable(transition);
