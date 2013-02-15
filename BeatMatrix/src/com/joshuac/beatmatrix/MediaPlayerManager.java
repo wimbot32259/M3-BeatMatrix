@@ -21,16 +21,15 @@ public class MediaPlayerManager
 	
 	//i - id of the View
 	//f - chosenFile (file chosen from 'ChooseFileDialog')
+	//maps the thread with a file to play
+	//call run() after to actually start the thread
 	public void setMapping(int i, File f)
 	{		  
 		  MediaPlayerThread thread = threads.get(i);
 		  if(thread == null){
+			  System.out.println("here");
 			  thread = new MediaPlayerThread(context, f);
 			  threads.put(i,thread);
-
-			  String msg = f.getName();
-			  Toast toast = Toast.makeText(context, msg + " mapped", Toast.LENGTH_SHORT);
-				toast.show();
 		  }
 		  else
 			  thread.setTrack(f);
@@ -40,7 +39,8 @@ public class MediaPlayerManager
 	//
 	public void run(int i)
 	{
-		threads.get(i).start();
+		if( !threads.get(i).isRunning() )
+			threads.get(i).start();
 	}//end play
 	
 	public void play(int i)

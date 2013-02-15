@@ -5,12 +5,15 @@ package com.joshuac.beatmatrix;
 import android.content.Context;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.widget.Toast;
+
 import java.io.File;
 
 public class MediaPlayerThread extends Thread implements Runnable
 {
 
-	private volatile boolean playing;
+	private boolean playing;
+	private boolean running = false;
 	MediaPlayer mp;
 	Context context;			//context of the application
 	File track; 		//file descriptor of the track
@@ -24,6 +27,7 @@ public class MediaPlayerThread extends Thread implements Runnable
 	    super();
 	    this.context = c;
 	    this.track = f;
+	    Toast.makeText(context, f.getName() + " mapped", Toast.LENGTH_SHORT).show();
 	}
 	
 	/*
@@ -34,6 +38,7 @@ public class MediaPlayerThread extends Thread implements Runnable
 	//starts the thread
 	public void run()
 	{
+		running = true;
 		mp = new MediaPlayer();
 		if (mp != null) {
             mp.reset();
@@ -41,7 +46,7 @@ public class MediaPlayerThread extends Thread implements Runnable
         }
 		Uri ef = Uri.fromFile(track);
 		mp = MediaPlayer.create(context, ef);
-        //mp.start();
+        
 	}//end run
 	
 	//play/restarts the track
@@ -70,7 +75,15 @@ public class MediaPlayerThread extends Thread implements Runnable
 	public void setTrack(File f)
 	{
 		this.track = f;
+		Toast.makeText(context, f.getName() + " mapped", Toast.LENGTH_SHORT).show();
 	}
 	
+	/*
+	 * Getters / Setters
+	 */
 
+	public boolean isRunning()
+	{
+		return running;
+	}
 }
