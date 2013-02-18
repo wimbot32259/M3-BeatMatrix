@@ -105,7 +105,6 @@ public class BeatButton extends ImageButton
 		    	            getResources().getDrawable(R.drawable.playonce);
 		    	    thisButton.setImageDrawable(transition);
 		    	    transition.startTransition(400);
-	    		//	thisButton.setImageDrawable(getResources().getDrawable(R.drawable.yellowbutton));
 		    	    manager.play(buttonId);
 		    	}
 		    	lastPressTime = pressTime;
