@@ -99,12 +99,13 @@ public class BeatButton extends ImageButton
 		    	    transition.startTransition(400);
 		    	    manager.play(buttonId);
 		    	}
-		    	else if(state==PLAYING)
+		    	else if(state==PLAYING || state==LOOPING)
 		    	{
 		    		TransitionDrawable transition = (TransitionDrawable)
 		    	            getResources().getDrawable(R.drawable.playonce);
 		    	    thisButton.setImageDrawable(transition);
 		    	    transition.startTransition(400);
+	    			thisButton.setImageDrawable(getResources().getDrawable(R.drawable.yellowbutton));
 		    	    manager.play(buttonId);
 		    	}
 		    	lastPressTime = pressTime;
@@ -130,7 +131,9 @@ public class BeatButton extends ImageButton
 	    {
 	    	// do something when the button is long clicked
 	    	state = LOOPING;
-	    	thisButton.setImageResource(R.drawable.greenbutton);
+			thisButton.setImageDrawable(getResources().getDrawable(R.drawable.greenbutton));
+	//    	thisButton.setImageResource(R.drawable.greenbutton);
+	    	manager.loop(buttonId);
 	    	return true;
 	    }
 	};

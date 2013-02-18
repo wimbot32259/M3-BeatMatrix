@@ -1,7 +1,6 @@
 package com.joshuac.beatmatrix;
 
-
-
+import android.media.AudioManager;
 import android.content.Context;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -35,6 +34,10 @@ public class MediaPlayerThread extends Thread implements Runnable
 	public void run()
 	{
 		mp = new MediaPlayer();
+		
+		//Sets what audio stream to adjust volume for in-app
+	//	setVolumeControlStream(AudioManager.STREAM_MUSIC);
+		
 		if (mp != null) {
             mp.reset();
             mp.release();
@@ -47,6 +50,7 @@ public class MediaPlayerThread extends Thread implements Runnable
 	//play/restarts the track
 	public void play()
 	{
+		mp.setLooping(false);
 		if(!mp.isPlaying())
 		{
 			mp.start();
@@ -57,9 +61,21 @@ public class MediaPlayerThread extends Thread implements Runnable
 		}
 	}
 	
+	//loops the track until tapped
+	public void loop() {
+		mp.setLooping(true);
+		if (!mp.isPlaying()) {
+			mp.start();
+		} else {
+			mp.seekTo(0);
+		}
+	}
+	
 	//pause the current track
 	public void pause()
 	{
+		mp.setLooping(false);
+//		mp.seekTo(0);
 		mp.pause();
 	}
 	
