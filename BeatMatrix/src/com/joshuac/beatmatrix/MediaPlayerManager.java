@@ -48,6 +48,10 @@ public class MediaPlayerManager
 		threads.get(i).play();
 	}
 	
+	public void loop(int i) {
+		threads.get(i).loop();
+	}
+	
 	public void pause(int i){
 		threads.get(i).pause();
 	}
