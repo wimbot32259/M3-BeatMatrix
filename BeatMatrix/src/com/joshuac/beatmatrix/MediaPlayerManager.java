@@ -13,8 +13,15 @@ public class MediaPlayerManager
 	SparseArray<MediaPlayerThread> threads;
 	Thread a;
 	MediaPlayerThread b;
+	private int total_buttons;
+	private int[] mapped_buttons;
 
-	MediaPlayerManager(Context c){
+	MediaPlayerManager(Context c, int buttons){
+		total_buttons = buttons;
+		mapped_buttons = new int[total_buttons];
+		for (int i = 0; i < total_buttons; i++) {
+			mapped_buttons[i] = 0;
+		}
 		this.context = c;
 		threads = new SparseArray<MediaPlayerThread>();
 	}
@@ -22,7 +29,8 @@ public class MediaPlayerManager
 	//i - id of the View
 	//f - chosenFile (file chosen from 'ChooseFileDialog')
 	public void setMapping(int i, File f)
-	{		  
+	{
+		  mapped_buttons[i] = 1;
 		  MediaPlayerThread thread = threads.get(i);
 		  if(thread == null){
 			  thread = new MediaPlayerThread(context, f);
@@ -54,6 +62,16 @@ public class MediaPlayerManager
 	
 	public void pause(int i){
 		threads.get(i).pause();
+	}
+	
+	public void stopAll() {
+		for (int i = 0; i < total_buttons; i++) {
+			if (mapped_buttons[i] == 1) {
+				threads.get(i).pause();
+			}
+			//otherwise there's no song mapped to it, so no thread exists for it yet
+			//(so it won't be playing anything)
+		}
 	}
 
 }

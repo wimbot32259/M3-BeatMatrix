@@ -23,11 +23,14 @@ public final class R {
         public static final int playlist_on=0x7f020009;
         public static final int playonce=0x7f02000a;
         public static final int redbutton=0x7f02000b;
-        public static final int turn_map_off=0x7f02000c;
-        public static final int turn_map_on=0x7f02000d;
-        public static final int turn_play_on=0x7f02000e;
-        public static final int turn_playlist_on=0x7f02000f;
-        public static final int yellowbutton=0x7f020010;
+        public static final int stopicon_off=0x7f02000c;
+        public static final int stopicon_on=0x7f02000d;
+        public static final int turn_map_off=0x7f02000e;
+        public static final int turn_map_on=0x7f02000f;
+        public static final int turn_play_on=0x7f020010;
+        public static final int turn_playlist_on=0x7f020011;
+        public static final int turn_stop_on=0x7f020012;
+        public static final int yellowbutton=0x7f020013;
     }
     public static final class id {
         public static final int beatMatrixHolder=0x7f080000;
