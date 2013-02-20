@@ -54,7 +54,8 @@ public class BeatButton extends ImageButton
 		
 		//set thread manager
 		manager = ButtonMatrix.getMediaPlayerManager();
-		this.buttonId = currentId++;
+		this.buttonId = currentId;
+		currentId = (currentId+1)%manager.getTotalButtons();
 	}
 	
 	public BeatButton(Context context, AttributeSet attrs)
@@ -69,6 +70,7 @@ public class BeatButton extends ImageButton
 		//set thread manager
 		manager = ButtonMatrix.getMediaPlayerManager();
 		this.buttonId = currentId++;
+		currentId = (currentId+1)%manager.getTotalButtons();
 	}
 	
 	public BeatButton(Context context, AttributeSet attrs, int defStyle)
@@ -83,6 +85,7 @@ public class BeatButton extends ImageButton
 		//set thread manager
 		manager = ButtonMatrix.getMediaPlayerManager();
 		this.buttonId = currentId++;
+		currentId = (currentId+1)%manager.getTotalButtons();
 	}
 
 	/*

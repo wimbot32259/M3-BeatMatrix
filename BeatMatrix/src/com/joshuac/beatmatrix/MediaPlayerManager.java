@@ -71,12 +71,14 @@ public class MediaPlayerManager
 	
 	public void stopAll() {
 		for (int i = 0; i < total_buttons; i++) {
-			if (mapped_buttons[i] == 1) {
-				pause(i);
-			}
+			pause(i);
 			//otherwise there's no song mapped to it, so no thread exists for it yet
 			//(so it won't be playing anything)
 		}
+	}
+	
+	public int getTotalButtons() {
+		return total_buttons;
 	}
 
 }
