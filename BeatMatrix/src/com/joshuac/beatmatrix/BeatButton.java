@@ -21,10 +21,12 @@ public class BeatButton extends ImageButton
 	//Static Playing States
 	private final static int WAITING = 0; 	//button is waiting to be played
 	private final static int STOPPED = 1; 	//button is not playing
-	private final static int PLAYING = 2;		//button is playing once
+	private final static int PLAYING = 2;	//button is playing once
 	private final static int LOOPING = 3; 	//button is looping
+	
 	//Button Map State
 	private boolean MAPPED = false;
+	
 	//Current button state
 	private int state = WAITING;
 	
@@ -45,9 +47,11 @@ public class BeatButton extends ImageButton
 	{
 		super(context);
 		thisButton = this;
+		
 		//set listeners
 		this.setOnClickListener(clickListener);
 		this.setOnLongClickListener(longClickListener);
+		
 		//set thread manager
 		manager = ButtonMatrix.getMediaPlayerManager();
 		this.buttonId = currentId++;
@@ -57,9 +61,11 @@ public class BeatButton extends ImageButton
 	{
 		super(context, attrs);
 		thisButton = this;
+		
 		//set listeners
 		this.setOnClickListener(clickListener);
 		this.setOnLongClickListener(longClickListener);
+		
 		//set thread manager
 		manager = ButtonMatrix.getMediaPlayerManager();
 		this.buttonId = currentId++;
@@ -69,9 +75,11 @@ public class BeatButton extends ImageButton
 	{
 		super(context, attrs, defStyle);
 		thisButton = this;
+		
 		//set listeners
 		this.setOnClickListener(clickListener);
 		this.setOnLongClickListener(longClickListener);
+		
 		//set thread manager
 		manager = ButtonMatrix.getMediaPlayerManager();
 		this.buttonId = currentId++;
@@ -86,9 +94,10 @@ public class BeatButton extends ImageButton
 	{
 	    public void onClick(View v) {
 	    	
-	    	// do something when the button is clicked
+	    	//Do something when the button is clicked
 	    	if(!ButtonMatrix.getMapButtonStatus() && MAPPED && ButtonMatrix.getPlayButtonStatus())
-	    	{	//play music
+	    	{	
+	    		//Play music
 		    	long pressTime = System.currentTimeMillis();
 		    	if (pressTime - lastPressTime <= DOUBLE_PRESS_INTERVAL)
 		    	{	//button was double tapped
@@ -195,7 +204,7 @@ public class BeatButton extends ImageButton
 			//newImg = getResources().getDrawable(R.drawable.playonce);
 		}
 		else if (state == LOOPING) {
-			newImg = getResources().getDrawable(R.drawable.greenbutton);
+			newImg = getResources().getDrawable(R.drawable.redbutton);
 		}
 		else if (state == STOPPED){
 			newImg = getResources().getDrawable(R.drawable.yellowbutton);
