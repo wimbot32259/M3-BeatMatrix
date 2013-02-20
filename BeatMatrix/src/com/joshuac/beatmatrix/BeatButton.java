@@ -20,8 +20,10 @@ public class BeatButton extends ImageButton
 	private final static int STOPPED = 1; 	//button is not playing
 	private final static int PLAYING = 2;	//button is playing once
 	private final static int LOOPING = 3; 	//button is looping
+	
 	//Button Map State
 	private boolean MAPPED = false;
+	
 	//Current button state
 	private int state = WAITING;
 	
@@ -40,9 +42,11 @@ public class BeatButton extends ImageButton
 	{
 		super(context);
 		thisButton = this;
+		
 		//set listeners
 		this.setOnClickListener(clickListener);
 		this.setOnLongClickListener(longClickListener);
+		
 		//set thread manager
 		manager = ButtonMatrix.getMediaPlayerManager();
 		this.buttonId = currentId++;
@@ -52,9 +56,11 @@ public class BeatButton extends ImageButton
 	{
 		super(context, attrs);
 		thisButton = this;
+		
 		//set listeners
 		this.setOnClickListener(clickListener);
 		this.setOnLongClickListener(longClickListener);
+		
 		//set thread manager
 		manager = ButtonMatrix.getMediaPlayerManager();
 		this.buttonId = currentId++;
@@ -64,9 +70,11 @@ public class BeatButton extends ImageButton
 	{
 		super(context, attrs, defStyle);
 		thisButton = this;
+		
 		//set listeners
 		this.setOnClickListener(clickListener);
 		this.setOnLongClickListener(longClickListener);
+		
 		//set thread manager
 		manager = ButtonMatrix.getMediaPlayerManager();
 		this.buttonId = currentId++;
@@ -81,39 +89,46 @@ public class BeatButton extends ImageButton
 	{
 	    public void onClick(View v) {
 	    	
-	    	// do something when the button is clicked
-	    	if(!ButtonMatrix.getMapButtonStatus() && MAPPED && ButtonMatrix.getPlayButtonStatus())
-	    	{	//play music
+	    	//Do something when the button is clicked
+	    	if(!ButtonMatrix.getMapButtonStatus()&& MAPPED && ButtonMatrix.getPlayButtonStatus())
+	    	{	
+	    		//Play music
 		    	long pressTime = System.currentTimeMillis();
 		    	if (pressTime - lastPressTime <= DOUBLE_PRESS_INTERVAL)
-		    	{	//button was double tapped
+		    	{	
+		    		//Button was double tapped
 		    		System.out.println("double tap");
-		    		
-		    		//CHANGE COLOR TO YELLOW HERE
-		    		
+		    		//TransitionDrawable transition = (TransitionDrawable)
+		    	    //        getResources().getDrawable(R.drawable.endplayonce);
+		    	    //thisButton.setImageDrawable(transition);
+		    	    //transition.startTransition(400);
+	    			thisButton.setImageDrawable(getResources().getDrawable(R.drawable.yellowbutton));
 		    		manager.pause(buttonId);
 		    	}
-		    	else if(state==WAITING)
+		    	else if(state == WAITING)
 		    	{
 		    		state = PLAYING;
-		    		TransitionDrawable transition = (TransitionDrawable)
-		    	            getResources().getDrawable(R.drawable.playonce);
-		    	    thisButton.setImageDrawable(transition);
-		    	    transition.startTransition(400);
+		    		//TransitionDrawable transition = (TransitionDrawable)
+		    	   //         getResources().getDrawable(R.drawable.playonce);
+		    	    //thisButton.setImageDrawable(transition);
+		    	   // transition.startTransition(400);
+	    			thisButton.setImageDrawable(getResources().getDrawable(R.drawable.greenbutton));
 		    	    manager.play(buttonId);
 		    	}
-		    	else if(state==PLAYING)
+		    	else if(state==PLAYING || state==LOOPING)
 		    	{
-		    		TransitionDrawable transition = (TransitionDrawable)
-		    	            getResources().getDrawable(R.drawable.playonce);
-		    	    thisButton.setImageDrawable(transition);
-		    	    transition.startTransition(400);
+		    		//TransitionDrawable transition = (TransitionDrawable)
+		    	    //        getResources().getDrawable(R.drawable.playonce);
+		    	    //thisButton.setImageDrawable(transition);
+		    	    //transition.startTransition(400);
+	    			thisButton.setImageDrawable(getResources().getDrawable(R.drawable.greenbutton));
 		    	    manager.play(buttonId);
 		    	}
 		    	lastPressTime = pressTime;
 	    	}//end play music
 	    	else if( ButtonMatrix.getMapButtonStatus() )
-	    	{ 	//map button is on
+	    	{ 	
+	    		//Map button is on
 	    		File chosenFile = ButtonMatrix.getChosenFile();
 	    		if(chosenFile != null)
 	    		{
@@ -133,11 +148,9 @@ public class BeatButton extends ImageButton
 	    {
 	    	// do something when the button is long clicked
 	    	state = LOOPING;
-	    	
-	    	//CHANGE THIS TO A RED BUTTON
-	    	thisButton.setImageResource(R.drawable.redbutton);
-	    	
-	    	//This should cause the button to loop
+			thisButton.setImageDrawable(getResources().getDrawable(R.drawable.redbutton));
+			//thisButton.setImageResource(R.drawable.greenbutton);
+	    	manager.loop(buttonId);
 	    	return true;
 	    }
 	};

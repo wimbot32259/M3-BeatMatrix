@@ -4,6 +4,6 @@
 *.jar
 *.war
 *.ear
-
+*.settings
 adt-bundle-linux-x86/*
 *.metadata

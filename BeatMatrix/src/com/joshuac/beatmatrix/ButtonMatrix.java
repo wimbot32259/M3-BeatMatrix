@@ -1,6 +1,5 @@
 package com.joshuac.beatmatrix;
 
-
 import android.app.Activity;
 import android.app.DialogFragment;
 import android.database.Cursor;
@@ -34,10 +33,13 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 	
 	final int NUM_BUTTONS = 5; 	//number of buttons
 	final int NUM_ROWS = 5;    	//number of rows (for the buttons)
+	final int TOTAL_BUTTONS = NUM_BUTTONS*NUM_ROWS;
+	//add scaling for sprint 2? ^^^
 	
 	//references to the actual buttons
 	private ImageView playButton;
-	private ImageView chooseButton;
+	private ImageView stopButton;
+	//private ImageView chooseButton;
 	private ImageView mapButton;
 	
 	private static MediaPlayerManager manager; //manages the music threads
@@ -48,7 +50,8 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 	public void onFileSelected(File f)
 	{
 		chosenFile = f;
-		chooseButton.setImageDrawable(getResources().getDrawable(R.drawable.playlist_off));
+		//chooseButton.setImageDrawable(getResources().getDrawable(R.drawable.playlist_off)); 
+		//Consider deleting
 		Toast toast = Toast.makeText(getApplicationContext(), chosenFile.getName(), Toast.LENGTH_SHORT);
 		toast.show();
     }
@@ -59,7 +62,7 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.button_matrix_activity);
         
-		manager = new MediaPlayerManager(this);
+		manager = new MediaPlayerManager(this, TOTAL_BUTTONS);
         
 		
 		//dynamically add TableRows and BeatButtons
@@ -117,12 +120,21 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 		//add file chooser ImageView to extra row
 		trow_extra1.addView(playButton,parms);
 		
+		//init stop ImageView
+		stopButton = new ImageView(this);
+		stopButton.setImageDrawable(getResources().getDrawable(R.drawable.stopicon_off));
+		stopButton.setScaleType(ScaleType.FIT_XY);
+		//add file chooser ImageView to extra row
+		trow_extra1.addView(stopButton,parms);
+		
+		/*
 		//init file chooser ImageView
 		chooseButton = new ImageView(this);
 		chooseButton.setImageDrawable(getResources().getDrawable(R.drawable.playlist_off));
 		chooseButton.setScaleType(ScaleType.FIT_XY);
 		//add file chooser ImageView to extra row
 		trow_extra1.addView(chooseButton,parms);
+		*/
 		
 		//init map button ImageView
 		mapButton = new ImageView(this);
@@ -143,35 +155,55 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
             public void onClick(View v)
             {
             	ImageView t = (ImageView) v;
-            	if(!playButtonOn)
+            	if(!getPlayButtonStatus())
             	{
             		//turn play button on w/ transition
 	        		TransitionDrawable transition = (TransitionDrawable)
 		    	            getResources().getDrawable(R.drawable.turn_play_on);
 		    	    t.setImageDrawable(transition);
 		    	    transition.startTransition(400);
-		    	    playButtonOn = true;
+		    	    setPlayButtonStatus(true);	//playButtonOn = true;
 		    	    //turn map button off
 		    	    mapButton.setImageDrawable(getResources().getDrawable(R.drawable.mapbutton_off));
-            		mapButtonOn = false;
+            		setMapButtonStatus(false);
             	}
             	else
             	{
             		t.setImageDrawable(getResources().getDrawable(R.drawable.playicon_off));
-            		playButtonOn = false;
+            		setPlayButtonStatus(false);
+            		//playButtonOn = false;
             	}
             	
             	
             }
         });
 		
-		
-		//Change 3 Start
+		//register the stop button's click listener
+		//responsible for changing this button's image on click
+		stopButton.setOnClickListener(
+			new OnClickListener() {
+	            public void onClick(View v) {
+	            	ImageView t = (ImageView) v;
+	        		//flash stop button red w/ transition
+	        		TransitionDrawable transition = (TransitionDrawable)
+		    	            getResources().getDrawable(R.drawable.turn_stop_on);
+		    	    t.setImageDrawable(transition);
+		    	    transition.startTransition(400);
+		    	    //pause music
+		    	    manager.stopAll();
+		    	    //turn map button off
+		    	    mapButton.setImageDrawable(getResources().getDrawable(R.drawable.mapbutton_off));
+	        		setMapButtonStatus(false);
+	        		//turn play button off
+            		playButton.setImageDrawable(getResources().getDrawable(R.drawable.playicon_off));
+            		setPlayButtonStatus(false);
+	            }
+			}
+		);
 		
 		//register the choose-file-dialog-button's click method
 		//responsible for changing this button's image on click
-		/*
-		chooseButton.setOnClickListener(new OnClickListener()
+		/*chooseButton.setOnClickListener(new OnClickListener()
 		{
             public void onClick(View v)
             {
@@ -186,8 +218,6 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
             }//end onClick
         }); */
 		
-		///Change 3 End
-		
 		
 		//register the map button's click listener
 		//responsible for changing this button's image on click
@@ -197,25 +227,27 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
             {
             	ImageView t = (ImageView) v;
 
-            	if(!mapButtonOn){
+            	if(!getMapButtonStatus()){
             		//turn map button on w/ transition
                 	TransitionDrawable transition;
 	        		transition = (TransitionDrawable)
 		    	            getResources().getDrawable(R.drawable.turn_map_on);
 	            	t.setImageDrawable(transition);
 		    	    transition.startTransition(400);
-	        		mapButtonOn = true;
+	        		setMapButtonStatus(true);
 	        		//turn play button off
-	        		//The play button will likely be taken out altogether in the future
 		    	    playButton.setImageDrawable(getResources().getDrawable(R.drawable.playicon_off));
-            		playButtonOn = false;
+            		setPlayButtonStatus(false);
             		
-            		//Change 1
+            		//Open choose song menu
     	    	    showChooseFileDialog();
+
+	        		
             	}
-            	else{
+            	else
+            	{
             		t.setImageDrawable(getResources().getDrawable(R.drawable.mapbutton_off));
-            		mapButtonOn = false;
+            		setMapButtonStatus(false);
             	}
 	    	    
             }//end onClick
@@ -269,10 +301,20 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 	/*
 	 * Getters / Setters
 	 */
+	public static void setMapButtonStatus(boolean status)
+	{
+		mapButtonOn = status;
+	}
+	
 	
 	public static boolean getMapButtonStatus()
 	{
 		return mapButtonOn; 
+	}
+	
+	public static void setPlayButtonStatus(boolean status)
+	{
+		playButtonOn = status;
 	}
 	
 	public static boolean getPlayButtonStatus()

@@ -1,19 +1,15 @@
 package com.joshuac.beatmatrix;
 
-
-
+import android.media.AudioManager;
 import android.content.Context;
 import android.media.MediaPlayer;
 import android.net.Uri;
-import android.widget.Toast;
-
 import java.io.File;
 
 public class MediaPlayerThread extends Thread implements Runnable
 {
 
-	private boolean playing;
-	private boolean running = false;
+	private volatile boolean playing;
 	MediaPlayer mp;
 	Context context;			//context of the application
 	File track; 		//file descriptor of the track
@@ -27,7 +23,6 @@ public class MediaPlayerThread extends Thread implements Runnable
 	    super();
 	    this.context = c;
 	    this.track = f;
-	    Toast.makeText(context, f.getName() + " mapped", Toast.LENGTH_SHORT).show();
 	}
 	
 	/*
@@ -38,20 +33,24 @@ public class MediaPlayerThread extends Thread implements Runnable
 	//starts the thread
 	public void run()
 	{
-		running = true;
 		mp = new MediaPlayer();
+		
+		//Sets what audio stream to adjust volume for in-app
+	//	setVolumeControlStream(AudioManager.STREAM_MUSIC);
+		
 		if (mp != null) {
             mp.reset();
             mp.release();
         }
 		Uri ef = Uri.fromFile(track);
 		mp = MediaPlayer.create(context, ef);
-        
+        //mp.start();
 	}//end run
 	
 	//play/restarts the track
 	public void play()
 	{
+		mp.setLooping(false);
 		if(!mp.isPlaying())
 		{
 			mp.start();
@@ -62,9 +61,21 @@ public class MediaPlayerThread extends Thread implements Runnable
 		}
 	}
 	
+	//loops the track until tapped
+	public void loop() {
+		mp.setLooping(true);
+		if (!mp.isPlaying()) {
+			mp.start();
+		} else {
+			mp.seekTo(0);
+		}
+	}
+	
 	//pause the current track
 	public void pause()
 	{
+		mp.setLooping(false);
+		mp.seekTo(0);
 		mp.pause();
 	}
 	
@@ -75,15 +86,7 @@ public class MediaPlayerThread extends Thread implements Runnable
 	public void setTrack(File f)
 	{
 		this.track = f;
-		Toast.makeText(context, f.getName() + " mapped", Toast.LENGTH_SHORT).show();
 	}
 	
-	/*
-	 * Getters / Setters
-	 */
 
-	public boolean isRunning()
-	{
-		return running;
-	}
 }
