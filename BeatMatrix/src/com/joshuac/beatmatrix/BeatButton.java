@@ -5,6 +5,8 @@ import java.io.File;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
+import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnCompletionListener;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageButton;
@@ -28,6 +30,8 @@ public class BeatButton extends ImageButton
 	
 	//thread manager
 	private static MediaPlayerManager manager;
+	
+	private MediaPlayer myMP = null;
 	
 	//double tap vars
 	long lastPressTime = 0;
@@ -113,22 +117,32 @@ public class BeatButton extends ImageButton
 	    	return true;
 	    }
 	};
+
+	//listen for song endings
+	private OnCompletionListener soundListener = new OnCompletionListener()
+	{
+	    public void onCompletion(MediaPlayer mp)
+	    {
+	    	//go to stopped when sound complete
+	    	soundEndAction();
+	    }
+	};
 	
 	// User interaction methods
 	
 	private void doubleTapAction() {
-		System.out.println("double tap");
+		changeState(STOPPED);
 		stopButtonSound();
 	}
 	
 	private void singleTapAction() {
-		changeState(PLAYING, true);
+		changeState(PLAYING);
 	    playButtonSound();
 		
 	}
 	
 	private void holdAction() {
-		changeState(LOOPING, false);
+		changeState(LOOPING);
     	loopButtonSound();
 	}
 	
@@ -136,30 +150,39 @@ public class BeatButton extends ImageButton
 		File chosenFile = ButtonMatrix.getChosenFile();
 		if(chosenFile != null)
 		{
-			manager.setMapping(buttonId, chosenFile);
-			changeState(STOPPED, false);
+			myMP = manager.setMapping(buttonId, chosenFile);
+			myMP.setOnCompletionListener(soundListener);
+			changeState(STOPPED);
 			MAPPED = true;
-			manager.run(buttonId);
 		}
+	}
+	
+	public void soundEndAction() {
+		//This may be used by another object when a sound ends
+		changeState(STOPPED);
 	}
 	
 	// Media player interface methods
 	
 	private void playButtonSound() {
+		//Call this to play a sound once
     	manager.play(buttonId);
 	}
 	
 	private void stopButtonSound() {
+		//Call this to stop a sound
 		manager.pause(buttonId);
 	}
 	
 	private void loopButtonSound() {
+		//Call this to loop a sound
     	manager.loop(buttonId);
 	}
 	
 	// State change method
 	
-	public void changeState(int newState, boolean trans) {
+	private void changeState(int newState) {
+		//Call this to change button state and image
 		state = newState;
 		
 		Drawable newImg;
@@ -168,7 +191,8 @@ public class BeatButton extends ImageButton
 			newImg = getResources().getDrawable(R.drawable.graybutton);
 		}
 		else if (state == PLAYING) {
-			newImg = getResources().getDrawable(R.drawable.playonce);
+			newImg = getResources().getDrawable(R.drawable.greenbutton);
+			//newImg = getResources().getDrawable(R.drawable.playonce);
 		}
 		else if (state == LOOPING) {
 			newImg = getResources().getDrawable(R.drawable.greenbutton);
@@ -180,7 +204,7 @@ public class BeatButton extends ImageButton
 			newImg = getResources().getDrawable(R.drawable.graybutton);
 		}
 		
-		if (trans) {
+		if (newImg instanceof TransitionDrawable) {
 			TransitionDrawable transition = (TransitionDrawable)newImg;			
 		    thisButton.setImageDrawable(transition);
 		    transition.startTransition(400);
