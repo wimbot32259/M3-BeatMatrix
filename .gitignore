@@ -12,3 +12,4 @@ adt-bundle-linux-x86/*
 *.cache
 *.ap_
 *.dex
+*.settings/*
