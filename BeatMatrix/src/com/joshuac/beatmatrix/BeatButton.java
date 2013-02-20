@@ -3,6 +3,7 @@ package com.joshuac.beatmatrix;
 import java.io.File;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
 import android.util.AttributeSet;
 import android.view.View;
@@ -87,38 +88,17 @@ public class BeatButton extends ImageButton
 		    	long pressTime = System.currentTimeMillis();
 		    	if (pressTime - lastPressTime <= DOUBLE_PRESS_INTERVAL)
 		    	{	//button was double tapped
-		    		System.out.println("double tap");
-		    		manager.pause(buttonId);
+		    		doubleTapAction();
 		    	}
-		    	else if(state==WAITING)
-		    	{
-		    		state = PLAYING;
-		    		TransitionDrawable transition = (TransitionDrawable)
-		    	            getResources().getDrawable(R.drawable.playonce);
-		    	    thisButton.setImageDrawable(transition);
-		    	    transition.startTransition(400);
-		    	    manager.play(buttonId);
-		    	}
-		    	else if(state==PLAYING || state==LOOPING)
-		    	{
-		    		TransitionDrawable transition = (TransitionDrawable)
-		    	            getResources().getDrawable(R.drawable.playonce);
-		    	    thisButton.setImageDrawable(transition);
-		    	    transition.startTransition(400);
-		    	    manager.play(buttonId);
+		    	else {
+		    		//button was single tapped
+		    		singleTapAction();
 		    	}
 		    	lastPressTime = pressTime;
 	    	}//end play music
 	    	else if( ButtonMatrix.getMapButtonStatus() )
 	    	{ 	//map button is on
-	    		File chosenFile = ButtonMatrix.getChosenFile();
-	    		if(chosenFile != null)
-	    		{
-	    			manager.setMapping(buttonId, chosenFile);
-	    			thisButton.setImageDrawable(getResources().getDrawable(R.drawable.yellowbutton));
-	    			MAPPED = true;
-	    			manager.run(buttonId);
-	    		}
+	    		mapAction();
 	    	}
 	    }
 	}; //end onClickListener
@@ -129,13 +109,86 @@ public class BeatButton extends ImageButton
 	    public boolean onLongClick(View v)
 	    {
 	    	// do something when the button is long clicked
-	    	state = LOOPING;
-			thisButton.setImageDrawable(getResources().getDrawable(R.drawable.greenbutton));
-	//    	thisButton.setImageResource(R.drawable.greenbutton);
-	    	manager.loop(buttonId);
+	    	holdAction();
 	    	return true;
 	    }
 	};
+	
+	// User interaction methods
+	
+	private void doubleTapAction() {
+		System.out.println("double tap");
+		stopButtonSound();
+	}
+	
+	private void singleTapAction() {
+		changeState(PLAYING, true);
+	    playButtonSound();
+		
+	}
+	
+	private void holdAction() {
+		changeState(LOOPING, false);
+    	loopButtonSound();
+	}
+	
+	private void mapAction() {
+		File chosenFile = ButtonMatrix.getChosenFile();
+		if(chosenFile != null)
+		{
+			manager.setMapping(buttonId, chosenFile);
+			changeState(STOPPED, false);
+			MAPPED = true;
+			manager.run(buttonId);
+		}
+	}
+	
+	// Media player interface methods
+	
+	private void playButtonSound() {
+    	manager.play(buttonId);
+	}
+	
+	private void stopButtonSound() {
+		manager.pause(buttonId);
+	}
+	
+	private void loopButtonSound() {
+    	manager.loop(buttonId);
+	}
+	
+	// State change method
+	
+	public void changeState(int newState, boolean trans) {
+		state = newState;
+		
+		Drawable newImg;
+		
+		if (state == WAITING) {
+			newImg = getResources().getDrawable(R.drawable.graybutton);
+		}
+		else if (state == PLAYING) {
+			newImg = getResources().getDrawable(R.drawable.playonce);
+		}
+		else if (state == LOOPING) {
+			newImg = getResources().getDrawable(R.drawable.greenbutton);
+		}
+		else if (state == STOPPED){
+			newImg = getResources().getDrawable(R.drawable.yellowbutton);
+		}
+		else {
+			newImg = getResources().getDrawable(R.drawable.graybutton);
+		}
+		
+		if (trans) {
+			TransitionDrawable transition = (TransitionDrawable)newImg;			
+		    thisButton.setImageDrawable(transition);
+		    transition.startTransition(400);
+		}
+		else {
+			thisButton.setImageDrawable(newImg);
+		}
+	}
 	
 	/*
 	 * Getters / Setters
