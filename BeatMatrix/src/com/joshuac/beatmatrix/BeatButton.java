@@ -18,7 +18,7 @@ public class BeatButton extends ImageButton
 	//Static Playing States
 	private final static int WAITING = 0; 	//button is waiting to be played
 	private final static int STOPPED = 1; 	//button is not playing
-	private final static int PLAYING = 2;		//button is playing once
+	private final static int PLAYING = 2;	//button is playing once
 	private final static int LOOPING = 3; 	//button is looping
 	//Button Map State
 	private boolean MAPPED = false;
@@ -88,6 +88,9 @@ public class BeatButton extends ImageButton
 		    	if (pressTime - lastPressTime <= DOUBLE_PRESS_INTERVAL)
 		    	{	//button was double tapped
 		    		System.out.println("double tap");
+		    		
+		    		//CHANGE COLOR TO YELLOW HERE
+		    		
 		    		manager.pause(buttonId);
 		    	}
 		    	else if(state==WAITING)
@@ -130,7 +133,11 @@ public class BeatButton extends ImageButton
 	    {
 	    	// do something when the button is long clicked
 	    	state = LOOPING;
-	    	thisButton.setImageResource(R.drawable.greenbutton);
+	    	
+	    	//CHANGE THIS TO A RED BUTTON
+	    	thisButton.setImageResource(R.drawable.redbutton);
+	    	
+	    	//This should cause the button to loop
 	    	return true;
 	    }
 	};

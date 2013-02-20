@@ -165,8 +165,12 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
             }
         });
 		
+		
+		//Change 3 Start
+		
 		//register the choose-file-dialog-button's click method
 		//responsible for changing this button's image on click
+		/*
 		chooseButton.setOnClickListener(new OnClickListener()
 		{
             public void onClick(View v)
@@ -180,7 +184,9 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 	    	    showChooseFileDialog();
             	
             }//end onClick
-        });
+        }); */
+		
+		///Change 3 End
 		
 		
 		//register the map button's click listener
@@ -200,9 +206,12 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 		    	    transition.startTransition(400);
 	        		mapButtonOn = true;
 	        		//turn play button off
+	        		//The play button will likely be taken out altogether in the future
 		    	    playButton.setImageDrawable(getResources().getDrawable(R.drawable.playicon_off));
             		playButtonOn = false;
-	        		
+            		
+            		//Change 1
+    	    	    showChooseFileDialog();
             	}
             	else{
             		t.setImageDrawable(getResources().getDrawable(R.drawable.mapbutton_off));
