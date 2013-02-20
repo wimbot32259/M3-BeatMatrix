@@ -7,3 +7,8 @@
 
 adt-bundle-linux-x86/*
 *.metadata
+*.apk
+*.dex
+*.settings
+*.cache
+*.ap_
