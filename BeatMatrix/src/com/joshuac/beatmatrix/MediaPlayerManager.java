@@ -1,6 +1,7 @@
 package com.joshuac.beatmatrix;
 
 import android.content.Context;
+import android.media.MediaPlayer;
 import android.util.SparseArray;
 import android.widget.Toast;
 import java.io.File;
@@ -28,27 +29,29 @@ public class MediaPlayerManager
 	
 	//i - id of the View
 	//f - chosenFile (file chosen from 'ChooseFileDialog')
-	public void setMapping(int i, File f)
+	public MediaPlayer setMapping(int i, File f)
 	{
 		  mapped_buttons[i] = 1;
 		  MediaPlayerThread thread = threads.get(i);
 		  if(thread == null){
 			  thread = new MediaPlayerThread(context, f);
 			  threads.put(i,thread);
-
-			  String msg = f.getName();
-			  Toast toast = Toast.makeText(context, msg + " mapped", Toast.LENGTH_SHORT);
-				toast.show();
+			  run(i);
 		  }
-		  else
+		  else {
 			  thread.setTrack(f);
+		  }
 
+		  String msg = f.getName();
+		  Toast toast = Toast.makeText(context, msg + " mapped", Toast.LENGTH_SHORT);
+		  toast.show();
+		  return thread.getMP();
 	}//end setMapping
 	
 	//
 	public void run(int i)
 	{
-		threads.get(i).start();
+			threads.get(i).start();
 	}//end play
 	
 	public void play(int i)

@@ -274,7 +274,7 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 	    newFragment.show(getFragmentManager(), "dialog");
 	 }
 	
-	//DELETE test
+	/*/DELETE test
 	void playAudio2()
 	{
 		String[] STAR = { "*" };     
@@ -296,7 +296,7 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 		        } while (cursor.moveToNext());
 		    }
 		}
-	}//end playAudio2
+	}//end playAudio2*/
 	
 	
 	/*
