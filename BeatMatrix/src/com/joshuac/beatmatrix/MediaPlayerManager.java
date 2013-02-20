@@ -64,13 +64,15 @@ public class MediaPlayerManager
 	}
 	
 	public void pause(int i){
-		threads.get(i).pause();
+		if (mapped_buttons[i] == 1) {
+			threads.get(i).pause();
+		}
 	}
 	
 	public void stopAll() {
 		for (int i = 0; i < total_buttons; i++) {
 			if (mapped_buttons[i] == 1) {
-				threads.get(i).pause();
+				pause(i);
 			}
 			//otherwise there's no song mapped to it, so no thread exists for it yet
 			//(so it won't be playing anything)

@@ -16,7 +16,7 @@ public class BeatButton extends ImageButton
 	
 	private BeatButton thisButton; 		//instance of this current button
 	private int buttonId;				//buttons are added dynamically so they have -1 as getId() 
-	private static int currentId = 1; 	//current id to delegate
+	private static int currentId = 0; 	//current id to delegate
 	
 	//Static Playing States
 	private final static int WAITING = 0; 	//button is waiting to be played
@@ -169,6 +169,13 @@ public class BeatButton extends ImageButton
 	public void soundEndAction() {
 		//This may be used by another object when a sound ends
 		changeState(STOPPED);
+	}
+	
+	public void stop() {
+		if (state != WAITING) {
+			changeState(STOPPED);
+			stopButtonSound();
+		}
 	}
 	
 	// Media player interface methods

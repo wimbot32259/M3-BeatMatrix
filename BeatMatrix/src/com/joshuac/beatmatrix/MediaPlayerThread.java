@@ -90,7 +90,10 @@ public class MediaPlayerThread extends Thread implements Runnable
 	{
 		mp.setLooping(false);
 		mp.seekTo(0);
-		mp.pause();
+		if(mp.isPlaying())
+		{
+			mp.pause();
+		}
 	}
 	
 	/*
