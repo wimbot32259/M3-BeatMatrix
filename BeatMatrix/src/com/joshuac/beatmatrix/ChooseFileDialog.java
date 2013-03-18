@@ -59,7 +59,7 @@ public class ChooseFileDialog extends DialogFragment {
 					int periodIndex= file.toString().lastIndexOf('.');
 					if(periodIndex != -1){
 						String ext = file.toString().substring(periodIndex);
-						if(ext.equals(".mp3")){
+						if(ext.equals(".mp3")||ext.equals(".wav")){
 								files.add(file);
 						}//if try-catch
 					}

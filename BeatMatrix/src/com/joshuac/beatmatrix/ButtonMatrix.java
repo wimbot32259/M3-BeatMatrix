@@ -20,6 +20,8 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.Toast;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 
 
@@ -42,6 +44,9 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 	//private ImageView chooseButton;
 	private ImageView mapButton;
 	
+	//List of existing beat buttons
+	private ArrayList<BeatButton> buttonList;
+	
 	private static MediaPlayerManager manager; //manages the music threads
 	
 	//enables ButtonMatrix to communicate with the ChooseFileDialog
@@ -63,7 +68,7 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 		setContentView(R.layout.button_matrix_activity);
         
 		manager = new MediaPlayerManager(this, TOTAL_BUTTONS);
-        
+		buttonList = new ArrayList<BeatButton>();
 		
 		//dynamically add TableRows and BeatButtons
 		TableLayout bmh = (TableLayout) findViewById(R.id.beatMatrixHolder);
@@ -82,6 +87,7 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 			{
 				//init button and set scaling
 				BeatButton newButton = (BeatButton) getLayoutInflater().inflate(R.layout.beat_button, null);
+				buttonList.add(newButton);
 				newButton.setScaleType(ScaleType.FIT_XY);
 				//create layout BeatButton params
 				Display display = getWindowManager().getDefaultDisplay();
@@ -190,7 +196,7 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 		    	    t.setImageDrawable(transition);
 		    	    transition.startTransition(400);
 		    	    //pause music
-		    	    manager.stopAll();
+		    	    stopAllButtons();
 		    	    //turn map button off
 		    	    mapButton.setImageDrawable(getResources().getDrawable(R.drawable.mapbutton_off));
 	        		setMapButtonStatus(false);
@@ -273,7 +279,15 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 	    newFragment.show(getFragmentManager(), "dialog");
 	 }
 	
-	//DELETE test
+	//stops all button sounds
+	//changes state of buttons as well
+	public void stopAllButtons() {
+		for (int i=0; i<buttonList.size();i++) {
+			buttonList.get(i).stop();
+		}
+	}
+	
+	/*/DELETE test
 	void playAudio2()
 	{
 		String[] STAR = { "*" };     
@@ -295,7 +309,7 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 		        } while (cursor.moveToNext());
 		    }
 		}
-	}//end playAudio2
+	}//end playAudio2*/
 	
 	
 	/*

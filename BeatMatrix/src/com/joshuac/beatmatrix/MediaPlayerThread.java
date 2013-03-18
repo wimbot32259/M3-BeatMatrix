@@ -23,12 +23,23 @@ public class MediaPlayerThread extends Thread implements Runnable
 	    super();
 	    this.context = c;
 	    this.track = f;
+	    
+	    //Start media player here instead of in run()
+		mp = new MediaPlayer();
+		
+		if (mp != null) {
+            mp.reset();
+            mp.release();
+        }
+		Uri ef = Uri.fromFile(track);
+		mp = MediaPlayer.create(context, ef);
 	}
 	
 	/*
 	 * Methods
 	 */
 	
+	/*
 	//@see java.lang.Thread#run()
 	//starts the thread
 	public void run()
@@ -43,9 +54,12 @@ public class MediaPlayerThread extends Thread implements Runnable
             mp.release();
         }
 		Uri ef = Uri.fromFile(track);
+		System.out.println("About to create media player");
 		mp = MediaPlayer.create(context, ef);
+		System.out.println("MP not null: " + (mp!=null));
         //mp.start();
 	}//end run
+	*/
 	
 	//play/restarts the track
 	public void play()
@@ -76,7 +90,10 @@ public class MediaPlayerThread extends Thread implements Runnable
 	{
 		mp.setLooping(false);
 		mp.seekTo(0);
-		mp.pause();
+		if(mp.isPlaying())
+		{
+			mp.pause();
+		}
 	}
 	
 	/*
@@ -86,7 +103,15 @@ public class MediaPlayerThread extends Thread implements Runnable
 	public void setTrack(File f)
 	{
 		this.track = f;
+		if (mp != null) {
+            mp.reset();
+            mp.release();
+        }
+		Uri ef = Uri.fromFile(track);
+		mp = MediaPlayer.create(context, ef);
 	}
 	
-
+	public MediaPlayer getMP() {
+		return mp;
+	}
 }
