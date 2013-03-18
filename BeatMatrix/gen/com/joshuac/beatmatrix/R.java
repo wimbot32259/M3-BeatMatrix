@@ -12,26 +12,25 @@ public final class R {
     }
     public static final class drawable {
         public static final int endloop=0x7f020000;
-        public static final int endplayonce=0x7f020001;
-        public static final int graybutton=0x7f020002;
-        public static final int greenbutton=0x7f020003;
-        public static final int ic_launcher=0x7f020004;
-        public static final int mapbutton_off=0x7f020005;
-        public static final int mapbutton_on=0x7f020006;
-        public static final int playicon_off=0x7f020007;
-        public static final int playicon_on=0x7f020008;
-        public static final int playlist_off=0x7f020009;
-        public static final int playlist_on=0x7f02000a;
-        public static final int playonce=0x7f02000b;
-        public static final int redbutton=0x7f02000c;
-        public static final int stopicon_off=0x7f02000d;
-        public static final int stopicon_on=0x7f02000e;
-        public static final int turn_map_off=0x7f02000f;
-        public static final int turn_map_on=0x7f020010;
-        public static final int turn_play_on=0x7f020011;
-        public static final int turn_playlist_on=0x7f020012;
-        public static final int turn_stop_on=0x7f020013;
-        public static final int yellowbutton=0x7f020014;
+        public static final int graybutton=0x7f020001;
+        public static final int greenbutton=0x7f020002;
+        public static final int ic_launcher=0x7f020003;
+        public static final int mapbutton_off=0x7f020004;
+        public static final int mapbutton_on=0x7f020005;
+        public static final int playicon_off=0x7f020006;
+        public static final int playicon_on=0x7f020007;
+        public static final int playlist_off=0x7f020008;
+        public static final int playlist_on=0x7f020009;
+        public static final int playonce=0x7f02000a;
+        public static final int redbutton=0x7f02000b;
+        public static final int stopicon_off=0x7f02000c;
+        public static final int stopicon_on=0x7f02000d;
+        public static final int turn_map_off=0x7f02000e;
+        public static final int turn_map_on=0x7f02000f;
+        public static final int turn_play_on=0x7f020010;
+        public static final int turn_playlist_on=0x7f020011;
+        public static final int turn_stop_on=0x7f020012;
+        public static final int yellowbutton=0x7f020013;
     }
     public static final class id {
         public static final int beatMatrixHolder=0x7f080000;

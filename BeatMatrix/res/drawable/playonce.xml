@@ -1,11 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <transition xmlns:android="http://schemas.android.com/apk/res/android">
-<<<<<<< HEAD
-	<item android:drawable="@drawable/yellowbutton" />
-    <item android:drawable="@drawable/greenbutton" />
-=======
+
   <item android:drawable="@drawable/greenbutton" />
   <item android:drawable="@drawable/greenbutton" />
->>>>>>> edb4207d6271be28779081a94045d2f8a8a436a3
+
 </transition> 

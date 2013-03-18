@@ -90,11 +90,8 @@ public class BeatButton extends ImageButton
 	    public void onClick(View v) {
 	    	
 	    	//Do something when the button is clicked
-<<<<<<< HEAD
+
 	    	if(!ButtonMatrix.getMapButtonStatus()&& MAPPED && ButtonMatrix.getPlayButtonStatus())
-=======
-	    	if(!ButtonMatrix.getMapButtonStatus() && MAPPED && ButtonMatrix.getPlayButtonStatus())
->>>>>>> edb4207d6271be28779081a94045d2f8a8a436a3
 	    	{	
 	    		//Play music
 		    	long pressTime = System.currentTimeMillis();
