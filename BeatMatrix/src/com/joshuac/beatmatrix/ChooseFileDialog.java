@@ -39,6 +39,11 @@ public class ChooseFileDialog extends DialogFragment {
         return frag;
     }
 	
+	public ChooseFileDialog()
+	{
+		fileList = generateFileList(baseDir);
+	}
+	
 	public static void setContext(Context c){
 		context = c;
 	}
