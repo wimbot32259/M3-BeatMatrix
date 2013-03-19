@@ -1,6 +1,6 @@
 package com.joshuac.beatmatrix;
 
-import android.media.AudioManager;
+//import android.media.AudioManager;
 import android.content.Context;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -9,7 +9,7 @@ import java.io.File;
 public class MediaPlayerThread extends Thread implements Runnable
 {
 
-	private volatile boolean playing;
+	//private volatile boolean playing;
 	MediaPlayer mp;
 	Context context;			//context of the application
 	File track; 		//file descriptor of the track

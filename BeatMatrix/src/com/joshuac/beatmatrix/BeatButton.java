@@ -1,16 +1,16 @@
 package com.joshuac.beatmatrix;
 
-import java.io.File;
+//import java.io.File;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
-import android.media.MediaPlayer;
-import android.media.MediaPlayer.OnCompletionListener;
+//import android.media.MediaPlayer;
+//import android.media.MediaPlayer.OnCompletionListener;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
-import android.view.View;
+//import android.view.View;
 import android.widget.ImageButton;
 
 public class BeatButton extends ImageButton
@@ -27,7 +27,7 @@ public class BeatButton extends ImageButton
 	private final static int LOOPING = 3; 	//button is looping
 	
 	//Button Map State
-	private boolean MAPPED = false;
+	//private boolean MAPPED = false;
 	
 	//Current button state
 	private int state = WAITING;
@@ -35,11 +35,11 @@ public class BeatButton extends ImageButton
 	//thread manager
 	private static MediaPlayerManager manager;
 	
-	private MediaPlayer myMP = null;
+	//private MediaPlayer myMP = null;
 	
 	//double tap vars
-	long lastPressTime = 0;
-	private static final long DOUBLE_PRESS_INTERVAL = 400;
+	//long lastPressTime = 0;
+	//private static final long DOUBLE_PRESS_INTERVAL = 400;
 	
 	//gesture detector
 	GestureDetector mGestureDetector;

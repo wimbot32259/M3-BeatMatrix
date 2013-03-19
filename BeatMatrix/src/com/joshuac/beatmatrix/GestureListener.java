@@ -23,7 +23,7 @@ public class GestureListener extends GestureDetector.SimpleOnGestureListener{
 	//Button Map State
 	private boolean MAPPED = false;
 	//Current button state
-	private int state = WAITING;
+	//private int state = WAITING;
 	
 	//thread manager
 	private static MediaPlayerManager manager = null;
