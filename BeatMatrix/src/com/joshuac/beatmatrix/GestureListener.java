@@ -29,7 +29,7 @@ public class GestureListener extends GestureDetector.SimpleOnGestureListener{
 	private static MediaPlayerManager manager = null;
 	
 	//media player
-	private MediaPlayer myMP = null;
+//	private MediaPlayer myMP = null;
 	
 	/*
 	 * Constructor(s)
@@ -131,8 +131,7 @@ public class GestureListener extends GestureDetector.SimpleOnGestureListener{
 		File chosenFile = ButtonMatrix.getChosenFile();
 		if(chosenFile != null)
 		{
-			myMP = manager.setMapping(buttonId, chosenFile);
-			myMP.setOnCompletionListener(soundListener);
+			manager.setMapping(buttonId, chosenFile, soundListener);
 			thisButton.changeState(STOPPED);
 			MAPPED = true;
 		}
