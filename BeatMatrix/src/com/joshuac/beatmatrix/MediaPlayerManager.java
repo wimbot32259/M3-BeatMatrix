@@ -12,9 +12,9 @@ public class MediaPlayerManager
 {
 	
 	Context context;
-	SparseArray<MediaPlayerThread> threads;
+	SparseArray<MyAudioDeviceThread> threads;
 	Thread a;
-	MediaPlayerThread b;
+	MyAudioDeviceThread b;
 	private int total_buttons;
 	private int[] mapped_buttons;
 
@@ -25,7 +25,7 @@ public class MediaPlayerManager
 			mapped_buttons[i] = 0;
 		}
 		this.context = c;
-		threads = new SparseArray<MediaPlayerThread>();
+		threads = new SparseArray<MyAudioDeviceThread>();
 	}
 	
 	//i - id of the View
@@ -33,9 +33,9 @@ public class MediaPlayerManager
 	public void setMapping(int i, File f, OnCompletionListener completionListener)
 	{
 		  mapped_buttons[i] = 1;
-		  MediaPlayerThread thread = threads.get(i);
+		  MyAudioDeviceThread thread = threads.get(i);
 		  if(thread == null){
-			  thread = new MediaPlayerThread(context, f, completionListener);
+			  thread = new MyAudioDeviceThread(context, f, completionListener);
 			  threads.put(i,thread);
 			  run(i);
 		  }
