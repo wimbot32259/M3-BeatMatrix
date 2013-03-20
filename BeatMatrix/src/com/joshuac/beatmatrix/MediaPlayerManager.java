@@ -2,10 +2,11 @@
 package com.joshuac.beatmatrix;
 
 import android.content.Context;
-import android.media.MediaPlayer.OnCompletionListener;
 import android.util.SparseArray;
 import android.widget.Toast;
 import java.io.File;
+
+import com.joshuac.beatmatrix.MyAudioDevice.OnCompletionListener;
 
 
 public class MediaPlayerManager 

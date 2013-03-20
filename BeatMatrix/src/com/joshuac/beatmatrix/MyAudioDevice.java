@@ -14,7 +14,6 @@ import com.joshuac.beatmatrix.WavReader.WavException;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
-import android.media.MediaPlayer.OnCompletionListener;
 
 public class MyAudioDevice
 {
@@ -28,6 +27,10 @@ public class MyAudioDevice
 	private boolean playing = false;
 	private boolean looping = false;
 	private OnCompletionListener onCompletionListener;
+	
+	public interface OnCompletionListener {
+		public void onCompletion();
+	}
 
 	public MyAudioDevice(File openFile)
 	{
@@ -54,7 +57,7 @@ public class MyAudioDevice
 			if (playing) {
 				//Write a buffer of data to the track
 				try {
-					if (dis.available() >= 0) {
+					if (dis.available() > 0) {
 						buffer = reader.readToPcm(info, dis, bufferSize);
 						track.write( buffer, 0, buffer.length );
 					}
@@ -66,7 +69,7 @@ public class MyAudioDevice
 					}
 					else {
 						playing = false;
-						onCompletionListener.onCompletion(null);
+						//onCompletionListener.onCompletion();
 					}
 				} catch (IOException e) {
 					e.printStackTrace();

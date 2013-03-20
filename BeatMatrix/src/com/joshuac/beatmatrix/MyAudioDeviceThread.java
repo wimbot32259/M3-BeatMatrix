@@ -2,8 +2,9 @@ package com.joshuac.beatmatrix;
 
 //import android.media.AudioManager;
 import android.content.Context;
-import android.media.MediaPlayer.OnCompletionListener;
 import java.io.File;
+
+import com.joshuac.beatmatrix.MyAudioDevice.OnCompletionListener;
 
 public class MyAudioDeviceThread extends Thread implements Runnable
 {
