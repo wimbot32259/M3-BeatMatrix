@@ -7,3 +7,5 @@
 *.settings
 adt-bundle-linux-x86/*
 *.metadata
+*.apk
+*.cache
