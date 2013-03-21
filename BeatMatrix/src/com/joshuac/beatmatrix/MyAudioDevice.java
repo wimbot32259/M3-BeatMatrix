@@ -28,6 +28,8 @@ public class MyAudioDevice
 	private boolean looping = false;
 	private OnCompletionListener onCompletionListener;
 	
+	//TODO make setTempo, setStartTime, setEndTime
+	
 	public interface OnCompletionListener {
 		public void onCompletion();
 	}

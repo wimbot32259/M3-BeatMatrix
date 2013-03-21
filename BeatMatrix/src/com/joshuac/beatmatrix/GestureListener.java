@@ -4,6 +4,7 @@ import java.io.File;
 
 import com.joshuac.beatmatrix.MyAudioDevice.OnCompletionListener;
 
+import android.app.DialogFragment;
 import android.content.Context;
 import android.content.res.Resources;
 //import android.media.MediaPlayer;
@@ -15,6 +16,8 @@ public class GestureListener extends GestureDetector.SimpleOnGestureListener{
 	private BeatButton thisButton; 		//instance of the button
 	private int buttonId;				//id given to the button
 	private static Resources resources = null;
+	
+	private int editingButtonId;
 	
 	//Static Playing States
 	private final static int WAITING = 0; 	//button is waiting to be played
@@ -64,8 +67,11 @@ public class GestureListener extends GestureDetector.SimpleOnGestureListener{
 			thisButton.changeState(PLAYING);
 		    playButtonSound();
     	}
-    	else if( ButtonMatrix.getMapButtonStatus() )
+    	else if( ButtonMatrix.getMapButtonStatus() ) {
     		mapAction();
+    	} else if (ButtonMatrix.getEditButtonStatus()) {
+    		editAction();
+    	}
 		return true;
 	}//end onSingleTapUp
 	
@@ -138,6 +144,14 @@ public class GestureListener extends GestureDetector.SimpleOnGestureListener{
 			thisButton.changeState(STOPPED);
 			MAPPED = true;
 		}
+	}
+	//WILL TODO fix these so edit screen knows which button we are working with
+	private void editAction() {
+		editingButtonId = buttonId;
+	}
+	
+	public int getEditingButtonId() {
+		return editingButtonId; 
 	}
 	
 	public void soundEndAction() {
