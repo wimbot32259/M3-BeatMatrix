@@ -11,6 +11,7 @@ import java.io.InputStream;
 import com.joshuac.beatmatrix.AudioReader.FileInfo;
 import com.joshuac.beatmatrix.WavReader.WavException;
 
+import android.app.Activity;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
@@ -29,7 +30,6 @@ public class MyAudioDevice
 	private OnCompletionListener onCompletionListener;
 	
 	private double volume = 1; //volume as a multiplicative factor
-	//TODO: Make tempo change the actual tempo
 	private double tempo = 1; //play speed as a multiplicative factor?
 	private int startPosition = 0; //offset of first sample to play, in bytes (SHOULD BE EVEN)
 	private int endPosition; //equals 1 + offset of last sample to play, in bytes (SHOULD BE EVEN)
@@ -37,8 +37,12 @@ public class MyAudioDevice
 	private double trackLength; //end time of file in seconds, stored so we know when to set endPosition to exact end
 	
 	
-	public interface OnCompletionListener {
-		public void onCompletion();
+	public static abstract class OnCompletionListener {
+		public OnCompletionListener(){}
+		
+		public Activity myActivity = null;
+
+		public abstract void onCompletion();
 	}
 
 	public MyAudioDevice(File openFile)
@@ -95,8 +99,13 @@ public class MyAudioDevice
 					}
 					else {
 						playing = false;
-						//TODO: Figure this mofo out.
-						//onCompletionListener.onCompletion();
+						onCompletionListener.myActivity.runOnUiThread(new Runnable() {
+					     public void run() {
+
+					    	 onCompletionListener.onCompletion();
+
+					    	    }
+					    	});
 					}
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -234,7 +243,7 @@ public class MyAudioDevice
 	
 	public void setStartTime(double startTime) {
 		if (startTime > 0 && startTime <= trackLength) {
-			startPosition = (int) Math.round(2*startTime*info.rate*info.channels);
+			startPosition = 2*info.channels*(int) Math.round(startTime*info.rate);
 		}
 		else if (startTime == 0.0) {
 			startPosition = 0;
@@ -248,7 +257,7 @@ public class MyAudioDevice
 	
 	public void setEndTime(double endTime) {
 		if (endTime >= 0 && endTime < trackLength) {
-			endPosition = (int) Math.round(2*endTime*info.rate*info.channels);
+			endPosition = 2*info.channels*(int) Math.round(endTime*info.rate);
 		}
 		else if (endTime == trackLength) {
 			endPosition = info.dataSize;

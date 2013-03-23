@@ -4,6 +4,7 @@ import java.io.File;
 
 import com.joshuac.beatmatrix.MyAudioDevice.OnCompletionListener;
 
+import android.app.Activity;
 import android.app.DialogFragment;
 import android.content.Context;
 import android.content.res.Resources;
@@ -32,7 +33,7 @@ public class GestureListener extends GestureDetector.SimpleOnGestureListener{
 	//thread manager
 	private static MediaPlayerManager manager = null;
 	
-	private OnCompletionListener soundListener = new SoundCompletionListener();
+	private OnCompletionListener soundListener;
 	
 	//media player
 //	private MediaPlayer myMP = null;
@@ -49,6 +50,7 @@ public class GestureListener extends GestureDetector.SimpleOnGestureListener{
 			manager = ButtonMatrix.getMediaPlayerManager();
 		if(resources == null)
 			resources = c.getResources();
+		soundListener = new SoundCompletionListener((Activity) thisButton.getContext());
 	}
 	
 	/*
@@ -126,8 +128,11 @@ public class GestureListener extends GestureDetector.SimpleOnGestureListener{
 	// User interaction methods
 	
 	//listen for song endings
-		private class SoundCompletionListener implements OnCompletionListener
+		private class SoundCompletionListener extends OnCompletionListener
 		{
+			public SoundCompletionListener(Activity theActivity) {
+				myActivity = theActivity;
+			}
 		    public void onCompletion()
 		    {
 		    	//go to stopped when sound complete
