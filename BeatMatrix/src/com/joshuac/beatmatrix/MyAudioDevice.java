@@ -28,7 +28,14 @@ public class MyAudioDevice
 	private boolean looping = false;
 	private OnCompletionListener onCompletionListener;
 	
-	//TODO make setTempo, setStartTime, setEndTime
+	private double volume = 1; //volume as a multiplicative factor
+	//TODO: Make tempo change the actual tempo
+	private double tempo = 1; //play speed as a multiplicative factor?
+	private int startPosition = 0; //offset of first sample to play, in bytes (SHOULD BE EVEN)
+	private int endPosition; //equals 1 + offset of last sample to play, in bytes (SHOULD BE EVEN)
+	private int currentPosition; // offset of current sample, in bytes
+	private double trackLength; //end time of file in seconds, stored so we know when to set endPosition to exact end
+	
 	
 	public interface OnCompletionListener {
 		public void onCompletion();
@@ -38,8 +45,15 @@ public class MyAudioDevice
 	{
 		file = openFile;
 		reader = new WavReader();
+		
+		tempo = 1;
+		volume = 1;
+		startPosition = 0;
 
 		startStream();
+		endPosition = info.dataSize;
+		trackLength = endPosition/(2.0*info.rate*info.channels);
+		
 		createAT();
 	}
 
@@ -59,23 +73,47 @@ public class MyAudioDevice
 			if (playing) {
 				//Write a buffer of data to the track
 				try {
-					if (dis.available() > 0) {
+					if (dis.available() > 0 && bufferSize < (endPosition - currentPosition)) {
 						buffer = reader.readToPcm(info, dis, bufferSize);
+						preprocessBuffer();
 						track.write( buffer, 0, buffer.length );
+						currentPosition += buffer.length;
 					}
 					else if (looping) {
+						//write any remaining bits to the track
+						if (endPosition - currentPosition > 0){
+							buffer = reader.readToPcm(info, dis, endPosition - currentPosition);
+							preprocessBuffer();
+							track.write( buffer, 0, buffer.length );
+						}
+						
 						//restart the input stream if looping
 						restart();
-						buffer = reader.readToPcm(info, dis, bufferSize);
+						/*buffer = reader.readToPcm(info, dis, bufferSize);
 						track.write( buffer, 0, buffer.length );
+						currentPosition += bufferSize;*/
 					}
 					else {
 						playing = false;
+						//TODO: Figure this mofo out.
 						//onCompletionListener.onCompletion();
 					}
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
+			}
+		}
+	}
+
+	private void preprocessBuffer() {
+		//Modify buffer for volume and tempo. TODO: Change tempo in preprocessing
+		//Note: volume increase results in poor sound quality
+		if (volume != 1) {
+			for (int i = 0; i<buffer.length; i+=2) {
+				short newValue = (short) ((buffer[i+1]<<8)|(buffer[i]));
+				newValue = (short) Math.round(newValue*volume);
+				buffer[i+1] = (byte) (newValue>>8);
+				buffer[i] = (byte) newValue;
 			}
 		}
 	}
@@ -97,6 +135,8 @@ public class MyAudioDevice
 			BufferedInputStream bis = new BufferedInputStream(is);
 			dis = new DataInputStream(bis);
 			info = reader.readHeader(dis);
+			dis.skip(startPosition);
+			currentPosition = startPosition;
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -141,9 +181,91 @@ public class MyAudioDevice
 	public void release() {
 		try {
 			dis.close();
+			track.release();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	//Avoid touching these. For debug purposes only...?
+	public int getStartPosition() {
+		return startPosition;
+	}
+	
+	public void setStartPosition(int startPosition) {
+		this.startPosition = startPosition;
+	}
+
+	public int getEndPosition() {
+		return endPosition;
+	}
+
+	public void setEndPosition(int endPosition) {
+		this.endPosition = endPosition;
+	}
+
+	public int getCurrentPosition() {
+		return currentPosition;
+	}
+	//End debug methods
+
+	public double getVolume() {
+		return volume;
+	}
+
+	public void setVolume(double volume) {
+		this.volume = volume;
+	}
+
+	public double getTempo() {
+		return tempo;
+	}
+
+	public void setTempo(double tempo) {
+		this.tempo = tempo;
+	}
+	
+	
+	//Start Time / End Time set/get methods
+	
+	public double getStartTime() {
+		return startPosition/(2.0*info.rate*info.channels);
+	}
+	
+	public void setStartTime(double startTime) {
+		if (startTime > 0 && startTime <= trackLength) {
+			startPosition = (int) Math.round(2*startTime*info.rate*info.channels);
+		}
+		else if (startTime == 0.0) {
+			startPosition = 0;
+		}
+		else throw new IllegalArgumentException();
+	}
+	
+	public double getEndTime() {
+		return endPosition/(2.0*info.rate*info.channels);
+	}
+	
+	public void setEndTime(double endTime) {
+		if (endTime >= 0 && endTime < trackLength) {
+			endPosition = (int) Math.round(2*endTime*info.rate*info.channels);
+		}
+		else if (endTime == trackLength) {
+			endPosition = info.dataSize;
+		}
+		else throw new IllegalArgumentException();
+	}
+	
+	public double getTrackLength() {
+		return trackLength;
+	}
+	
+	public double getCurrentLength() {
+		return endPosition/(2.0*info.rate*info.channels)-startPosition/(2.0*info.rate*info.channels);
+	}
+	
+	public double getCurrentTime() {
+		return endPosition/(2.0*info.rate*info.channels);
 	}
 
 /*	public void writeSamples(byte[] samples) 

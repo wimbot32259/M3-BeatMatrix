@@ -89,7 +89,7 @@ public class WavReader extends AudioReader {
 		return data;
 	}
 
-	public static void play(FileInfo info, byte[] byteData) {
+/*	public static void play(FileInfo info, byte[] byteData) {
 		// Set and push to audio track..
 		int intSize = android.media.AudioTrack.getMinBufferSize(info.rate,
 				(info.channels==1)? AudioFormat.CHANNEL_OUT_MONO:AudioFormat.CHANNEL_OUT_STEREO,
@@ -102,5 +102,5 @@ public class WavReader extends AudioReader {
 		at.write(byteData, 0, byteData.length);
 		at.stop();
 		at.release();
-	}
+	}*/
 }
