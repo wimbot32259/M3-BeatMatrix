@@ -3,6 +3,7 @@ package com.joshuac.beatmatrix;
 //import android.media.AudioManager;
 import android.content.Context;
 import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnCompletionListener;
 import android.net.Uri;
 import java.io.File;
 
@@ -35,6 +36,12 @@ public class MediaPlayerThread extends Thread implements Runnable
 		mp = MediaPlayer.create(context, ef);
 	}
 	
+	public MediaPlayerThread(Context c, File f,
+			OnCompletionListener completionListener) {
+		this(c,f);
+		setOnCompletionListener(completionListener);
+	}
+	
 	/*
 	 * Methods
 	 */
@@ -60,7 +67,7 @@ public class MediaPlayerThread extends Thread implements Runnable
         //mp.start();
 	}//end run
 	*/
-	
+
 	//play/restarts the track
 	public void play()
 	{
@@ -110,8 +117,13 @@ public class MediaPlayerThread extends Thread implements Runnable
 		Uri ef = Uri.fromFile(track);
 		mp = MediaPlayer.create(context, ef);
 	}
-	
-	public MediaPlayer getMP() {
-		return mp;
+
+	public void setOnCompletionListener(OnCompletionListener completionListener) {
+		// sets the completion listener for this media player
+		mp.setOnCompletionListener(completionListener);
 	}
+	
+/*	public MediaPlayer getMP() {
+		return mp;
+	}*/
 }

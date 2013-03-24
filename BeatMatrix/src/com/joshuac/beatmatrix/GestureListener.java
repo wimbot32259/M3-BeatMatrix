@@ -2,10 +2,13 @@ package com.joshuac.beatmatrix;
 
 import java.io.File;
 
+import com.joshuac.beatmatrix.MyAudioDevice.OnCompletionListener;
+
+import android.app.Activity;
+import android.app.DialogFragment;
 import android.content.Context;
 import android.content.res.Resources;
-import android.media.MediaPlayer;
-import android.media.MediaPlayer.OnCompletionListener;
+//import android.media.MediaPlayer;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 
@@ -14,6 +17,8 @@ public class GestureListener extends GestureDetector.SimpleOnGestureListener{
 	private BeatButton thisButton; 		//instance of the button
 	private int buttonId;				//id given to the button
 	private static Resources resources = null;
+	
+	private int editingButtonId;
 	
 	//Static Playing States
 	private final static int WAITING = 0; 	//button is waiting to be played
@@ -28,8 +33,10 @@ public class GestureListener extends GestureDetector.SimpleOnGestureListener{
 	//thread manager
 	private static MediaPlayerManager manager = null;
 	
+	private OnCompletionListener soundListener;
+	
 	//media player
-	private MediaPlayer myMP = null;
+//	private MediaPlayer myMP = null;
 	
 	/*
 	 * Constructor(s)
@@ -43,6 +50,7 @@ public class GestureListener extends GestureDetector.SimpleOnGestureListener{
 			manager = ButtonMatrix.getMediaPlayerManager();
 		if(resources == null)
 			resources = c.getResources();
+		soundListener = new SoundCompletionListener((Activity) thisButton.getContext());
 	}
 	
 	/*
@@ -61,8 +69,11 @@ public class GestureListener extends GestureDetector.SimpleOnGestureListener{
 			thisButton.changeState(PLAYING);
 		    playButtonSound();
     	}
-    	else if( ButtonMatrix.getMapButtonStatus() )
+    	else if( ButtonMatrix.getMapButtonStatus() ) {
     		mapAction();
+    	} else if (ButtonMatrix.getEditButtonStatus()) {
+    		editAction();
+    	}
 		return true;
 	}//end onSingleTapUp
 	
@@ -118,9 +129,12 @@ public class GestureListener extends GestureDetector.SimpleOnGestureListener{
 	// User interaction methods
 	
 	//listen for song endings
-		private OnCompletionListener soundListener = new OnCompletionListener()
+		private class SoundCompletionListener extends OnCompletionListener
 		{
-		    public void onCompletion(MediaPlayer mp)
+			public SoundCompletionListener(Activity theActivity) {
+				myActivity = theActivity;
+			}
+		    public void onCompletion()
 		    {
 		    	//go to stopped when sound complete
 		    	soundEndAction();
@@ -132,11 +146,18 @@ public class GestureListener extends GestureDetector.SimpleOnGestureListener{
 		File chosenFile = ButtonMatrix.getChosenFile();
 		if(chosenFile != null)
 		{
-			myMP = manager.setMapping(buttonId, chosenFile);
-			myMP.setOnCompletionListener(soundListener);
+			manager.setMapping(buttonId, chosenFile, soundListener);
 			thisButton.changeState(STOPPED);
 			MAPPED = true;
 		}
+	}
+	//WILL TODO fix these so edit screen knows which button we are working with
+	private void editAction() {
+		editingButtonId = buttonId;
+	}
+	
+	public int getEditingButtonId() {
+		return editingButtonId; 
 	}
 	
 	public void soundEndAction() {

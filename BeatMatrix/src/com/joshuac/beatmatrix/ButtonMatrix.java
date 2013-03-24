@@ -25,13 +25,16 @@ import java.util.ArrayList;
 
 
 
-public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseFileSelectedListener
+public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseFileSelectedListener, SongEditDialog.OnSongEditSelectedListener
 {
 	private static File chosenFile; 	//file chosen to map
 	
+	private static boolean CHOOSING = false;
+	private int editingButtonId;
 	
 	private static boolean playButtonOn = false; 	//is the play button on?
 	private static boolean mapButtonOn = false; 	// is the map button on?
+	private static boolean editButtonOn = false; 	// is the edit button on?
 	
 	final int NUM_BUTTONS = 5; 	//number of buttons
 	final int NUM_ROWS = 5;    	//number of rows (for the buttons)
@@ -44,6 +47,7 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 	//private ImageView chooseButton;
 	private ImageView mapButton;
 	private DialogFragment newFragment;
+	private ImageView editButton;
 	
 	//List of existing beat buttons
 	private ArrayList<BeatButton> buttonList;
@@ -150,6 +154,11 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 		//add file chooser ImageView to extra row
 		trow_extra1.addView(mapButton,parms);
 		
+		editButton = new ImageView(this);
+		editButton.setImageDrawable(getResources().getDrawable(R.drawable.editbutton_off));
+		editButton.setScaleType(ScaleType.FIT_XY);
+		//add file chooser ImageView to extra row
+		trow_extra1.addView(editButton,parms);
 		
 		/*
 		 * Add Listeners
@@ -173,6 +182,8 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 		    	    //turn map button off
 		    	    mapButton.setImageDrawable(getResources().getDrawable(R.drawable.mapbutton_off));
             		setMapButtonStatus(false);
+            		editButton.setImageDrawable(getResources().getDrawable(R.drawable.editbutton_off));
+            		setEditButtonStatus(false);
             	}
             	else
             	{
@@ -201,6 +212,9 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 		    	    //turn map button off
 		    	    mapButton.setImageDrawable(getResources().getDrawable(R.drawable.mapbutton_off));
 	        		setMapButtonStatus(false);
+	        		//turn edit button off
+		    	    editButton.setImageDrawable(getResources().getDrawable(R.drawable.editbutton_off));
+	        		setEditButtonStatus(false);
 	        		//turn play button off
             		playButton.setImageDrawable(getResources().getDrawable(R.drawable.playicon_off));
             		setPlayButtonStatus(false);
@@ -245,6 +259,9 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 	        		//turn play button off
 		    	    playButton.setImageDrawable(getResources().getDrawable(R.drawable.playicon_off));
             		setPlayButtonStatus(false);
+            		editButton.setImageDrawable(getResources().getDrawable(R.drawable.editbutton_off));
+            		setEditButtonStatus(false);
+            		CHOOSING = false;
             		
             		//Open choose song menu
     	    	    showChooseFileDialog();
@@ -255,6 +272,43 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
             	{
             		t.setImageDrawable(getResources().getDrawable(R.drawable.mapbutton_off));
             		setMapButtonStatus(false);
+            	}
+	    	    
+            }//end onClick
+        });
+		
+		editButton.setOnClickListener(new OnClickListener()
+		{
+            public void onClick(View v)
+            {
+            	ImageView t = (ImageView) v;
+
+            	if(!getEditButtonStatus()){
+            		//turn map button on w/ transition
+                	TransitionDrawable transition;
+	        		transition = (TransitionDrawable)
+		    	            getResources().getDrawable(R.drawable.turn_edit_on);
+	            	t.setImageDrawable(transition);
+		    	    transition.startTransition(400);
+	        		setEditButtonStatus(true);
+	        		//turn play button off
+		    	    playButton.setImageDrawable(getResources().getDrawable(R.drawable.playicon_off));
+            		setPlayButtonStatus(false);
+            		mapButton.setImageDrawable(getResources().getDrawable(R.drawable.mapbutton_off));
+            		setMapButtonStatus(false);
+            		
+            		CHOOSING = true;
+            		//Open choose song menu
+    	    	    //showSongEditDialog();
+
+	        		
+            	} else if (CHOOSING) {
+            		CHOOSING = false;
+            		showSongEditDialog();
+            	} else {
+            		CHOOSING = false;
+            		t.setImageDrawable(getResources().getDrawable(R.drawable.editbutton_off));
+            		setEditButtonStatus(false);
             	}
 	    	    
             }//end onClick
@@ -285,7 +339,13 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 		//ChooseFileDialog.setContext(this);
 		//newFragment = ChooseFileDialog.newInstance(R.string.chooseFileDialogTitle);
 	    newFragment.show(getFragmentManager(), "dialog");
-	 }
+	}
+	
+	void showSongEditDialog() {
+		SongEditDialog.setContext(this);
+		DialogFragment newFragment = SongEditDialog.newInstance(R.string.songEditDialogTitle);
+	    newFragment.show(getFragmentManager(), "dialog");
+	}
 	
 	//stops all button sounds
 	//changes state of buttons as well
@@ -308,6 +368,17 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 	public static boolean getMapButtonStatus()
 	{
 		return mapButtonOn; 
+	}
+	
+	public static void setEditButtonStatus(boolean status)
+	{
+		editButtonOn = status;
+	}
+	
+	
+	public static boolean getEditButtonStatus()
+	{
+		return editButtonOn; 
 	}
 	
 	public static void setPlayButtonStatus(boolean status)
