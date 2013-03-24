@@ -156,7 +156,7 @@ public class GestureListener extends GestureDetector.SimpleOnGestureListener{
 	}
 	
 	public int getEditingButtonId() {
-		return editingButtonId; 
+		return editingButtonId;
 	}
 	
 	public void soundEndAction() {

@@ -82,5 +82,6 @@ public class MediaPlayerManager
 	public int getTotalButtons() {
 		return total_buttons;
 	}
+	
 
 }
