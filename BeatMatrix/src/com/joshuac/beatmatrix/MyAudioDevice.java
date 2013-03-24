@@ -29,8 +29,8 @@ public class MyAudioDevice
 	private boolean looping = false;
 	private OnCompletionListener onCompletionListener;
 	
-	private double volume = 1; //volume as a multiplicative factor
-	private double tempo = 1; //play speed as a multiplicative factor?
+	private float volume = 1; //volume as a multiplicative factor
+	private double playbackSpeed = 1; //play speed as a multiplicative factor?
 	private int startPosition = 0; //offset of first sample to play, in bytes (SHOULD BE EVEN)
 	private int endPosition; //equals 1 + offset of last sample to play, in bytes (SHOULD BE EVEN)
 	private int currentPosition; // offset of current sample, in bytes
@@ -50,7 +50,7 @@ public class MyAudioDevice
 		file = openFile;
 		reader = new WavReader();
 		
-		tempo = 1;
+		playbackSpeed = 1;
 		volume = 1;
 		startPosition = 0;
 
@@ -75,11 +75,14 @@ public class MyAudioDevice
 		
 		while(true) {
 			if (playing) {
+				if (track.getPlayState() == AudioTrack.PLAYSTATE_PAUSED) {
+					track.play();
+				}
 				//Write a buffer of data to the track
 				try {
 					if (dis.available() > 0 && bufferSize < (endPosition - currentPosition)) {
 						buffer = reader.readToPcm(info, dis, bufferSize);
-						preprocessBuffer();
+						//preprocessBuffer();
 						track.write( buffer, 0, buffer.length );
 						currentPosition += buffer.length;
 					}
@@ -87,7 +90,7 @@ public class MyAudioDevice
 						//write any remaining bits to the track
 						if (endPosition - currentPosition > 0){
 							buffer = reader.readToPcm(info, dis, endPosition - currentPosition);
-							preprocessBuffer();
+							//preprocessBuffer();
 							track.write( buffer, 0, buffer.length );
 						}
 						
@@ -100,22 +103,25 @@ public class MyAudioDevice
 					else {
 						playing = false;
 						onCompletionListener.myActivity.runOnUiThread(new Runnable() {
-					     public void run() {
-
-					    	 onCompletionListener.onCompletion();
-
-					    	    }
-					    	});
+							public void run() {
+								onCompletionListener.onCompletion();
+							}
+					    });
 					}
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
 			}
+			else {
+				if (track.getPlayState() == AudioTrack.PLAYSTATE_PLAYING) {
+					track.pause();
+				}
+			}
 		}
 	}
 
-	private void preprocessBuffer() {
-		//Modify buffer for volume and tempo. TODO: Change tempo in preprocessing
+	/*private void preprocessBuffer() {
+		//Modify buffer for volume
 		//Note: volume increase results in poor sound quality
 		if (volume != 1) {
 			for (int i = 0; i<buffer.length; i+=2) {
@@ -125,7 +131,7 @@ public class MyAudioDevice
 				buffer[i] = (byte) newValue;
 			}
 		}
-	}
+	}*/
 
 	private void restartStream() {
 		try {
@@ -171,13 +177,13 @@ public class MyAudioDevice
 		looping = loop;
 	}
 	
-	public void reset(File nFile) {
+/*	public void reset(File nFile) {
 		playing = false;
 		looping = false;
 		file = nFile;
 		restartStream();
 		createAT();
-	}
+	}*/
 
 	public void setOnCompletionListener(OnCompletionListener onCompletionListener) {
 		this.onCompletionListener = onCompletionListener;
@@ -218,20 +224,23 @@ public class MyAudioDevice
 	}
 	//End debug methods
 
-	public double getVolume() {
+	public float getVolume() {
 		return volume;
 	}
 
-	public void setVolume(double volume) {
+	public void setVolume(float volume) {
+		//volume is a scalar between 0.0 and 1.0. Default is 1.0
 		this.volume = volume;
+		track.setStereoVolume(volume, volume);
 	}
 
-	public double getTempo() {
-		return tempo;
+	public double getPlaybackSpeed() {
+		return playbackSpeed;
 	}
 
-	public void setTempo(double tempo) {
-		this.tempo = tempo;
+	public void setPlaybackSpeed(double playbackSpeed) {
+		this.playbackSpeed = playbackSpeed;
+		track.setPlaybackRate((int) Math.round(info.rate*playbackSpeed));
 	}
 	
 	
@@ -266,14 +275,17 @@ public class MyAudioDevice
 	}
 	
 	public double getTrackLength() {
+		//length of the original file
 		return trackLength;
 	}
 	
 	public double getCurrentLength() {
+		//length of the file from start time to end time at default speed
 		return endPosition/(2.0*info.rate*info.channels)-startPosition/(2.0*info.rate*info.channels);
 	}
 	
 	public double getCurrentTime() {
+		//current track position, at default speed
 		return endPosition/(2.0*info.rate*info.channels);
 	}
 
