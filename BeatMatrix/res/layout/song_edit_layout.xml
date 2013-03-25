@@ -20,5 +20,22 @@
     <SeekBar
         android:id="@+id/EndSeek"
         android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:max="100" />
+    <TextView 
+        android:text="@string/volume"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"/>
+    <SeekBar
+        android:id="@+id/VolSeek"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" />
+    <TextView 
+        android:text="@string/speed"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"/>
+    <SeekBar
+        android:id="@+id/SpeedSeek"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content" />
 </LinearLayout>

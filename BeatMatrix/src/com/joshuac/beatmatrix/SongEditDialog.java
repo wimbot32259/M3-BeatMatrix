@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.view.*;
 import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -20,7 +21,9 @@ public class SongEditDialog extends DialogFragment {
 
 	private static Context context;
 	
-	private float start_time, end_time;
+	private double start_time, end_time, speed;
+	private float volume;
+	private static int buttonId;
 	
 	OnSongEditSelectedListener mCallback;
 	
@@ -29,28 +32,8 @@ public class SongEditDialog extends DialogFragment {
 	//the onFileSelected() method (or other methods in this interface) 
 	//using the mCallback instance of the OnChooseFileSelectedListener interface
     public interface OnSongEditSelectedListener {
-        public void onEditInfoSelected(float start_time, float end_time);
+        public void onEditInfoSelected(double start_time, double end_time, float volume, double speed);
     }
-/*
-    seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener()
-    {
-
-        public void onStopTrackingTouch(SeekBar bar)
-        {
-            int value = bar.getProgress(); // the value of the seekBar progress
-        }
-
-        public void onStartTrackingTouch(SeekBar bar)
-        {
-
-        }
-
-        public void onProgressChanged(SeekBar bar,
-                int paramInt, boolean paramBoolean)
-        {
-            textView.setText("" + paramInt + "%"); // here in textView the percent will be shown
-        }
-    });*/
     
     //creates a new instance of the dialog
 	public static SongEditDialog newInstance(int title) {
@@ -65,36 +48,97 @@ public class SongEditDialog extends DialogFragment {
 		context = c;
 	}
 	
+	public static void setButtonId(int Id) {
+		buttonId = Id;
+	}
+	
+	private OnSeekBarChangeListener startSeekBarListener = new OnSeekBarChangeListener() {
+		public void onProgressChanged(SeekBar seekBar, int progress, boolean fromuser) {
+			start_time = seekBar.getProgress();
+			System.out.println(start_time);
+		}
+		public void onStartTrackingTouch(SeekBar seekBar) {
+			
+		}
+		public void onStopTrackingTouch(SeekBar seekBar) {
+			
+		}
+	};
+	private OnSeekBarChangeListener endSeekBarListener = new OnSeekBarChangeListener() {
+		public void onProgressChanged(SeekBar seekBar, int progress, boolean fromuser) {
+			end_time = seekBar.getProgress();
+			
+		}
+		public void onStartTrackingTouch(SeekBar seekBar) {
+			
+		}
+		public void onStopTrackingTouch(SeekBar seekBar) {
+			
+		}
+	};
+	private OnSeekBarChangeListener volSeekBarListener = new OnSeekBarChangeListener() {
+		public void onProgressChanged(SeekBar seekBar, int progress, boolean fromuser) {
+			volume = seekBar.getProgress();
+			
+		}
+		public void onStartTrackingTouch(SeekBar seekBar) {
+			
+		}
+		public void onStopTrackingTouch(SeekBar seekBar) {
+			
+		}
+	};
+	private OnSeekBarChangeListener speedSeekBarListener = new OnSeekBarChangeListener() {
+		public void onProgressChanged(SeekBar seekBar, int progress, boolean fromuser) {
+			speed = seekBar.getProgress();
+			System.out.println(speed);
+			
+		}
+		public void onStartTrackingTouch(SeekBar seekBar) {
+			
+		}
+		public void onStopTrackingTouch(SeekBar seekBar) {
+			
+		}
+	};
+		
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
     	AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
     	LayoutInflater inflater = getActivity().getLayoutInflater();
+    	 View v = inflater.inflate(R.layout.song_edit_layout, null);   	 
+	  
+ 	   SeekBar StartSeek = (SeekBar)v.findViewById(R.id.StartSeek);
+ 	   StartSeek.setOnSeekBarChangeListener(startSeekBarListener);
+ 	   SeekBar EndSeek = (SeekBar)v.findViewById(R.id.EndSeek);
+ 	   EndSeek.setOnSeekBarChangeListener(endSeekBarListener);
+//    	   EndSeek.max = 
+ 	   SeekBar VolSeek = (SeekBar)v.findViewById(R.id.VolSeek);
+ 	   VolSeek.setOnSeekBarChangeListener(volSeekBarListener);
+ 	   SeekBar SpeedSeek = (SeekBar)v.findViewById(R.id.SpeedSeek);
+ 	   SpeedSeek.setOnSeekBarChangeListener(speedSeekBarListener);
+ 	 
         builder.setTitle(R.string.songEditDialogTitle)
-    		.setView(inflater.inflate(R.layout.song_edit_layout, null))
+    		.setView(v/*inflater.inflate(R.layout.song_edit_layout, null)*/)
     	    // Add action buttons
     		.setPositiveButton(R.string.done, new DialogInterface.OnClickListener() {
                @Override
                public void onClick(DialogInterface dialog, int id) {
                    // sign in the user ...
-            	   LayoutInflater inflater = (LayoutInflater) context
-            	            .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            	   View v = inflater.inflate(R.layout.song_edit_layout, null);
-            	   SeekBar StartSeek = (SeekBar)v.findViewById(R.id.StartSeek);
-            	   SeekBar EndSeek = (SeekBar)v.findViewById(R.id.EndSeek);
-            	   start_time = StartSeek.getProgress();
-            	   end_time = EndSeek.getProgress();
-            	   mCallback.onEditInfoSelected(start_time, end_time);
+//            	   LayoutInflater inflater = (LayoutInflater) context
+  //          	            .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            	   mCallback.onEditInfoSelected(start_time, end_time, volume, speed);
                }
            })
            .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                public void onClick(DialogInterface dialog, int id) {
                    SongEditDialog.this.getDialog().cancel();
                }
-           });        
-    	
+           });
+
         return builder.create();
     }//end onCreateDialog
-    
+
     @Override
     public void onAttach(Activity activity) {
     	super.onAttach(activity);

@@ -25,11 +25,13 @@ import java.util.ArrayList;
 
 
 
-public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseFileSelectedListener, SongEditDialog.OnSongEditSelectedListener, SongSelectDialog.OnSongSelectedListener
+public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseFileSelectedListener, SongEditDialog.OnSongEditSelectedListener, SongSelectDialog.OnSongSelectedListener, GestureListener.OnEditActionListener
 {
 	private static File chosenFile; 	//file chosen to map
 	
-	private int editingButtonId;
+	private static int editingButtonId;
+	static boolean waitingId = true;
+	boolean CHOOSING = false;
 	
 	private static boolean playButtonOn = false; 	//is the play button on?
 	private static boolean mapButtonOn = false; 	// is the map button on?
@@ -68,20 +70,23 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 		editingButtonId = buttonId;
 		//chooseButton.setImageDrawable(getResources().getDrawable(R.drawable.playlist_off)); 
 		//Consider deleting
-		Toast toast = Toast.makeText(getApplicationContext(), "got buttonId", Toast.LENGTH_SHORT);
+		Toast toast = Toast.makeText(getApplicationContext(), Integer.toString(buttonId), Toast.LENGTH_SHORT);
 		toast.show();
 		showSongEditDialog();
     }
 	
-	public void onEditInfoSelected(float start_time, float end_time) {
+	public void onEditInfoSelected(double start_time, double end_time, float volume, double speed) {
 		
 		//chooseButton.setImageDrawable(getResources().getDrawable(R.drawable.playlist_off)); 
 		//Consider deleting
-		Toast toast = Toast.makeText(getApplicationContext(), "buttonId", Toast.LENGTH_SHORT);
+		Toast toast = Toast.makeText(getApplicationContext(), ""+start_time+" "+end_time+" "+volume+" "+speed/*Double.toString(start_time)*/, Toast.LENGTH_SHORT);
 		toast.show();
 
 		//now call setters for audio device
-		
+		manager.setStartTime(start_time, editingButtonId);
+		manager.setEndTime(end_time, editingButtonId);
+		manager.setVolume(volume, editingButtonId);
+		manager.setPlaybackSpeed(speed, editingButtonId);
     }
 
 	@Override
@@ -202,11 +207,13 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
             		setMapButtonStatus(false);
             		editButton.setImageDrawable(getResources().getDrawable(R.drawable.editbutton_off));
             		setEditButtonStatus(false);
+            		CHOOSING = false;
             	}
             	else
             	{
             		t.setImageDrawable(getResources().getDrawable(R.drawable.playicon_off));
             		setPlayButtonStatus(false);
+            		CHOOSING = false;
             		//playButtonOn = false;
             	}
             	
@@ -236,6 +243,7 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 	        		//turn play button off
             		playButton.setImageDrawable(getResources().getDrawable(R.drawable.playicon_off));
             		setPlayButtonStatus(false);
+            		CHOOSING = false;
 	            }
 			}
 		);
@@ -266,7 +274,7 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
             {
             	ImageView t = (ImageView) v;
 
-            	if(!getMapButtonStatus()){
+            	if(!getMapButtonStatus() && !CHOOSING){
             		//turn map button on w/ transition
                 	TransitionDrawable transition;
 	        		transition = (TransitionDrawable)
@@ -282,13 +290,11 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
             		
             		//Open choose song menu
     	    	    showChooseFileDialog();
-
-	        		
-            	}
-            	else
-            	{
+    	    	    CHOOSING = false;
+            	} else {
             		t.setImageDrawable(getResources().getDrawable(R.drawable.mapbutton_off));
             		setMapButtonStatus(false);
+            		CHOOSING = false;
             	}
 	    	    
             }//end onClick
@@ -315,10 +321,13 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
             		setMapButtonStatus(false);
 
     	    	    showSongSelectDialog();
-    	    	    
+    	    	    waitingId = true;
+    	    	    CHOOSING = true;
+
             	} else {
             		t.setImageDrawable(getResources().getDrawable(R.drawable.editbutton_off));
             		setEditButtonStatus(false);
+            		CHOOSING = false;
             	}
 	    	    
             }//end onClick
@@ -333,7 +342,7 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 		getMenuInflater().inflate(R.menu.activity_button_matrix, menu);
 		return true;
 	}
-	
+
 
 	//show the choose file dialog
 	//set context and title, then show
@@ -358,14 +367,25 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 	}
 	
 	void showSongEditDialog() {
+	//	while (waitingId) {
+			// do nothing
+		//}
 		// pass list of songs mapped for picking
 		// gonna pick button ID for now
-		
+		SongEditDialog.setButtonId(editingButtonId);
 		SongEditDialog.setContext(this);
 		DialogFragment newFragment = SongEditDialog.newInstance(R.string.songEditDialogTitle);
-	    newFragment.show(getFragmentManager(), "dialog");
-	    
+	    newFragment.show(getFragmentManager(), "dialog");   
 	}
+	
+	public void editAction(int buttonId) {
+		System.out.println("in buttonmatrix, callback just got called");
+		editingButtonId = buttonId;
+		waitingId = false;
+		System.out.println("test");
+		showSongEditDialog();
+	}
+	
 	
 	//stops all button sounds
 	//changes state of buttons as well
@@ -398,7 +418,7 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 	
 	public static boolean getEditButtonStatus()
 	{
-		return editButtonOn; 
+		return editButtonOn;
 	}
 	
 	public static void setPlayButtonStatus(boolean status)
