@@ -25,7 +25,7 @@ import java.util.ArrayList;
 
 
 
-public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseFileSelectedListener, SongEditDialog.OnSongEditSelectedListener
+public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseFileSelectedListener, SongEditDialog.OnSongEditSelectedListener, SongSelectDialog.OnSongSelectedListener
 {
 	private static File chosenFile; 	//file chosen to map
 	
@@ -70,11 +70,11 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 		//Consider deleting
 		Toast toast = Toast.makeText(getApplicationContext(), "got buttonId", Toast.LENGTH_SHORT);
 		toast.show();
-		showSongEditDialog2();
+		showSongEditDialog();
     }
 	
-	public void onEditInfoSelected(int buttonId) {
-		editingButtonId = buttonId;
+	public void onEditInfoSelected(float start_time, float end_time) {
+		
 		//chooseButton.setImageDrawable(getResources().getDrawable(R.drawable.playlist_off)); 
 		//Consider deleting
 		Toast toast = Toast.makeText(getApplicationContext(), "buttonId", Toast.LENGTH_SHORT);
@@ -314,7 +314,7 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
             		mapButton.setImageDrawable(getResources().getDrawable(R.drawable.mapbutton_off));
             		setMapButtonStatus(false);
 
-    	    	    showSongEditDialog();
+    	    	    showSongSelectDialog();
     	    	    
             	} else {
             		t.setImageDrawable(getResources().getDrawable(R.drawable.editbutton_off));
@@ -344,12 +344,12 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 	    newFragment.show(getFragmentManager(), "dialog");
 	}
 	
-	void showSongEditDialog() {
+	void showSongSelectDialog() {
 		// pass list of songs mapped for picking
 		// gonna pick button ID for now
 		
-		SongEditDialog.setContext(this);
-		DialogFragment newFragment = SongEditDialog.newInstance(R.string.songEditDialogTitle);
+		SongSelectDialog.setContext(this);
+		DialogFragment newFragment = SongSelectDialog.newInstance(R.string.songSelectDialogTitle);
 	    newFragment.show(getFragmentManager(), "dialog");
 	    //with returned chosen song, move on to set time, etc
 	    
@@ -357,12 +357,12 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 	    
 	}
 	
-	void showSongEditDialog2() {
+	void showSongEditDialog() {
 		// pass list of songs mapped for picking
 		// gonna pick button ID for now
 		
-		SongEditDialog2.setContext(this);
-		DialogFragment newFragment = SongEditDialog2.newInstance(R.string.songEditDialog2Title);
+		SongEditDialog.setContext(this);
+		DialogFragment newFragment = SongEditDialog.newInstance(R.string.songEditDialogTitle);
 	    newFragment.show(getFragmentManager(), "dialog");
 	    
 	}

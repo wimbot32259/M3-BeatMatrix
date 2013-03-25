@@ -8,14 +8,19 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Environment;
-import android.view.LayoutInflater;
+import android.view.*;
+import android.widget.SeekBar;
 
 import java.io.File;
 import java.util.ArrayList;
 
+import com.joshuac.beatmatrix.SongEditDialog.OnSongEditSelectedListener;
+
 public class SongEditDialog extends DialogFragment {
-	
+
 	private static Context context;
+	
+	private float start_time, end_time;
 	
 	OnSongEditSelectedListener mCallback;
 	
@@ -24,9 +29,29 @@ public class SongEditDialog extends DialogFragment {
 	//the onFileSelected() method (or other methods in this interface) 
 	//using the mCallback instance of the OnChooseFileSelectedListener interface
     public interface OnSongEditSelectedListener {
-        public void onSongSelected(int buttonId);
+        public void onEditInfoSelected(float start_time, float end_time);
     }
+/*
+    seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener()
+    {
 
+        public void onStopTrackingTouch(SeekBar bar)
+        {
+            int value = bar.getProgress(); // the value of the seekBar progress
+        }
+
+        public void onStartTrackingTouch(SeekBar bar)
+        {
+
+        }
+
+        public void onProgressChanged(SeekBar bar,
+                int paramInt, boolean paramBoolean)
+        {
+            textView.setText("" + paramInt + "%"); // here in textView the percent will be shown
+        }
+    });*/
+    
     //creates a new instance of the dialog
 	public static SongEditDialog newInstance(int title) {
 		SongEditDialog frag = new SongEditDialog();
@@ -39,24 +64,40 @@ public class SongEditDialog extends DialogFragment {
 	public static void setContext(Context c){
 		context = c;
 	}
-		
+	
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
     	AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle(R.string.pick_buttonId)
-               .setItems(R.array.buttonIds, new DialogInterface.OnClickListener() {
-                   public void onClick(DialogInterface dialog, int which) {
-                	   mCallback.onSongSelected(which);
-                   // The 'which' argument contains the index position
-                   // of the selected item
+    	LayoutInflater inflater = getActivity().getLayoutInflater();
+        builder.setTitle(R.string.songEditDialogTitle)
+    		.setView(inflater.inflate(R.layout.song_edit_layout, null))
+    	    // Add action buttons
+    		.setPositiveButton(R.string.done, new DialogInterface.OnClickListener() {
+               @Override
+               public void onClick(DialogInterface dialog, int id) {
+                   // sign in the user ...
+            	   LayoutInflater inflater = (LayoutInflater) context
+            	            .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            	   View v = inflater.inflate(R.layout.song_edit_layout, null);
+            	   SeekBar StartSeek = (SeekBar)v.findViewById(R.id.StartSeek);
+            	   SeekBar EndSeek = (SeekBar)v.findViewById(R.id.EndSeek);
+            	   start_time = StartSeek.getProgress();
+            	   end_time = EndSeek.getProgress();
+            	   mCallback.onEditInfoSelected(start_time, end_time);
                }
-        });
+           })
+           .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+               public void onClick(DialogInterface dialog, int id) {
+                   SongEditDialog.this.getDialog().cancel();
+               }
+           });        
+    	
         return builder.create();
     }//end onCreateDialog
     
     @Override
     public void onAttach(Activity activity) {
-        super.onAttach(activity);
+    	super.onAttach(activity);
         
         // This makes sure that the container activity has implemented
         // the callback interface. If not, it throws an exception

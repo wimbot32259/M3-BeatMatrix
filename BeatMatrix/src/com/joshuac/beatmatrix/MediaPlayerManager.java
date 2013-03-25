@@ -83,5 +83,21 @@ public class MediaPlayerManager
 		return total_buttons;
 	}
 	
+	public void setStartTime(double start_time, int i) {
+		threads.get(i).setStartTime(start_time);
+	}
+	
+	public void setEndTime(double end_time, int i) {
+		threads.get(i).setEndTime(end_time);
+	}
+	
+	public void setVolume(float volume, int i) {
+		threads.get(i).setVolume(volume);
+	}
+	
+	public void setPlaybackSpeed(double speed, int i) {
+		threads.get(i).setPlaybackSpeed(speed);
+	}
+	
 
 }

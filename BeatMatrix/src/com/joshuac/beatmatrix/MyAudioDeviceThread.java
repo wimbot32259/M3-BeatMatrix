@@ -87,6 +87,24 @@ public class MyAudioDeviceThread extends Thread implements Runnable
 		myAudio.setOnCompletionListener(completionListener);
 	}
 	
+	public void setStartTime(double start_time) {
+		myAudio.setStartTime(start_time);
+	}
+	
+	public void setEndTime(double end_time) {
+		myAudio.setEndTime(end_time);
+	}
+	
+	public void setVolume(float volume) {
+		myAudio.setVolume(volume);
+	}
+	
+	public void setPlaybackSpeed(double speed) {
+		myAudio.setPlaybackSpeed(speed);
+	}
+	
+	
+	
 /*	public MediaPlayer getMP() {
 		return mp;
 	}*/
