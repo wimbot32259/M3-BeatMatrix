@@ -367,11 +367,6 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 	}
 	
 	void showSongEditDialog() {
-	//	while (waitingId) {
-			// do nothing
-		//}
-		// pass list of songs mapped for picking
-		// gonna pick button ID for now
 		SongEditDialog.setButtonId(editingButtonId);
 		SongEditDialog.setContext(this);
 		DialogFragment newFragment = SongEditDialog.newInstance(R.string.songEditDialogTitle);
