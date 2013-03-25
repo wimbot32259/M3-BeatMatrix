@@ -250,28 +250,39 @@ public class MyAudioDevice
 		return startPosition/(2.0*info.rate*info.channels);
 	}
 	
-	public void setStartTime(double startTime) {
+	public int setStartTime(double startTime) {
 		if (startTime > 0 && startTime <= trackLength) {
 			startPosition = 2*info.channels*(int) Math.round(startTime*info.rate);
 		}
 		else if (startTime == 0.0) {
 			startPosition = 0;
 		}
-		else throw new IllegalArgumentException();
+		else {
+			return -1;
+		}
+		return 0;
+			
+			//throw new IllegalArgumentException();
 	}
 	
 	public double getEndTime() {
 		return endPosition/(2.0*info.rate*info.channels);
 	}
 	
-	public void setEndTime(double endTime) {
+	public int setEndTime(double endTime) {
 		if (endTime >= 0 && endTime < trackLength) {
 			endPosition = 2*info.channels*(int) Math.round(endTime*info.rate);
 		}
 		else if (endTime == trackLength) {
 			endPosition = info.dataSize;
 		}
-		else throw new IllegalArgumentException();
+		else {
+			return -1;
+		}
+		return 0;
+			
+			
+			//throw new IllegalArgumentException();
 	}
 	
 	public double getTrackLength() {

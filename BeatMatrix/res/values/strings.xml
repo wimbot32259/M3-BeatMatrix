@@ -10,6 +10,8 @@
     <string name="pick_buttonId">Choose ButtonId</string>
     <string name="start_time">Start Time:</string>
     <string name="end_time">End Time:</string>
+    <string name="volume">Volume:</string>
+    <string name="speed">Speed:</string>
 	<string name="ok">OK</string>
 	<string name="done">Done</string>
 	<string name="cancel">Cancel</string>

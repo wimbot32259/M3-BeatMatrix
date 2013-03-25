@@ -84,20 +84,35 @@ public class MediaPlayerManager
 	}
 	
 	public void setStartTime(double start_time, int i) {
-		threads.get(i).setStartTime(start_time);
+		if (mapped_buttons[i] == 1) {
+			threads.get(i).setStartTime(start_time);
+		}
 	}
 	
 	public void setEndTime(double end_time, int i) {
-		threads.get(i).setEndTime(end_time);
+		if (mapped_buttons[i] == 1) {
+			threads.get(i).setEndTime(end_time);
+		}
 	}
 	
 	public void setVolume(float volume, int i) {
-		threads.get(i).setVolume(volume);
+		if (mapped_buttons[i] == 1) {
+			threads.get(i).setVolume(volume);
+		}
 	}
 	
 	public void setPlaybackSpeed(double speed, int i) {
-		threads.get(i).setPlaybackSpeed(speed);
+		if (mapped_buttons[i] == 1) {
+			threads.get(i).setPlaybackSpeed(speed);
+		}
 	}
-	
+
+	public double getTrackLength(int i) {
+		if (mapped_buttons[i] == 1) {
+			return threads.get(i).getTrackLength();
+		} else {
+			return -1;
+		}
+	}
 
 }

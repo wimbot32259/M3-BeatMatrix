@@ -103,7 +103,9 @@ public class MyAudioDeviceThread extends Thread implements Runnable
 		myAudio.setPlaybackSpeed(speed);
 	}
 	
-	
+	public double getTrackLength() {
+		return myAudio.getTrackLength();
+	}
 	
 /*	public MediaPlayer getMP() {
 		return mp;
