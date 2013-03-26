@@ -107,11 +107,11 @@ public class GestureListener extends GestureDetector.SimpleOnGestureListener{
 	//double tap event
 	public boolean onDoubleTap(MotionEvent e)
 	{
-    	if(!ButtonMatrix.getMapButtonStatus()&& MAPPED && ButtonMatrix.getPlayButtonStatus())
+ /*   	if(!ButtonMatrix.getMapButtonStatus()&& MAPPED && ButtonMatrix.getPlayButtonStatus())
     	{
 			thisButton.changeState(STOPPED);
 			stopButtonSound();
-    	}
+    	}*/
 		return true;
 	}//end onDoubleTap
 	
@@ -119,6 +119,11 @@ public class GestureListener extends GestureDetector.SimpleOnGestureListener{
 	//swipe event
 	public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) 
 	{
+	if(!ButtonMatrix.getMapButtonStatus()&& MAPPED && ButtonMatrix.getPlayButtonStatus())
+    	{
+			thisButton.changeState(STOPPED);
+			stopButtonSound();
+    	}
 		return true;
 	}//end onFling
 	
