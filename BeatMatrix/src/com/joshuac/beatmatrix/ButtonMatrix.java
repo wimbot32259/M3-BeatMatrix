@@ -370,7 +370,7 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 		SongEditDialog.setButtonId(editingButtonId);
 		SongEditDialog.setContext(this);
 		DialogFragment newFragment = SongEditDialog.newInstance(R.string.songEditDialogTitle);
-	    newFragment.show(getFragmentManager(), "dialog");   
+	    newFragment.show(getFragmentManager(), "dialog");
 	}
 	
 	public void editAction(int buttonId) {
