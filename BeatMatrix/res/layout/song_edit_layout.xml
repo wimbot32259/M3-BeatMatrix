@@ -6,6 +6,7 @@
     android:paddingRight="16dp"
     android:orientation="vertical" >
     <TextView 
+        android:id="@+id/StartText"
         android:text="@string/start_time"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"/>
@@ -14,6 +15,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"/>
     <TextView 
+        android:id="@+id/EndText"        
         android:text="@string/end_time"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"/>
@@ -23,6 +25,7 @@
         android:layout_height="wrap_content"
         android:max="100" />
     <TextView 
+        android:id="@+id/VolumeText"        
         android:text="@string/volume"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"/>
@@ -31,6 +34,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content" />
     <TextView 
+        android:id="@+id/SpeedText"
         android:text="@string/speed"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"/>

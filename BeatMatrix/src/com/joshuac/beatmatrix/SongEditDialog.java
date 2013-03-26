@@ -11,6 +11,7 @@ import android.os.Environment;
 import android.view.*;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
+import android.widget.TextView;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -24,6 +25,9 @@ public class SongEditDialog extends DialogFragment {
 	private double start_time, end_time, speed;
 	private float volume;
 	private static int buttonId;
+	
+	//Text views
+	private TextView SpeedText, VolumeText, StartText, EndText;
 	
 	OnSongEditSelectedListener mCallback;
 	
@@ -55,7 +59,9 @@ public class SongEditDialog extends DialogFragment {
 	private OnSeekBarChangeListener startSeekBarListener = new OnSeekBarChangeListener() {
 		public void onProgressChanged(SeekBar seekBar, int progress, boolean fromuser) {
 			start_time = seekBar.getProgress();
-			System.out.println(start_time);
+			System.out.println("Start time: " + start_time);
+			StartText.setText("Start Time: " + start_time);
+
 		}
 		public void onStartTrackingTouch(SeekBar seekBar) {
 			
@@ -67,7 +73,8 @@ public class SongEditDialog extends DialogFragment {
 	private OnSeekBarChangeListener endSeekBarListener = new OnSeekBarChangeListener() {
 		public void onProgressChanged(SeekBar seekBar, int progress, boolean fromuser) {
 			end_time = seekBar.getProgress();
-			
+			System.out.println("End time: " + end_time);
+			EndText.setText("End Time: " + end_time);			
 		}
 		public void onStartTrackingTouch(SeekBar seekBar) {
 			
@@ -79,7 +86,8 @@ public class SongEditDialog extends DialogFragment {
 	private OnSeekBarChangeListener volSeekBarListener = new OnSeekBarChangeListener() {
 		public void onProgressChanged(SeekBar seekBar, int progress, boolean fromuser) {
 			volume = seekBar.getProgress();
-			
+			System.out.println("Volume: " + volume);
+			VolumeText.setText("Volume: " + volume);
 		}
 		public void onStartTrackingTouch(SeekBar seekBar) {
 			
@@ -91,8 +99,8 @@ public class SongEditDialog extends DialogFragment {
 	private OnSeekBarChangeListener speedSeekBarListener = new OnSeekBarChangeListener() {
 		public void onProgressChanged(SeekBar seekBar, int progress, boolean fromuser) {
 			speed = seekBar.getProgress();
-			System.out.println(speed);
-			
+			System.out.println("Speed: " + speed);
+			SpeedText.setText("Speed: " + speed);
 		}
 		public void onStartTrackingTouch(SeekBar seekBar) {
 			
@@ -101,23 +109,38 @@ public class SongEditDialog extends DialogFragment {
 			
 		}
 	};
+	
 		
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+    	
+    	
+    	System.out.println("Called onCreateDialog");
+    	
     	AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
     	LayoutInflater inflater = getActivity().getLayoutInflater();
     	 View v = inflater.inflate(R.layout.song_edit_layout, null);   	 
 	  
+       //Set start listener
  	   SeekBar StartSeek = (SeekBar)v.findViewById(R.id.StartSeek);
  	   StartSeek.setOnSeekBarChangeListener(startSeekBarListener);
+ 	   StartText = (TextView) v.findViewById(R.id.StartText);
+  	 
+ 	   //Set end listener
  	   SeekBar EndSeek = (SeekBar)v.findViewById(R.id.EndSeek);
  	   EndSeek.setOnSeekBarChangeListener(endSeekBarListener);
-//    	   EndSeek.max = 
+ 	   EndText = (TextView) v.findViewById(R.id.EndText);
+
+ 	   //Set volume listener
  	   SeekBar VolSeek = (SeekBar)v.findViewById(R.id.VolSeek);
  	   VolSeek.setOnSeekBarChangeListener(volSeekBarListener);
+ 	   VolumeText = (TextView) v.findViewById(R.id.VolumeText);
+ 	   
+ 	   //Set speed listener
  	   SeekBar SpeedSeek = (SeekBar)v.findViewById(R.id.SpeedSeek);
  	   SpeedSeek.setOnSeekBarChangeListener(speedSeekBarListener);
- 	 
+ 	   SpeedText = (TextView) v.findViewById(R.id.SpeedText);
+ 	   
         builder.setTitle(R.string.songEditDialogTitle)
     		.setView(v/*inflater.inflate(R.layout.song_edit_layout, null)*/)
     	    // Add action buttons
