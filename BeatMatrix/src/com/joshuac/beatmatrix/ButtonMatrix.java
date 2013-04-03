@@ -1,14 +1,13 @@
 package com.joshuac.beatmatrix;
 
-
 import android.app.Activity;
 import android.app.DialogFragment;
-import android.database.Cursor;
+//import android.database.Cursor;
 import android.graphics.Point;
 import android.graphics.drawable.TransitionDrawable;
-import android.net.Uri;
+//import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
+//import android.provider.MediaStore;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.Menu;
@@ -21,24 +20,37 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.Toast;
 import java.io.File;
+import java.util.ArrayList;
+//import java.util.List;
 
 
 
-public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseFileSelectedListener
+public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseFileSelectedListener, SongEditDialog.OnSongEditSelectedListener, SongSelectDialog.OnSongSelectedListener, GestureListener.OnEditActionListener
 {
 	private static File chosenFile; 	//file chosen to map
 	
+	private static int editingButtonId;
+	static boolean waitingId = true;
+	boolean CHOOSING = false;
 	
 	private static boolean playButtonOn = false; 	//is the play button on?
 	private static boolean mapButtonOn = false; 	// is the map button on?
+	private static boolean editButtonOn = false; 	// is the edit button on?
 	
 	final int NUM_BUTTONS = 5; 	//number of buttons
 	final int NUM_ROWS = 5;    	//number of rows (for the buttons)
+	final int TOTAL_BUTTONS = NUM_BUTTONS*NUM_ROWS;
+	//add scaling for sprint 2? ^^^
 	
 	//references to the actual buttons
 	private ImageView playButton;
-	private ImageView chooseButton;
+	private ImageView stopButton;
+	//private ImageView chooseButton;
 	private ImageView mapButton;
+	private ImageView editButton;
+	
+	//List of existing beat buttons
+	private ArrayList<BeatButton> buttonList;
 	
 	private static MediaPlayerManager manager; //manages the music threads
 	
@@ -48,9 +60,33 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 	public void onFileSelected(File f)
 	{
 		chosenFile = f;
-		chooseButton.setImageDrawable(getResources().getDrawable(R.drawable.playlist_off));
+		//chooseButton.setImageDrawable(getResources().getDrawable(R.drawable.playlist_off)); 
+		//Consider deleting
 		Toast toast = Toast.makeText(getApplicationContext(), chosenFile.getName(), Toast.LENGTH_SHORT);
 		toast.show();
+    }
+	
+	public void onSongSelected(int buttonId) {
+		editingButtonId = buttonId;
+		//chooseButton.setImageDrawable(getResources().getDrawable(R.drawable.playlist_off)); 
+		//Consider deleting
+		Toast toast = Toast.makeText(getApplicationContext(), Integer.toString(buttonId), Toast.LENGTH_SHORT);
+		toast.show();
+		showSongEditDialog();
+    }
+	
+	public void onEditInfoSelected(double start_time, double end_time, float volume, double speed) {
+		
+		//chooseButton.setImageDrawable(getResources().getDrawable(R.drawable.playlist_off)); 
+		//Consider deleting
+		Toast toast = Toast.makeText(getApplicationContext(), ""+start_time+" "+end_time+" "+volume+" "+speed/*Double.toString(start_time)*/, Toast.LENGTH_SHORT);
+		toast.show();
+
+		//now call setters for audio device
+		manager.setStartTime(start_time, editingButtonId);
+		manager.setEndTime(end_time, editingButtonId);
+		manager.setVolume(volume, editingButtonId);
+		manager.setPlaybackSpeed(speed, editingButtonId);
     }
 
 	@Override
@@ -59,8 +95,8 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.button_matrix_activity);
         
-		manager = new MediaPlayerManager(this);
-        
+		manager = new MediaPlayerManager(this, TOTAL_BUTTONS);
+		buttonList = new ArrayList<BeatButton>();
 		
 		//dynamically add TableRows and BeatButtons
 		TableLayout bmh = (TableLayout) findViewById(R.id.beatMatrixHolder);
@@ -79,6 +115,7 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 			{
 				//init button and set scaling
 				BeatButton newButton = (BeatButton) getLayoutInflater().inflate(R.layout.beat_button, null);
+				buttonList.add(newButton);
 				newButton.setScaleType(ScaleType.FIT_XY);
 				//create layout BeatButton params
 				Display display = getWindowManager().getDefaultDisplay();
@@ -117,12 +154,21 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 		//add file chooser ImageView to extra row
 		trow_extra1.addView(playButton,parms);
 		
+		//init stop ImageView
+		stopButton = new ImageView(this);
+		stopButton.setImageDrawable(getResources().getDrawable(R.drawable.stopicon_off));
+		stopButton.setScaleType(ScaleType.FIT_XY);
+		//add file chooser ImageView to extra row
+		trow_extra1.addView(stopButton,parms);
+		
+		/*
 		//init file chooser ImageView
 		chooseButton = new ImageView(this);
 		chooseButton.setImageDrawable(getResources().getDrawable(R.drawable.playlist_off));
 		chooseButton.setScaleType(ScaleType.FIT_XY);
 		//add file chooser ImageView to extra row
 		trow_extra1.addView(chooseButton,parms);
+		*/
 		
 		//init map button ImageView
 		mapButton = new ImageView(this);
@@ -131,6 +177,11 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 		//add file chooser ImageView to extra row
 		trow_extra1.addView(mapButton,parms);
 		
+		editButton = new ImageView(this);
+		editButton.setImageDrawable(getResources().getDrawable(R.drawable.editbutton_off));
+		editButton.setScaleType(ScaleType.FIT_XY);
+		//add file chooser ImageView to extra row
+		trow_extra1.addView(editButton,parms);
 		
 		/*
 		 * Add Listeners
@@ -143,31 +194,63 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
             public void onClick(View v)
             {
             	ImageView t = (ImageView) v;
-            	if(!playButtonOn)
+            	if(!getPlayButtonStatus())
             	{
             		//turn play button on w/ transition
 	        		TransitionDrawable transition = (TransitionDrawable)
 		    	            getResources().getDrawable(R.drawable.turn_play_on);
 		    	    t.setImageDrawable(transition);
 		    	    transition.startTransition(400);
-		    	    playButtonOn = true;
+		    	    setPlayButtonStatus(true);	//playButtonOn = true;
 		    	    //turn map button off
 		    	    mapButton.setImageDrawable(getResources().getDrawable(R.drawable.mapbutton_off));
-            		mapButtonOn = false;
+            		setMapButtonStatus(false);
+            		editButton.setImageDrawable(getResources().getDrawable(R.drawable.editbutton_off));
+            		setEditButtonStatus(false);
+            		CHOOSING = false;
             	}
             	else
             	{
             		t.setImageDrawable(getResources().getDrawable(R.drawable.playicon_off));
-            		playButtonOn = false;
+            		setPlayButtonStatus(false);
+            		CHOOSING = false;
+            		//playButtonOn = false;
             	}
             	
             	
             }
         });
 		
+		//register the stop button's click listener
+		//responsible for changing this button's image on click
+		stopButton.setOnClickListener(
+			new OnClickListener() {
+	            public void onClick(View v) {
+	            	ImageView t = (ImageView) v;
+	        		//flash stop button red w/ transition
+	        		TransitionDrawable transition = (TransitionDrawable)
+		    	            getResources().getDrawable(R.drawable.turn_stop_on);
+		    	    t.setImageDrawable(transition);
+		    	    transition.startTransition(400);
+		    	    //pause music
+		    	    stopAllButtons();
+		    	    //turn map button off
+		    	    mapButton.setImageDrawable(getResources().getDrawable(R.drawable.mapbutton_off));
+	        		setMapButtonStatus(false);
+	        		//turn edit button off
+		    	    editButton.setImageDrawable(getResources().getDrawable(R.drawable.editbutton_off));
+	        		setEditButtonStatus(false);
+	        		//turn play button off
+            		playButton.setImageDrawable(getResources().getDrawable(R.drawable.playicon_off));
+            		setPlayButtonStatus(false);
+            		CHOOSING = false;
+	            }
+			}
+		);
+		
 		//register the choose-file-dialog-button's click method
 		//responsible for changing this button's image on click
-		chooseButton.setOnClickListener(new OnClickListener()
+		/*chooseButton.setOnClickListener(new OnClickListener()
 		{
             public void onClick(View v)
             {
@@ -180,7 +263,7 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 	    	    showChooseFileDialog();
             	
             }//end onClick
-        });
+        }); */
 		
 		
 		//register the map button's click listener
@@ -191,22 +274,60 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
             {
             	ImageView t = (ImageView) v;
 
-            	if(!mapButtonOn){
+            	if(!getMapButtonStatus() && !CHOOSING){
             		//turn map button on w/ transition
                 	TransitionDrawable transition;
 	        		transition = (TransitionDrawable)
 		    	            getResources().getDrawable(R.drawable.turn_map_on);
 	            	t.setImageDrawable(transition);
 		    	    transition.startTransition(400);
-	        		mapButtonOn = true;
+	        		setMapButtonStatus(true);
 	        		//turn play button off
 		    	    playButton.setImageDrawable(getResources().getDrawable(R.drawable.playicon_off));
-            		playButtonOn = false;
-	        		
-            	}
-            	else{
+            		setPlayButtonStatus(false);
+            		editButton.setImageDrawable(getResources().getDrawable(R.drawable.editbutton_off));
+            		setEditButtonStatus(false);
+            		
+            		//Open choose song menu
+    	    	    showChooseFileDialog();
+    	    	    CHOOSING = false;
+            	} else {
             		t.setImageDrawable(getResources().getDrawable(R.drawable.mapbutton_off));
-            		mapButtonOn = false;
+            		setMapButtonStatus(false);
+            		CHOOSING = false;
+            	}
+	    	    
+            }//end onClick
+        });
+		
+		editButton.setOnClickListener(new OnClickListener()
+		{
+            public void onClick(View v)
+            {
+            	ImageView t = (ImageView) v;
+
+            	if(!getEditButtonStatus()){
+            		//turn map button on w/ transition
+                	TransitionDrawable transition;
+	        		transition = (TransitionDrawable)
+		    	            getResources().getDrawable(R.drawable.turn_edit_on);
+	            	t.setImageDrawable(transition);
+		    	    transition.startTransition(400);
+	        		setEditButtonStatus(true);
+	        		//turn play button off
+		    	    playButton.setImageDrawable(getResources().getDrawable(R.drawable.playicon_off));
+            		setPlayButtonStatus(false);
+            		mapButton.setImageDrawable(getResources().getDrawable(R.drawable.mapbutton_off));
+            		setMapButtonStatus(false);
+
+    	    	    showSongSelectDialog();
+    	    	    waitingId = true;
+    	    	    CHOOSING = true;
+
+            	} else {
+            		t.setImageDrawable(getResources().getDrawable(R.drawable.editbutton_off));
+            		setEditButtonStatus(false);
+            		CHOOSING = false;
             	}
 	    	    
             }//end onClick
@@ -221,7 +342,7 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 		getMenuInflater().inflate(R.menu.activity_button_matrix, menu);
 		return true;
 	}
-	
+
 
 	//show the choose file dialog
 	//set context and title, then show
@@ -230,40 +351,74 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 		ChooseFileDialog.setContext(this);
 		DialogFragment newFragment = ChooseFileDialog.newInstance(R.string.chooseFileDialogTitle);
 	    newFragment.show(getFragmentManager(), "dialog");
-	 }
+	}
 	
-	//DELETE test
-	void playAudio2()
-	{
-		String[] STAR = { "*" };     
-		Uri allaudiosong = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-		String audioselection = MediaStore.Audio.Media.IS_MUSIC + " != 0";
-		Cursor cursor;
-		cursor = managedQuery(allaudiosong, STAR, audioselection, null, null);
-
-		if (cursor != null) {
-		    if (cursor.moveToFirst()) {
-		        do {
-		           
-		            String fullpath = cursor.getString(cursor
-		                    .getColumnIndex(MediaStore.Audio.Media.DATA));
-		            System.out.println("Audio Song FullPth= "+fullpath); 
-		            Toast toast = Toast.makeText(getApplicationContext(), fullpath, Toast.LENGTH_SHORT);
-		    		toast.show();
-
-		        } while (cursor.moveToNext());
-		    }
+	void showSongSelectDialog() {
+		// pass list of songs mapped for picking
+		// gonna pick button ID for now
+		
+		SongSelectDialog.setContext(this);
+		DialogFragment newFragment = SongSelectDialog.newInstance(R.string.songSelectDialogTitle);
+	    newFragment.show(getFragmentManager(), "dialog");
+	    //with returned chosen song, move on to set time, etc
+	    
+	    //with returned info, call setters for audio player
+	    
+	}
+	
+	void showSongEditDialog() {
+		SongEditDialog.setButtonId(editingButtonId);
+		SongEditDialog.setContext(this);
+		DialogFragment newFragment = SongEditDialog.newInstance(R.string.songEditDialogTitle);
+	    newFragment.show(getFragmentManager(), "dialog");   
+	}
+	
+	public void editAction(int buttonId) {
+		System.out.println("in buttonmatrix, callback just got called");
+		editingButtonId = buttonId;
+		waitingId = false;
+		System.out.println("test");
+		showSongEditDialog();
+	}
+	
+	
+	//stops all button sounds
+	//changes state of buttons as well
+	public void stopAllButtons() {
+		for (int i=0; i<buttonList.size();i++) {
+			buttonList.get(i).stop();
 		}
-	}//end playAudio2
+	}
 	
 	
 	/*
 	 * Getters / Setters
 	 */
+	public static void setMapButtonStatus(boolean status)
+	{
+		mapButtonOn = status;
+	}
+	
 	
 	public static boolean getMapButtonStatus()
 	{
 		return mapButtonOn; 
+	}
+	
+	public static void setEditButtonStatus(boolean status)
+	{
+		editButtonOn = status;
+	}
+	
+	
+	public static boolean getEditButtonStatus()
+	{
+		return editButtonOn;
+	}
+	
+	public static void setPlayButtonStatus(boolean status)
+	{
+		playButtonOn = status;
 	}
 	
 	public static boolean getPlayButtonStatus()

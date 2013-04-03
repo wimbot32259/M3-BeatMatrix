@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array
+        name="buttonIds">
+        <item
+            >Button 1</item>
+        <item
+            >Button 2</item>
+        <item
+            >Button 3</item>
+        <item
+            >Button 4</item>
+        <item
+            >Button 5</item>
+        <item
+            >Button 6</item>
+        <item
+            >Button 7</item>
+        <item
+            >Button 8</item>
+        <item
+            >Button 9</item>
+        <item
+            >Button 10</item>
+        <item
+            >Button 11</item>
+        <item
+            >Button 12</item>
+        <item
+            >Button 13</item>
+        <item
+            >Button 14</item>
+        <item
+            >Button 15</item>
+        <item
+            >Button 16</item>
+        <item
+            >Button 17</item>
+        <item
+            >Button 18</item>
+        <item
+            >Button 19</item>
+        <item
+            >Button 20</item>
+        <item
+            >Button 21</item>
+        <item
+            >Button 22</item>
+        <item
+            >Button 23</item>
+        <item
+            >Button 24</item>
+        <item
+            >Button 25</item>
+    </string-array>
+</resources>
