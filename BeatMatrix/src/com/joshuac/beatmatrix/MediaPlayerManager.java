@@ -50,11 +50,12 @@ public class MediaPlayerManager
 		  toast.show();
 	}//end setMapping
 	
-	//
 	public void run(int i)
 	{
 			threads.get(i).start();
 	}//end play
+	
+	
 	
 	public void play(int i)
 	{

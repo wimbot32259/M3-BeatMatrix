@@ -76,7 +76,8 @@ public class GestureListener extends GestureDetector.SimpleOnGestureListener{
 	//single tap confirmed take a while to confirm, recommend remove double tap action
 	public boolean onSingleTapConfirmed(MotionEvent e)
 	{
-    	if(!ButtonMatrix.getMapButtonStatus()&& MAPPED && ButtonMatrix.getPlayButtonStatus())
+		//!ButtonMatrix.getMapButtonStatus()&& MAPPED && ButtonMatrix.getPlayButtonStatus()
+    	if(MAPPED)
     	{
 			thisButton.changeState(PLAYING);
 		    playButtonSound();
@@ -96,7 +97,8 @@ public class GestureListener extends GestureDetector.SimpleOnGestureListener{
 	//long press event
 	public void onLongPress(MotionEvent e) 
 	{
-    	if(!ButtonMatrix.getMapButtonStatus()&& MAPPED && ButtonMatrix.getPlayButtonStatus())
+		//!ButtonMatrix.getMapButtonStatus()&& MAPPED && ButtonMatrix.getPlayButtonStatus()
+    	if(MAPPED)
     	{
 			thisButton.changeState(LOOPING);
 	    	loopButtonSound();
