@@ -47,6 +47,7 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 	private ImageView stopButton;
 	//private ImageView chooseButton;
 	private ImageView mapButton;
+	private DialogFragment newFragment;
 	private ImageView editButton;
 	
 	//choose file dialog
@@ -97,7 +98,7 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.button_matrix_activity);
-        
+		  
 		manager = new MediaPlayerManager(this, TOTAL_BUTTONS);
 		buttonList = new ArrayList<BeatButton>();
 		
@@ -354,13 +355,26 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 		getMenuInflater().inflate(R.menu.activity_button_matrix, menu);
 		return true;
 	}
+<<<<<<< HEAD
 
 
+=======
+	
+	//load song list
+	protected void onResume()
+	{
+		super.onResume();
+		ChooseFileDialog.setContext(this);
+		newFragment = ChooseFileDialog.newInstance(R.string.chooseFileDialogTitle);
+	}
+	
+>>>>>>> 6249946d2247aad22e4917fdbe0840519c4b3a94
 	//show the choose file dialog
 	//set context and title, then show
 	void showChooseFileDialog()
 	{
 		//ChooseFileDialog.setContext(this);
+<<<<<<< HEAD
 		//DialogFragment newFragment = ChooseFileDialog.newInstance(R.string.chooseFileDialogTitle);
 	    chooseFileDialog.show(getFragmentManager(), "dialog");
 	}
@@ -371,6 +385,9 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 		
 		SongSelectDialog.setContext(this);
 		DialogFragment newFragment = SongSelectDialog.newInstance(R.string.songSelectDialogTitle);
+=======
+		//newFragment = ChooseFileDialog.newInstance(R.string.chooseFileDialogTitle);
+>>>>>>> 6249946d2247aad22e4917fdbe0840519c4b3a94
 	    newFragment.show(getFragmentManager(), "dialog");
 	    //with returned chosen song, move on to set time, etc
 	    
