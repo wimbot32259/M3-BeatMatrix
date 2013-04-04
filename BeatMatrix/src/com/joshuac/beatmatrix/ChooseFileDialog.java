@@ -29,6 +29,13 @@ public class ChooseFileDialog extends DialogFragment {
     public interface OnChooseFileSelectedListener {
         public void onFileSelected(File f);
     }
+    
+    
+    public ChooseFileDialog()
+    {
+    	fileList = generateFileList(baseDir);
+    }
+    
 
     //creates a new instance of the dialog
 	public static ChooseFileDialog newInstance(int title) {
