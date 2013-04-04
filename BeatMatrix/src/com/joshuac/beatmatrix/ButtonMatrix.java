@@ -345,8 +345,9 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 		super.onResume();
 		ChooseFileDialog.setContext(this);
 		chooseFileDialog = ChooseFileDialog.newInstance(R.string.chooseFileDialogTitle);
-	}//end onResume
-
+	}//end onStart
+	
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu)
 	{
