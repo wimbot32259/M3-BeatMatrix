@@ -59,8 +59,10 @@ public class MyAudioDeviceThread extends Thread implements Runnable
 	//loops the track until tapped
 	public void loop() {
 		myAudio.setLooping(true);
-		myAudio.restart();
-		myAudio.play();
+		if(!myAudio.isPlaying()) {
+			myAudio.restart();
+			myAudio.play();
+		}
 	}
 	
 	//pause the current track
