@@ -85,7 +85,7 @@ public class MyAudioDevice
 				try {
 					if (dis.available() > 0 && bufferSize < (endPosition - currentPosition)) {
 						buffer = reader.readToPcm(info, dis, bufferSize);
-						//preprocessBuffer();
+						preprocessBuffer();
 						track.write( buffer, 0, buffer.length );
 						currentPosition += buffer.length;
 					}
@@ -93,7 +93,7 @@ public class MyAudioDevice
 						//write any remaining bits to the track
 						if (endPosition - currentPosition > 0){
 							buffer = reader.readToPcm(info, dis, endPosition - currentPosition);
-							//preprocessBuffer();
+							preprocessBuffer();
 							track.write( buffer, 0, buffer.length );
 						}
 						
