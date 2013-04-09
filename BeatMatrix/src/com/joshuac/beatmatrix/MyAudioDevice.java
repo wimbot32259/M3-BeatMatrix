@@ -39,6 +39,8 @@ public class MyAudioDevice
 	
 	private boolean editTreble = false;
 	private boolean editVolume = false;
+	byte buffn1 = 0; //buffer[-1]	
+	byte buffn2 = 0; //buffer[-2]
 	
 	public static abstract class OnCompletionListener {
 		public OnCompletionListener(){}
@@ -71,6 +73,7 @@ public class MyAudioDevice
 		track = new AudioTrack(AudioManager.STREAM_MUSIC, info.rate,
 			(info.channels==1)? AudioFormat.CHANNEL_OUT_MONO:AudioFormat.CHANNEL_OUT_STEREO,
 			AudioFormat.ENCODING_PCM_16BIT, bufferSize, AudioTrack.MODE_STREAM);
+		bufferCopy = new byte[bufferSize];
 	}
 
 	public void start() {
@@ -125,9 +128,9 @@ public class MyAudioDevice
 
 	private void preprocessBuffer() 
 	{
-		if (editVolume|| editTreble) 
+		if (editVolume|| editTreble) //add effects below
 		{
-			//copy buffer
+			//copy buffer before editing
 			System.arraycopy(buffer,0,bufferCopy,0,bufferSize);
 			
 			for (int i = 0; i < buffer.length; i+=2) 
@@ -142,25 +145,52 @@ public class MyAudioDevice
 					newValue = (short) Math.round(newValue*volume);
 					buffer[i+1] = (byte) (newValue>>8);
 					buffer[i] = (byte) newValue;
-				}
+				}//end edit volume
 				
 				//modify treble
 				//need to test with two streams still..
 				if(editTreble)
 				{
 					if(info.channels == 1)	//mono
-					{
-						buffer[i]	=	(byte) (bufferCopy[i]	- bufferCopy[i-1]);
-						buffer[i+1]	=	(byte) (bufferCopy[i+1]	- bufferCopy[i]);
+					{ 
+						if(i==0)
+						{
+							buffer[i]	=	(byte) (bufferCopy[i]	- buffn1);
+							buffer[i+1]	=	(byte) (bufferCopy[i+1]	- bufferCopy[i]);
+						}
+						else
+						{
+							buffer[i]	=	(byte) (bufferCopy[i]	- bufferCopy[i-1]);
+							buffer[i+1]	=	(byte) (bufferCopy[i+1]	- bufferCopy[i]);
+						}
+						//check for greater than byte or less than zero
+						//0 to 255 or -32768 to 32767 ?
 					}
 					else 					//stereo
 					{
-						buffer[i]	=	(byte) (bufferCopy[i]	- bufferCopy[i-2]);
-						buffer[i+1]	=	(byte) (bufferCopy[i+1]	- bufferCopy[i-1]);
+						if(i==0)
+						{
+							buffer[i]	=	(byte) (bufferCopy[i]	- buffn2);
+							buffer[i+1]	=	(byte) (bufferCopy[i+1]	- buffn1);
+						}
+						else
+						{
+							buffer[i]	=	(byte) (bufferCopy[i]	- bufferCopy[i-2]);
+							buffer[i+1]	=	(byte) (bufferCopy[i+1]	- bufferCopy[i-1]);
+						}
+						//check for greater than byte or less than zero
+						//0 to 255 or -32768 to 32767 ?
 					}
 				}//end edit treble
-			}
-		}
+				
+				//store buffer[-1] and buffer[-2]
+				if(i==bufferSize-1)
+				{
+					buffn1 = buffer[i];
+					buffn2 = buffer[i-1];
+				}
+			}//end for loop
+		}//end adding effects
 
 	}//end preprocessBuffer
 

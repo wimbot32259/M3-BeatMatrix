@@ -92,6 +92,7 @@ public class MediaPlayerThread extends Thread implements Runnable
 		}
 	}
 	
+	
 	//pause the current track
 	public void pause()
 	{
