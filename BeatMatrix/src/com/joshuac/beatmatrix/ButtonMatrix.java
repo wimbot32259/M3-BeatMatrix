@@ -491,8 +491,8 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 			{
 				buttonList.get(i).setState( WAITING );
 			}
-			buttonList.get(i).setState( WAITING );
-			buttonList.get(i).setMapped( false );
+			buttonList.get(i).setState( WAITING ); //TODO uncomment
+			buttonList.get(i).setMapped( false );  //TODO uncomment
 		}
 	}
 	

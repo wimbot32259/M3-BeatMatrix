@@ -25,6 +25,7 @@ public class MyAudioDevice
 	private AudioReader reader;
 	private FileInfo info;
 	private byte[] buffer = new byte[bufferSize];
+	private byte[] bufferCopy = new byte[bufferSize];
 	private boolean playing = false;
 	private boolean looping = false;
 	private OnCompletionListener onCompletionListener;
@@ -36,6 +37,8 @@ public class MyAudioDevice
 	private int currentPosition; // offset of current sample, in bytes
 	private double trackLength; //end time of file in seconds, stored so we know when to set endPosition to exact end
 	
+	private boolean editTreble = false;
+	private boolean editVolume = false;
 	
 	public static abstract class OnCompletionListener {
 		public OnCompletionListener(){}
@@ -120,18 +123,46 @@ public class MyAudioDevice
 		}
 	}
 
-	/*private void preprocessBuffer() {
-		//Modify buffer for volume
-		//Note: volume increase results in poor sound quality
-		if (volume != 1) {
-			for (int i = 0; i<buffer.length; i+=2) {
-				short newValue = (short) ((buffer[i+1]<<8)|(buffer[i]));
-				newValue = (short) Math.round(newValue*volume);
-				buffer[i+1] = (byte) (newValue>>8);
-				buffer[i] = (byte) newValue;
+	private void preprocessBuffer() 
+	{
+		if (editVolume|| editTreble) 
+		{
+			//copy buffer
+			System.arraycopy(buffer,0,bufferCopy,0,bufferSize);
+			
+			for (int i = 0; i < buffer.length; i+=2) 
+			{
+				//need to distinguish between two and one stream still
+				
+				//Modify buffer for volume
+				//Note: volume increase results in poor sound quality
+				if(editVolume)
+				{
+					short newValue = (short) ((buffer[i+1]<<8)|(buffer[i]));
+					newValue = (short) Math.round(newValue*volume);
+					buffer[i+1] = (byte) (newValue>>8);
+					buffer[i] = (byte) newValue;
+				}
+				
+				//modify treble
+				//need to test with two streams still..
+				if(editTreble)
+				{
+					if(info.channels == 1)	//mono
+					{
+						buffer[i]	=	(byte) (bufferCopy[i]	- bufferCopy[i-1]);
+						buffer[i+1]	=	(byte) (bufferCopy[i+1]	- bufferCopy[i]);
+					}
+					else 					//stereo
+					{
+						buffer[i]	=	(byte) (bufferCopy[i]	- bufferCopy[i-2]);
+						buffer[i+1]	=	(byte) (bufferCopy[i+1]	- bufferCopy[i-1]);
+					}
+				}//end edit treble
 			}
 		}
-	}*/
+
+	}//end preprocessBuffer
 
 	private void restartStream() {
 		try {
