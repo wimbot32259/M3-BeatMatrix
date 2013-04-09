@@ -147,7 +147,7 @@ public class GestureListener extends GestureDetector.SimpleOnGestureListener{
 	// User interaction methods
 	
 	//listen for song endings
-		private class SoundCompletionListener extends OnCompletionListener
+		public class SoundCompletionListener extends OnCompletionListener
 		{
 			public SoundCompletionListener(Activity theActivity) {
 				myActivity = theActivity;
@@ -200,19 +200,41 @@ public class GestureListener extends GestureDetector.SimpleOnGestureListener{
 	}
 	
 
-	    public void onAttach(Activity activity) {
-	        //super.onAttach(activity);
-	        
-	        // This makes sure that the container activity has implemented
-	        // the callback interface. If not, it throws an exception
-	        try {
-	        	onEditActionListener = (OnEditActionListener) activity;
-	        } catch (ClassCastException e) {
-	            throw new ClassCastException(activity.toString()
-	                    + " must implement onEditActionListener");
-	        }
-	    }//end onAttach
+    public void onAttach(Activity activity) {
+        //super.onAttach(activity);
+        
+        // This makes sure that the container activity has implemented
+        // the callback interface. If not, it throws an exception
+        try {
+        	onEditActionListener = (OnEditActionListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                    + " must implement onEditActionListener");
+        }
+    }//end onAttach
+    
+    
+    /*
+     * 
+     * Getters / Setters
+     * 
+     */
+    
+    public boolean getMapped()
+    {
+    	return MAPPED;
+    }
+    
+	public void setMapped(boolean b)
+	{
+		MAPPED = b;
+	}
 
+	public void setTrack(File f)
+	{
+		manager.setMapping(buttonId, f, soundListener);
+		thisButton.changeState(STOPPED);
+		MAPPED = true;
+	}
 	
-
 }//end GestureListener

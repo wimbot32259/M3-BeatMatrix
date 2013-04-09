@@ -13,34 +13,46 @@ public class MediaPlayerManager
 {
 	
 	Context context;
-	SparseArray<MyAudioDeviceThread> threads;
+	MyAudioDeviceThread[] threads = null;
 	Thread a;
 	MyAudioDeviceThread b;
 	private int total_buttons;
 	private int[] mapped_buttons;
+	private String[] filepaths;
 
 	MediaPlayerManager(Context c, int buttons){
+		System.out.println("creating new manager");
 		total_buttons = buttons;
 		mapped_buttons = new int[total_buttons];
+		filepaths = new String[total_buttons];
+		threads = new MyAudioDeviceThread[total_buttons];
 		for (int i = 0; i < total_buttons; i++) {
 			mapped_buttons[i] = 0;
+			filepaths[i] = "";
+			threads[i] = null;
 		}
 		this.context = c;
-		threads = new SparseArray<MyAudioDeviceThread>();
 	}
 	
-	//i - id of the View
+	//i - id of the ViewS
 	//f - chosenFile (file chosen from 'ChooseFileDialog')
 	public void setMapping(int i, File f, OnCompletionListener completionListener)
 	{
+		System.out.println("mapping " + f.getAbsolutePath());
 		  mapped_buttons[i] = 1;
-		  MyAudioDeviceThread thread = threads.get(i);
+		  filepaths[i] = f.getAbsolutePath();
+		  MyAudioDeviceThread thread = threads[i];
 		  if(thread == null){
+			  System.out.println("manager: creating new thread for " + i);
 			  thread = new MyAudioDeviceThread(context, f, completionListener);
-			  threads.put(i,thread);
+			  threads[i] = thread;
+			  System.out.println("thread " + i + "created: " + threads[i].getTrackPath());
+			  ButtonMatrix.setPath(i, f.getAbsolutePath());
 			  run(i);
 		  }
-		  else {
+		  else 
+		  {
+			  System.out.println("manager: thread exists for " + i);
 			  thread.setTrack(f);
 			  thread.setOnCompletionListener(completionListener);
 		  }
@@ -52,23 +64,23 @@ public class MediaPlayerManager
 	
 	public void run(int i)
 	{
-			threads.get(i).start();
+			threads[i].start();
 	}//end play
 	
 	
 	
 	public void play(int i)
 	{
-		threads.get(i).play();
+		threads[i].play();
 	}
 	
 	public void loop(int i) {
-		threads.get(i).loop();
+		threads[i].loop();
 	}
 	
 	public void pause(int i){
 		if (mapped_buttons[i] == 1) {
-			threads.get(i).pause();
+			threads[i].pause();
 		}
 	}
 	
@@ -80,40 +92,72 @@ public class MediaPlayerManager
 		}
 	}
 	
+	//kills thread
+	public void kill(int i)
+	{
+		if(threads[i] != null)
+			threads[i].interrupt();
+		threads[i] = null;
+	}
+	
+	public void resetThreads()
+	{
+		for (int i = 0; i < total_buttons; i++)
+		{
+			kill(i);
+			threads[i] = null;
+		}
+	}
+	
+	/*
+	 * 
+	 * Getters / Setters
+	 * 
+	 */
+	
 	public int getTotalButtons() {
 		return total_buttons;
 	}
 	
 	public void setStartTime(double start_time, int i) {
 		if (mapped_buttons[i] == 1) {
-			threads.get(i).setStartTime(start_time);
+			threads[i].setStartTime(start_time);
 		}
 	}
 	
 	public void setEndTime(double end_time, int i) {
 		if (mapped_buttons[i] == 1) {
-			threads.get(i).setEndTime(end_time);
+			threads[i].setEndTime(end_time);
 		}
 	}
 	
 	public void setVolume(float volume, int i) {
 		if (mapped_buttons[i] == 1) {
-			threads.get(i).setVolume(volume);
+			threads[i].setVolume(volume);
 		}
 	}
 	
 	public void setPlaybackSpeed(double speed, int i) {
 		if (mapped_buttons[i] == 1) {
-			threads.get(i).setPlaybackSpeed(speed);
+			threads[i].setPlaybackSpeed(speed);
 		}
 	}
 
 	public double getTrackLength(int i) {
 		if (mapped_buttons[i] == 1) {
-			return threads.get(i).getTrackLength();
+			return threads[i].getTrackLength();
 		} else {
 			return -1;
 		}
+	}
+	
+	public String getTrackPath(int i)
+	{
+		if(threads[i] != null){
+			System.out.println("thread " + i + " is not null");
+			return threads[i].getTrackPath();
+		}
+		else return "";
 	}
 
 }

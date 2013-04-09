@@ -1,13 +1,18 @@
 package com.joshuac.beatmatrix;
 
+import java.io.File;
+import java.util.ArrayList;
+
+import com.joshuac.beatmatrix.GestureListener.SoundCompletionListener;
+
 import android.app.Activity;
 import android.app.DialogFragment;
-//import android.database.Cursor;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.graphics.Point;
 import android.graphics.drawable.TransitionDrawable;
-//import android.net.Uri;
 import android.os.Bundle;
-//import android.provider.MediaStore;
+import android.os.Environment;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.Menu;
@@ -19,8 +24,9 @@ import android.widget.ImageView.ScaleType;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.Toast;
-import java.io.File;
-import java.util.ArrayList;
+//import android.database.Cursor;
+//import android.net.Uri;
+//import android.provider.MediaStore;
 //import java.util.List;
 
 
@@ -57,6 +63,18 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 	private ArrayList<BeatButton> buttonList;
 	
 	private static MediaPlayerManager manager; //manages the music threads
+	
+	//static values for saving/restoring state
+	 public static final String PREFS_NAME = "BeatMatrixPreferences";
+	 public static String PREFS_BUTTON_STATE = "BeatMatrixButtonState";
+	 public static String PREFS_BUTTON_MAPPED = "BeatMatrixButtonMapped";
+	 public static String PREFS_BUTTON_TRACK = "BeatMatrixButtonTrack";
+	 private static String[] paths;
+	 private static boolean restored = false;
+	 
+	//static button playing states
+	private final static int WAITING = 0; 	//button is waiting to be played
+	private final static int STOPPED = 1; 	//button is not playing	
 	
 	//enables ButtonMatrix to communicate with the ChooseFileDialog
 	//called when user selects a File from the storage device
@@ -100,7 +118,12 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 		setContentView(R.layout.button_matrix_activity);
 		  
 		manager = new MediaPlayerManager(this, TOTAL_BUTTONS);
-		buttonList = new ArrayList<BeatButton>();
+		manager.resetThreads();
+		buttonList = new ArrayList<BeatButton>(TOTAL_BUTTONS);
+		paths = new String[TOTAL_BUTTONS];
+		
+		for(int i = 0; i < TOTAL_BUTTONS; i++)
+			paths[i] = "";
 		
 		//dynamically add TableRows and BeatButtons
 		TableLayout bmh = (TableLayout) findViewById(R.id.beatMatrixHolder);
@@ -120,6 +143,11 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 				//init button and set scaling
 				BeatButton newButton = (BeatButton) getLayoutInflater().inflate(R.layout.beat_button, null);
 				buttonList.add(newButton);
+				
+				//reset current id when building each time
+				if(i==0 && j==0)
+					newButton.resetCurrentId();
+				
 				newButton.setScaleType(ScaleType.FIT_XY);
 				//create layout BeatButton params
 				Display display = getWindowManager().getDefaultDisplay();
@@ -252,24 +280,6 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 			}
 		);
 		
-		//register the choose-file-dialog-button's click method
-		//responsible for changing this button's image on click
-		/*chooseButton.setOnClickListener(new OnClickListener()
-		{
-            public void onClick(View v)
-            {
-            	ImageView t = (ImageView) v;
-        		TransitionDrawable transition = (TransitionDrawable)
-	    	            getResources().getDrawable(R.drawable.turn_playlist_on);
-	    	    t.setImageDrawable(transition);
-	    	    transition.startTransition(400);
-            	
-	    	    showChooseFileDialog();
-            	
-            }//end onClick
-        }); */
-		
-		
 		//register the map button's click listener
 		//responsible for changing this button's image on click
 		mapButton.setOnClickListener(new OnClickListener()
@@ -336,6 +346,14 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 	    	    
             }//end onClick
         });
+			   
+	    //restore persistent state
+		if(!restored)
+		{
+			System.out.println("RESTORING!!");
+			restoreState();
+			restored = true;
+		}
 		
 	}//end onCreate
 	
@@ -347,6 +365,13 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 		ChooseFileDialog.setContext(this);
 		chooseFileDialog = ChooseFileDialog.newInstance(R.string.chooseFileDialogTitle);
 	}//end onStart
+	
+	//save preferences
+	protected void onPause()
+	{
+		super.onPause();
+		saveState();
+	}//end onPause
 	
 	
 	@Override
@@ -413,10 +438,71 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 		}
 	}
 	
+	//save persistent state
+	public void saveState()
+	{
+		//get settings
+		SharedPreferences settings = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+		Editor edit = settings.edit();
+		edit.clear();
+		
+		//store button state, mapped value, track path
+		for(int i = 0; i < TOTAL_BUTTONS; i++)
+		{
+			//if not WAITING, store STOPPED
+			if( buttonList.get(i).getState() != WAITING)
+			{
+				edit.putInt( PREFS_BUTTON_STATE + i, STOPPED );
+				System.out.println(i + " was mapped.. in saveState");
+				System.out.println( i +" path = " +  paths[i] + " in saveState");
+				manager.kill(i);
+			}
+			else
+			{
+				edit.putInt( PREFS_BUTTON_STATE + i, WAITING );
+			}
+			edit.putBoolean( PREFS_BUTTON_MAPPED + i, buttonList.get(i).getMapped() );
+			edit.putString( PREFS_BUTTON_TRACK + i, paths[i] );
+		}
+		//commit settings
+		edit.commit();	
+	}
+	
+	//restore persistent state
+	public void restoreState()
+	{
+		paths = new String[TOTAL_BUTTONS];
+		SharedPreferences settings = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+		//restore button state, mapped value, track path
+		for(int i = 0; i < TOTAL_BUTTONS; i++)
+		{
+			//set mapped value
+			boolean wasMapped = settings.getBoolean(PREFS_BUTTON_MAPPED + i,false);
+			buttonList.get(i).setMapped( wasMapped );
+			//set other values depending on mapped values
+			if(wasMapped)
+			{
+				buttonList.get(i).setState( STOPPED );
+				GestureListener listener = buttonList.get(i).getGestureListener();
+				//listener.setTrack( new File(settings.getString(PREFS_BUTTON_TRACK + i, "")) );
+				paths[i] = settings.getString(PREFS_BUTTON_TRACK + i, "");
+			}
+			else
+			{
+				buttonList.get(i).setState( WAITING );
+			}
+			buttonList.get(i).setState( WAITING );
+			buttonList.get(i).setMapped( false );
+		}
+	}
+	
 	
 	/*
+	 * 
 	 * Getters / Setters
+	 * 
 	 */
+	
 	public static void setMapButtonStatus(boolean status)
 	{
 		mapButtonOn = status;
@@ -457,6 +543,11 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 	public static File getChosenFile()
 	{
 		return chosenFile;
+	}
+	
+	public static void setPath(int i, String f)
+	{
+		paths[i] = f;
 	}
 
 }//end class ButtonMatrix

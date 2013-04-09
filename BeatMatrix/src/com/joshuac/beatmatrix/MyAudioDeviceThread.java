@@ -12,7 +12,7 @@ public class MyAudioDeviceThread extends Thread implements Runnable
 	//private volatile boolean playing;
 	MyAudioDevice myAudio;
 	Context context;			//context of the application
-	File track; 		//file descriptor of the track
+	File track = null; 		//file descriptor of the track
 	
 	/*
 	 * Constructor(s)
@@ -23,6 +23,7 @@ public class MyAudioDeviceThread extends Thread implements Runnable
 	    super();
 	    this.context = c;
 	    this.track = f;
+	    System.out.println(this.toString() + ": in MADT(c,f) " +  track.getAbsolutePath());
 	    
 	    //Start Audio Device here
 		myAudio = new MyAudioDevice(track);
@@ -30,6 +31,7 @@ public class MyAudioDeviceThread extends Thread implements Runnable
 	
 	public MyAudioDeviceThread(Context c, File f, OnCompletionListener completionListener) {
 		this(c,f);
+		System.out.println("MADT creating thread with file " + track.getAbsolutePath());
 		setOnCompletionListener(completionListener);
 	}
 	
@@ -107,7 +109,16 @@ public class MyAudioDeviceThread extends Thread implements Runnable
 		return myAudio.getTrackLength();
 	}
 	
-/*	public MediaPlayer getMP() {
-		return mp;
-	}*/
+	public String getTrackPath()
+	{
+		System.out.println("in gettp " + this.toString());
+		if(track != null)
+		{
+			System.out.println("MADT: is not null");
+			return track.getAbsolutePath();
+		}
+		else
+			return "";
+	}
+	
 }

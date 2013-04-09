@@ -1,5 +1,8 @@
 package com.joshuac.beatmatrix;
 
+import java.io.File;
+import java.util.ArrayList;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -8,8 +11,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Environment;
-import java.io.File;
-import java.util.ArrayList;
+import android.provider.MediaStore;
 
 public class ChooseFileDialog extends DialogFragment {
 	
@@ -33,6 +35,7 @@ public class ChooseFileDialog extends DialogFragment {
     
     public ChooseFileDialog()
     {
+    	//add external files
     	fileList = generateFileList(baseDir);
     }
     
