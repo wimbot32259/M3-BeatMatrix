@@ -49,6 +49,9 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 	private ImageView mapButton;
 	private ImageView editButton;
 	
+	//choose file dialog
+	private DialogFragment chooseFileDialog;
+	
 	//List of existing beat buttons
 	private ArrayList<BeatButton> buttonList;
 	
@@ -334,6 +337,15 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
         });
 		
 	}//end onCreate
+	
+	
+	//preloads song list
+	protected void onStart()
+	{
+		super.onResume();
+		ChooseFileDialog.setContext(this);
+		chooseFileDialog = ChooseFileDialog.newInstance(R.string.chooseFileDialogTitle);
+	}//end onResume
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu)
@@ -348,9 +360,9 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 	//set context and title, then show
 	void showChooseFileDialog()
 	{
-		ChooseFileDialog.setContext(this);
-		DialogFragment newFragment = ChooseFileDialog.newInstance(R.string.chooseFileDialogTitle);
-	    newFragment.show(getFragmentManager(), "dialog");
+		//ChooseFileDialog.setContext(this);
+		//DialogFragment newFragment = ChooseFileDialog.newInstance(R.string.chooseFileDialogTitle);
+	    chooseFileDialog.show(getFragmentManager(), "dialog");
 	}
 	
 	void showSongSelectDialog() {

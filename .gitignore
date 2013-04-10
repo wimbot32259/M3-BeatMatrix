@@ -1,5 +1,3 @@
-*.class
-
 # Package Files #
 *.jar
 *.war
@@ -8,8 +6,23 @@
 adt-bundle-linux-x86/*
 *.metadata
 
+# built application files
 *.apk
-*.cache
 *.ap_
+
+# files for the dex VM
 *.dex
-*.settings/*
+
+# Java class files
+*.class
+
+# generated files
+bin/
+gen/
+
+# Local configuration file (sdk path, etc)
+local.properties
+
+# Eclipse project files
+.classpath
+.project
