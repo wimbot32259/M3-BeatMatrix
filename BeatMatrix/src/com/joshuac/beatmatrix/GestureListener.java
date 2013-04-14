@@ -43,11 +43,11 @@ public class GestureListener extends GestureDetector.SimpleOnGestureListener{
 //	private MediaPlayer myMP = null;
 	
 	
-	OnEditActionListener onEditActionListener;
+	OnEditActionListener mCallback;
 	
     public interface OnEditActionListener {
     	//System.out.println("action listener");
-        public void editAction(int buttonId);
+        public void onEditAction(int buttonId);
     }
 	
 	/*
@@ -87,8 +87,9 @@ public class GestureListener extends GestureDetector.SimpleOnGestureListener{
     		mapAction();
     	} else if (ButtonMatrix.getEditButtonStatus()) {
     		if (buttonId != -1) {
+    			System.out.println(buttonId);
     			System.out.println("trying callback");
-    			onEditActionListener.editAction(buttonId);
+    			mCallback.onEditAction(buttonId);
     			System.out.println("Just called callback from gesturelistener");
     		}
     	}
@@ -208,7 +209,7 @@ public class GestureListener extends GestureDetector.SimpleOnGestureListener{
         // This makes sure that the container activity has implemented
         // the callback interface. If not, it throws an exception
         try {
-        	onEditActionListener = (OnEditActionListener) activity;
+        	mCallback = (OnEditActionListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
                     + " must implement onEditActionListener");

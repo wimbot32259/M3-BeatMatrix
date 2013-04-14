@@ -105,10 +105,20 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 		toast.show();
 
 		//now call setters for audio device
-		manager.setStartTime(start_time, editingButtonId);
-		manager.setEndTime(end_time, editingButtonId);
-		manager.setVolume(volume, editingButtonId);
-		manager.setPlaybackSpeed(speed, editingButtonId);
+		if (end_time > start_time) {
+			manager.setStartTime(start_time, editingButtonId);
+			manager.setEndTime(end_time, editingButtonId);
+		}
+		if (volume <= 0) {
+			manager.setVolume(1, editingButtonId);
+		} else {
+			manager.setVolume(volume, editingButtonId);
+		}
+		if (speed <= 0 || speed > 4) {
+			manager.setPlaybackSpeed(1, editingButtonId);
+		} else {
+			manager.setPlaybackSpeed(speed, editingButtonId);
+		}
     }
 
 	@Override
@@ -333,8 +343,8 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
             		setPlayButtonStatus(false);
             		mapButton.setImageDrawable(getResources().getDrawable(R.drawable.mapbutton_off));
             		setMapButtonStatus(false);
-
-    	    	   // showSongSelectDialog();
+            		stopAllButtons();
+    	    	    showSongSelectDialog();
     	    	    waitingId = true;
     	    	    CHOOSING = true;
 
@@ -421,14 +431,23 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 	    newFragment.show(getFragmentManager(), "dialog");   
 	}
 	
-	public void editAction(int buttonId) {
+/*	public void editAction(int buttonId) {
+		System.out.println("in buttonmatrix, callback just got called");
+		editingButtonId = buttonId;
+		waitingId = false;
+		System.out.println("test");
+		showSongEditDialog();
+	}*/
+	
+	@Override
+	public void onEditAction(int buttonId) {
+		// TODO Auto-generated method stub
 		System.out.println("in buttonmatrix, callback just got called");
 		editingButtonId = buttonId;
 		waitingId = false;
 		System.out.println("test");
 		showSongEditDialog();
 	}
-	
 	
 	//stops all button sounds
 	//changes state of buttons as well
@@ -549,5 +568,7 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 	{
 		paths[i] = f;
 	}
+
+
 
 }//end class ButtonMatrix

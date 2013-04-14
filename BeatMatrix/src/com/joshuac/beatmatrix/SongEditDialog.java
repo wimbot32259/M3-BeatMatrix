@@ -58,29 +58,34 @@ public class SongEditDialog extends DialogFragment {
 	
 	private OnSeekBarChangeListener startSeekBarListener = new OnSeekBarChangeListener() {
 		public void onProgressChanged(SeekBar seekBar, int progress, boolean fromuser) {
-			start_time = seekBar.getProgress();
+			if (start_time > end_time) {
+				start_time = end_time;
+			} else {
+				start_time = seekBar.getProgress();
+			}
 			System.out.println("Start time: " + start_time);
 			StartText.setText("Start Time: " + start_time);
-
 		}
 		public void onStartTrackingTouch(SeekBar seekBar) {
-			
 		}
 		public void onStopTrackingTouch(SeekBar seekBar) {
-			
+			seekBar.setProgress((int)start_time);
 		}
 	};
 	private OnSeekBarChangeListener endSeekBarListener = new OnSeekBarChangeListener() {
 		public void onProgressChanged(SeekBar seekBar, int progress, boolean fromuser) {
-			end_time = seekBar.getProgress();
+			if (end_time < start_time) {
+				end_time = start_time;
+			} else {
+				end_time = seekBar.getProgress();
+			}
 			System.out.println("End time: " + end_time);
-			EndText.setText("End Time: " + end_time);			
+			EndText.setText("End Time: " + end_time);
 		}
 		public void onStartTrackingTouch(SeekBar seekBar) {
-			
 		}
 		public void onStopTrackingTouch(SeekBar seekBar) {
-			
+			seekBar.setProgress((int)end_time);
 		}
 	};
 	private OnSeekBarChangeListener volSeekBarListener = new OnSeekBarChangeListener() {
@@ -90,23 +95,21 @@ public class SongEditDialog extends DialogFragment {
 			VolumeText.setText("Volume: " + volume);
 		}
 		public void onStartTrackingTouch(SeekBar seekBar) {
-			
 		}
 		public void onStopTrackingTouch(SeekBar seekBar) {
-			
+			seekBar.setProgress((int)volume);
 		}
 	};
 	private OnSeekBarChangeListener speedSeekBarListener = new OnSeekBarChangeListener() {
 		public void onProgressChanged(SeekBar seekBar, int progress, boolean fromuser) {
-			speed = seekBar.getProgress();
+			speed = seekBar.getProgress()/50;
 			System.out.println("Speed: " + speed);
 			SpeedText.setText("Speed: " + speed);
 		}
 		public void onStartTrackingTouch(SeekBar seekBar) {
-			
 		}
 		public void onStopTrackingTouch(SeekBar seekBar) {
-			
+			seekBar.setProgress((int)speed*50);
 		}
 	};
 	
@@ -123,23 +126,38 @@ public class SongEditDialog extends DialogFragment {
 	  
        //Set start listener
  	   SeekBar StartSeek = (SeekBar)v.findViewById(R.id.StartSeek);
+ 	   System.out.println("about to set progress");
+ 	   start_time = 0;
+ 	   StartSeek.setProgress((int)start_time);
+ 	   System.out.println("set progress");
  	   StartSeek.setOnSeekBarChangeListener(startSeekBarListener);
+ 	   System.out.println("set listener");
  	   StartText = (TextView) v.findViewById(R.id.StartText);
+ 	   StartText.setText("Start Time: " + start_time);
   	 
  	   //Set end listener
  	   SeekBar EndSeek = (SeekBar)v.findViewById(R.id.EndSeek);
+ 	   end_time = 100;
+ 	   EndSeek.setProgress((int)end_time);
  	   EndSeek.setOnSeekBarChangeListener(endSeekBarListener);
  	   EndText = (TextView) v.findViewById(R.id.EndText);
+ 	   EndText.setText("End Time: " + end_time);	// !!!!!! Fix so it inits at actual song end time!
 
  	   //Set volume listener
  	   SeekBar VolSeek = (SeekBar)v.findViewById(R.id.VolSeek);
+ 	   volume = 1;
+ 	   VolSeek.setProgress((int)volume);
  	   VolSeek.setOnSeekBarChangeListener(volSeekBarListener);
  	   VolumeText = (TextView) v.findViewById(R.id.VolumeText);
+ 	   VolumeText.setText("Volume: " + volume);
  	   
  	   //Set speed listener
  	   SeekBar SpeedSeek = (SeekBar)v.findViewById(R.id.SpeedSeek);
+ 	   speed = 1;
+ 	   SpeedSeek.setProgress((int)speed);
  	   SpeedSeek.setOnSeekBarChangeListener(speedSeekBarListener);
  	   SpeedText = (TextView) v.findViewById(R.id.SpeedText);
+ 	   SpeedText.setText("Speed: " + speed);
  	   
         builder.setTitle(R.string.songEditDialogTitle)
     		.setView(v/*inflater.inflate(R.layout.song_edit_layout, null)*/)
@@ -147,7 +165,6 @@ public class SongEditDialog extends DialogFragment {
     		.setPositiveButton(R.string.done, new DialogInterface.OnClickListener() {
                @Override
                public void onClick(DialogInterface dialog, int id) {
-                   // sign in the user ...
 //            	   LayoutInflater inflater = (LayoutInflater) context
   //          	            .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             	   mCallback.onEditInfoSelected(start_time, end_time, volume, speed);
