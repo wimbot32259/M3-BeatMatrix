@@ -334,7 +334,7 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
             		mapButton.setImageDrawable(getResources().getDrawable(R.drawable.mapbutton_off));
             		setMapButtonStatus(false);
 
-    	    	    showSongSelectDialog();
+    	    	   // showSongSelectDialog();
     	    	    waitingId = true;
     	    	    CHOOSING = true;
 

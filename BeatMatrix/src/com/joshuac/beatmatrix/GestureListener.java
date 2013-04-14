@@ -77,17 +77,19 @@ public class GestureListener extends GestureDetector.SimpleOnGestureListener{
 	public boolean onSingleTapConfirmed(MotionEvent e)
 	{
 		//!ButtonMatrix.getMapButtonStatus()&& MAPPED && ButtonMatrix.getPlayButtonStatus()
-    	if(MAPPED)
+    	if(!ButtonMatrix.getMapButtonStatus() && MAPPED && !ButtonMatrix.getEditButtonStatus())
     	{
 			thisButton.changeState(PLAYING);
 		    playButtonSound();
+		    System.out.println("playing!!!!!!!!!!!!!!!!!!!!!!");
     	}
     	else if( ButtonMatrix.getMapButtonStatus() ) {
     		mapAction();
     	} else if (ButtonMatrix.getEditButtonStatus()) {
     		if (buttonId != -1) {
+    			System.out.println("trying callback");
     			onEditActionListener.editAction(buttonId);
-    			System.out.println("Just called callback from gesturelistenet");
+    			System.out.println("Just called callback from gesturelistener");
     		}
     	}
 		return true;
