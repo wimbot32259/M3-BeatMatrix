@@ -6,7 +6,9 @@ import com.joshuac.beatmatrix.MyAudioDevice.OnCompletionListener;
 import com.joshuac.beatmatrix.SongEditDialog.OnSongEditSelectedListener;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.app.DialogFragment;
+import android.content.DialogInterface;
 import android.content.Context;
 import android.content.res.Resources;
 //import android.media.MediaPlayer;
@@ -89,7 +91,7 @@ public class GestureListener extends GestureDetector.SimpleOnGestureListener{
     		if (buttonId != -1) {
     			System.out.println(buttonId);
     			System.out.println("trying callback");
-    			mCallback.onEditAction(buttonId);
+    			//mCallback.onEditAction(buttonId);
     			System.out.println("Just called callback from gesturelistener");
     		}
     	}

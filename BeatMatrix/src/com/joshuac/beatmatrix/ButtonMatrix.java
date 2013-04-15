@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 
 import com.joshuac.beatmatrix.GestureListener.SoundCompletionListener;
+import com.joshuac.beatmatrix.GestureListener.OnEditActionListener;
 
 import android.app.Activity;
 import android.app.DialogFragment;
