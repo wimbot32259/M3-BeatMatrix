@@ -25,6 +25,7 @@ public class SongEditDialog extends DialogFragment {
 	private double start_time, end_time;
 	private float volume, speed;
 	private static int buttonId;
+	private static double songLength;
 	
 	//Text views
 	private TextView SpeedText, VolumeText, StartText, EndText;
@@ -56,12 +57,16 @@ public class SongEditDialog extends DialogFragment {
 		buttonId = Id;
 	}
 	
+	public static void setSongLength(double length) {
+		songLength = length;
+	}
+	
 	private OnSeekBarChangeListener startSeekBarListener = new OnSeekBarChangeListener() {
 		public void onProgressChanged(SeekBar seekBar, int progress, boolean fromuser) {
 			if (start_time > end_time) {
 				start_time = end_time;
 			} else {
-				start_time = seekBar.getProgress();
+				start_time = (seekBar.getProgress()/100.0)*songLength;
 			}
 			System.out.println("Start time: " + start_time);
 			StartText.setText("Start Time: " + start_time);
@@ -69,7 +74,7 @@ public class SongEditDialog extends DialogFragment {
 		public void onStartTrackingTouch(SeekBar seekBar) {
 		}
 		public void onStopTrackingTouch(SeekBar seekBar) {
-			seekBar.setProgress((int)start_time);
+			seekBar.setProgress((int)((start_time/songLength)*100));
 		}
 	};
 	private OnSeekBarChangeListener endSeekBarListener = new OnSeekBarChangeListener() {
@@ -77,7 +82,7 @@ public class SongEditDialog extends DialogFragment {
 			if (end_time < start_time) {
 				end_time = start_time;
 			} else {
-				end_time = seekBar.getProgress();
+				end_time = (seekBar.getProgress()/100.0)*songLength;
 			}
 			System.out.println("End time: " + end_time);
 			EndText.setText("End Time: " + end_time);
@@ -85,7 +90,7 @@ public class SongEditDialog extends DialogFragment {
 		public void onStartTrackingTouch(SeekBar seekBar) {
 		}
 		public void onStopTrackingTouch(SeekBar seekBar) {
-			seekBar.setProgress((int)end_time);
+			seekBar.setProgress((int)((end_time/songLength)*100));
 		}
 	};
 	private OnSeekBarChangeListener volSeekBarListener = new OnSeekBarChangeListener() {
@@ -137,8 +142,8 @@ public class SongEditDialog extends DialogFragment {
   	 
  	   //Set end listener
  	   SeekBar EndSeek = (SeekBar)v.findViewById(R.id.EndSeek);
- 	   end_time = 100;
- 	   EndSeek.setProgress((int)end_time);
+ 	   end_time = songLength;
+ 	   EndSeek.setProgress((int)((end_time/songLength)*100));
  	   EndSeek.setOnSeekBarChangeListener(endSeekBarListener);
  	   EndText = (TextView) v.findViewById(R.id.EndText);
  	   EndText.setText("End Time: " + end_time);	// !!!!!! Fix so it inits at actual song end time!

@@ -425,6 +425,7 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 	}
 	
 	void showSongEditDialog() {
+		SongEditDialog.setSongLength(manager.getTrackLength(editingButtonId));
 		SongEditDialog.setButtonId(editingButtonId);
 		SongEditDialog.setContext(this);
 		DialogFragment newFragment = SongEditDialog.newInstance(R.string.songEditDialogTitle);
