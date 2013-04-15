@@ -90,19 +90,19 @@ public class SongEditDialog extends DialogFragment {
 	};
 	private OnSeekBarChangeListener volSeekBarListener = new OnSeekBarChangeListener() {
 		public void onProgressChanged(SeekBar seekBar, int progress, boolean fromuser) {
-			volume = seekBar.getProgress();
+			volume = (float)(seekBar.getProgress()/50.0);
 			System.out.println("Volume: " + volume);
 			VolumeText.setText("Volume: " + volume);
 		}
 		public void onStartTrackingTouch(SeekBar seekBar) {
 		}
 		public void onStopTrackingTouch(SeekBar seekBar) {
-			seekBar.setProgress((int)volume);
+			seekBar.setProgress((int)(volume*50));
 		}
 	};
 	private OnSeekBarChangeListener speedSeekBarListener = new OnSeekBarChangeListener() {
 		public void onProgressChanged(SeekBar seekBar, int progress, boolean fromuser) {
-			speed = (float) (((float)seekBar.getProgress())/50.0);
+			speed = (float)(seekBar.getProgress()/50.0);
 			System.out.println("Speed: " + speed);
 			SpeedText.setText("Speed: " + speed);
 		}
@@ -146,7 +146,7 @@ public class SongEditDialog extends DialogFragment {
  	   //Set volume listener
  	   SeekBar VolSeek = (SeekBar)v.findViewById(R.id.VolSeek);
  	   volume = 1;
- 	   VolSeek.setProgress((int)volume);
+ 	   VolSeek.setProgress((int)(volume*50));
  	   VolSeek.setOnSeekBarChangeListener(volSeekBarListener);
  	   VolumeText = (TextView) v.findViewById(R.id.VolumeText);
  	   VolumeText.setText("Volume: " + volume);
@@ -154,7 +154,7 @@ public class SongEditDialog extends DialogFragment {
  	   //Set speed listener
  	   SeekBar SpeedSeek = (SeekBar)v.findViewById(R.id.SpeedSeek);
  	   speed = 1;
- 	   SpeedSeek.setProgress((int)speed);
+ 	   SpeedSeek.setProgress((int)(speed*50));
  	   SpeedSeek.setOnSeekBarChangeListener(speedSeekBarListener);
  	   SpeedText = (TextView) v.findViewById(R.id.SpeedText);
  	   SpeedText.setText("Speed: " + speed);
