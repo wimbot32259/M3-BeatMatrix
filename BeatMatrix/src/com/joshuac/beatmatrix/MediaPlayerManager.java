@@ -125,21 +125,53 @@ public class MediaPlayerManager
 		}
 	}
 	
+	public double getStartTime(int i) {
+		if (mapped_buttons[i] == 1) {
+			return threads[i].getStartTime();
+		} else {
+			return 0;
+		}
+	}
+	
 	public void setEndTime(double end_time, int i) {
 		if (mapped_buttons[i] == 1) {
 			threads[i].setEndTime(end_time);
 		}
 	}
 	
-	public void setVolume(float volume, int i) {
+	public double getEndTime(int i) {
+		if (mapped_buttons[i] == 1) {
+			return threads[i].getEndTime();
+		} else {
+			return 0;
+		}
+	}
+	
+	public void setVolume(double volume, int i) {
 		if (mapped_buttons[i] == 1) {
 			threads[i].setVolume(volume);
 		}
 	}
 	
-	public void setPlaybackSpeed(float speed, int i) {
+	public double getVolume(int i) {
+		if (mapped_buttons[i] == 1) {
+			return threads[i].getVolume();
+		} else {
+			return 0;
+		}
+	}
+	
+	public void setPlaybackSpeed(double speed, int i) {
 		if (mapped_buttons[i] == 1) {
 			threads[i].setPlaybackSpeed(speed);
+		}
+	}
+	
+	public double getPlaybackSpeed(int i) {
+		if (mapped_buttons[i] == 1) {
+			return threads[i].getPlaybackSpeed();
+		} else {
+			return 0;
 		}
 	}
 

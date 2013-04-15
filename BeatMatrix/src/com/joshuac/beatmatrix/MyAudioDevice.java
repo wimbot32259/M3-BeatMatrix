@@ -30,8 +30,8 @@ public class MyAudioDevice
 	private boolean looping = false;
 	private OnCompletionListener onCompletionListener;
 	
-	private float volume = 1; //volume as a multiplicative factor
-	private float playbackSpeed = 1; //play speed as a multiplicative factor?
+	private double volume = 1; //volume as a multiplicative factor
+	private double playbackSpeed = 1; //play speed as a multiplicative factor?
 	private int startPosition = 0; //offset of first sample to play, in bytes (SHOULD BE EVEN)
 	private int endPosition; //equals 1 + offset of last sample to play, in bytes (SHOULD BE EVEN)
 	private int currentPosition; // offset of current sample, in bytes
@@ -285,21 +285,21 @@ public class MyAudioDevice
 	}
 	//End debug methods
 
-	public float getVolume() {
+	public double getVolume() {
 		return volume;
 	}
 
-	public void setVolume(float volume) {
+	public void setVolume(double volume) {
 		//volume is a scalar between 0.0 and 1.0. Default is 1.0
 		this.volume = volume;
-		track.setStereoVolume(volume, volume);
+		track.setStereoVolume((float)volume, (float)volume);
 	}
 
-	public float getPlaybackSpeed() {
+	public double getPlaybackSpeed() {
 		return playbackSpeed;
 	}
 
-	public void setPlaybackSpeed(float playbackSpeed) {
+	public void setPlaybackSpeed(double playbackSpeed) {
 		this.playbackSpeed = playbackSpeed;
 		track.setPlaybackRate((int) Math.round(info.rate*playbackSpeed));
 	}

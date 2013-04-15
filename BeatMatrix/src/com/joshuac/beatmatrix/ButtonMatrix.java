@@ -97,7 +97,7 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 		showSongEditDialog();
     }
 	
-	public void onEditInfoSelected(double start_time, double end_time, float volume, float speed) {
+	public void onEditInfoSelected(double start_time, double end_time, double volume, double speed) {
 		
 		//chooseButton.setImageDrawable(getResources().getDrawable(R.drawable.playlist_off)); 
 		//Consider deleting
@@ -425,8 +425,7 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 	}
 	
 	void showSongEditDialog() {
-		SongEditDialog.setSongLength(manager.getTrackLength(editingButtonId));
-		SongEditDialog.setButtonId(editingButtonId);
+		SongEditDialog.initialize(editingButtonId, manager.getTrackLength(editingButtonId), manager.getStartTime(editingButtonId), manager.getEndTime(editingButtonId), manager.getPlaybackSpeed(editingButtonId), manager.getVolume(editingButtonId));
 		SongEditDialog.setContext(this);
 		DialogFragment newFragment = SongEditDialog.newInstance(R.string.songEditDialogTitle);
 	    newFragment.show(getFragmentManager(), "dialog");   

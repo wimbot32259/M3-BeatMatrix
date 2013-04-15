@@ -22,8 +22,8 @@ public class SongEditDialog extends DialogFragment {
 
 	private static Context context;
 	
-	private double start_time, end_time;
-	private float volume, speed;
+	private static double start_time, end_time;
+	private static double volume, speed;
 	private static int buttonId;
 	private static double songLength;
 	
@@ -37,7 +37,7 @@ public class SongEditDialog extends DialogFragment {
 	//the onFileSelected() method (or other methods in this interface) 
 	//using the mCallback instance of the OnChooseFileSelectedListener interface
     public interface OnSongEditSelectedListener {
-        public void onEditInfoSelected(double start_time, double end_time, float volume, float speed);
+        public void onEditInfoSelected(double start_time, double end_time, double volume, double speed);
     }
     
     //creates a new instance of the dialog
@@ -53,12 +53,13 @@ public class SongEditDialog extends DialogFragment {
 		context = c;
 	}
 	
-	public static void setButtonId(int Id) {
+	public static void initialize(int Id, double length, double curr_start, double curr_end, double curr_speed, double curr_volume) {
 		buttonId = Id;
-	}
-	
-	public static void setSongLength(double length) {
 		songLength = length;
+		start_time = curr_start;
+		end_time = curr_end;
+		volume = curr_volume;
+		speed = curr_speed;
 	}
 	
 	private OnSeekBarChangeListener startSeekBarListener = new OnSeekBarChangeListener() {
@@ -95,7 +96,7 @@ public class SongEditDialog extends DialogFragment {
 	};
 	private OnSeekBarChangeListener volSeekBarListener = new OnSeekBarChangeListener() {
 		public void onProgressChanged(SeekBar seekBar, int progress, boolean fromuser) {
-			volume = (float)(seekBar.getProgress()/50.0);
+			volume = (seekBar.getProgress()/50.0);
 			System.out.println("Volume: " + volume);
 			VolumeText.setText("Volume: " + volume);
 		}
@@ -107,7 +108,7 @@ public class SongEditDialog extends DialogFragment {
 	};
 	private OnSeekBarChangeListener speedSeekBarListener = new OnSeekBarChangeListener() {
 		public void onProgressChanged(SeekBar seekBar, int progress, boolean fromuser) {
-			speed = (float)(seekBar.getProgress()/50.0);
+			speed = (seekBar.getProgress()/50.0);
 			System.out.println("Speed: " + speed);
 			SpeedText.setText("Speed: " + speed);
 		}
@@ -132,8 +133,10 @@ public class SongEditDialog extends DialogFragment {
        //Set start listener
  	   SeekBar StartSeek = (SeekBar)v.findViewById(R.id.StartSeek);
  	   System.out.println("about to set progress");
- 	   start_time = 0;
- 	   StartSeek.setProgress((int)start_time);
+ 	   if (start_time == 0) {
+ 		   start_time = 0;
+ 	   }
+ 	   StartSeek.setProgress((int)((start_time/songLength)*100));
  	   System.out.println("set progress");
  	   StartSeek.setOnSeekBarChangeListener(startSeekBarListener);
  	   System.out.println("set listener");
@@ -142,7 +145,9 @@ public class SongEditDialog extends DialogFragment {
   	 
  	   //Set end listener
  	   SeekBar EndSeek = (SeekBar)v.findViewById(R.id.EndSeek);
- 	   end_time = songLength;
+ 	   if (end_time == 0) {
+ 		   end_time = songLength;
+ 	   }
  	   EndSeek.setProgress((int)((end_time/songLength)*100));
  	   EndSeek.setOnSeekBarChangeListener(endSeekBarListener);
  	   EndText = (TextView) v.findViewById(R.id.EndText);
@@ -150,7 +155,9 @@ public class SongEditDialog extends DialogFragment {
 
  	   //Set volume listener
  	   SeekBar VolSeek = (SeekBar)v.findViewById(R.id.VolSeek);
- 	   volume = 1;
+ 	   if (volume == 0) {
+ 		   volume = 1;
+ 	   }
  	   VolSeek.setProgress((int)(volume*50));
  	   VolSeek.setOnSeekBarChangeListener(volSeekBarListener);
  	   VolumeText = (TextView) v.findViewById(R.id.VolumeText);
@@ -158,7 +165,9 @@ public class SongEditDialog extends DialogFragment {
  	   
  	   //Set speed listener
  	   SeekBar SpeedSeek = (SeekBar)v.findViewById(R.id.SpeedSeek);
- 	   speed = 1;
+ 	   if (speed == 0) {
+ 		   speed = 1;
+ 	   }
  	   SpeedSeek.setProgress((int)(speed*50));
  	   SpeedSeek.setOnSeekBarChangeListener(speedSeekBarListener);
  	   SpeedText = (TextView) v.findViewById(R.id.SpeedText);

@@ -95,16 +95,32 @@ public class MyAudioDeviceThread extends Thread implements Runnable
 		myAudio.setStartTime(start_time);
 	}
 	
+	public double getStartTime() {
+		return myAudio.getStartTime();
+	}
+	
 	public void setEndTime(double end_time) {
 		myAudio.setEndTime(end_time);
 	}
 	
-	public void setVolume(float volume) {
+	public double getEndTime() {
+		return myAudio.getEndTime();
+	}
+	
+	public void setVolume(double volume) {
 		myAudio.setVolume(volume);
 	}
 	
-	public void setPlaybackSpeed(float speed) {
+	public double getVolume() {
+		return myAudio.getVolume();
+	}
+	
+	public void setPlaybackSpeed(double speed) {
 		myAudio.setPlaybackSpeed(speed);
+	}
+	
+	public double getPlaybackSpeed() {
+		return myAudio.getPlaybackSpeed();
 	}
 	
 	public double getTrackLength() {
