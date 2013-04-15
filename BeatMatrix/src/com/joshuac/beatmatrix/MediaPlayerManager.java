@@ -183,6 +183,34 @@ public class MediaPlayerManager
 		}
 	}
 	
+	public void setBass(double bass, int i) {
+		if (mapped_buttons[i] == 1) {
+			threads[i].setBass(bass);
+		}
+	}
+	
+	public double getBass(int i) {
+		if (mapped_buttons[i] == 1) {
+			return threads[i].getBass();
+		} else {
+			return 0;
+		}
+	}
+	
+	public void setTreble(double treble, int i) {
+		if (mapped_buttons[i] == 1) {
+			threads[i].setTreble(treble);
+		}
+	}
+	
+	public double getTreble(int i) {
+		if (mapped_buttons[i] == 1) {
+			return threads[i].getTreble();
+		} else {
+			return 0;
+		}
+	}
+	
 	public String getTrackPath(int i)
 	{
 		if(threads[i] != null){

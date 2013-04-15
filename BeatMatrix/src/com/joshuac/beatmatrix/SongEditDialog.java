@@ -23,12 +23,12 @@ public class SongEditDialog extends DialogFragment {
 	private static Context context;
 	
 	private static double start_time, end_time;
-	private static double volume, speed;
+	private static double volume, speed, bass, treble;
 	private static int buttonId;
 	private static double songLength;
 	
 	//Text views
-	private TextView SpeedText, VolumeText, StartText, EndText;
+	private TextView SpeedText, VolumeText, StartText, EndText, BassText, TrebleText;
 	
 	OnSongEditSelectedListener mCallback;
 	
@@ -37,7 +37,7 @@ public class SongEditDialog extends DialogFragment {
 	//the onFileSelected() method (or other methods in this interface) 
 	//using the mCallback instance of the OnChooseFileSelectedListener interface
     public interface OnSongEditSelectedListener {
-        public void onEditInfoSelected(double start_time, double end_time, double volume, double speed);
+        public void onEditInfoSelected(double start_time, double end_time, double volume, double speed, double bass, double treble);
     }
     
     //creates a new instance of the dialog
@@ -53,13 +53,15 @@ public class SongEditDialog extends DialogFragment {
 		context = c;
 	}
 	
-	public static void initialize(int Id, double length, double curr_start, double curr_end, double curr_speed, double curr_volume) {
+	public static void initialize(int Id, double length, double curr_start, double curr_end, double curr_speed, double curr_volume, double curr_bass, double curr_treble) {
 		buttonId = Id;
 		songLength = length;
 		start_time = curr_start;
 		end_time = curr_end;
 		volume = curr_volume;
 		speed = curr_speed;
+		bass = curr_bass;
+		treble = curr_treble;
 	}
 	
 	private OnSeekBarChangeListener startSeekBarListener = new OnSeekBarChangeListener() {
@@ -125,6 +127,32 @@ public class SongEditDialog extends DialogFragment {
 		}
 	};
 	
+	private OnSeekBarChangeListener bassSeekBarListener = new OnSeekBarChangeListener() {
+		public void onProgressChanged(SeekBar seekBar, int progress, boolean fromuser) {
+			bass = (seekBar.getProgress()/50.0);
+			System.out.println("Bass: " + bass);
+			BassText.setText("Bass: " + bass);
+		}
+		public void onStartTrackingTouch(SeekBar seekBar) {
+		}
+		public void onStopTrackingTouch(SeekBar seekBar) {
+			seekBar.setProgress((int)(bass*50));
+		}
+	};
+	
+	private OnSeekBarChangeListener trebleSeekBarListener = new OnSeekBarChangeListener() {
+		public void onProgressChanged(SeekBar seekBar, int progress, boolean fromuser) {
+			treble = (seekBar.getProgress()/50.0);
+			System.out.println("Treble: " + treble);
+			TrebleText.setText("Treble: " + treble);
+		}
+		public void onStartTrackingTouch(SeekBar seekBar) {
+		}
+		public void onStopTrackingTouch(SeekBar seekBar) {
+			seekBar.setProgress((int)(treble*50));
+		}
+	};
+	
 		
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -179,6 +207,26 @@ public class SongEditDialog extends DialogFragment {
  	   SpeedText = (TextView) v.findViewById(R.id.SpeedText);
  	   SpeedText.setText("Speed: " + speed);
  	   
+ 	   //Set treble listener
+ 	   SeekBar TrebleSeek = (SeekBar)v.findViewById(R.id.TrebleSeek);
+ 	   if (treble == 0) {
+ 		   treble = 1;
+ 	   }
+ 	   TrebleSeek.setProgress((int)(treble*50));
+ 	   TrebleSeek.setOnSeekBarChangeListener(trebleSeekBarListener);
+ 	   TrebleText = (TextView) v.findViewById(R.id.TrebleText);
+ 	   TrebleText.setText("Treble: " + treble);
+ 	   
+ 	   //Set bass listener
+ 	   SeekBar BassSeek = (SeekBar)v.findViewById(R.id.BassSeek);
+ 	   if (bass == 0) {
+ 		   bass = 1;
+ 	   }
+ 	   BassSeek.setProgress((int)(bass*50));
+ 	   BassSeek.setOnSeekBarChangeListener(bassSeekBarListener);
+ 	   BassText = (TextView) v.findViewById(R.id.BassText);
+ 	   BassText.setText("Bass: " + bass);
+ 	   
         builder.setTitle(R.string.songEditDialogTitle)
     		.setView(v/*inflater.inflate(R.layout.song_edit_layout, null)*/)
     	    // Add action buttons
@@ -187,7 +235,7 @@ public class SongEditDialog extends DialogFragment {
                public void onClick(DialogInterface dialog, int id) {
 //            	   LayoutInflater inflater = (LayoutInflater) context
   //          	            .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            	   mCallback.onEditInfoSelected(start_time, end_time, volume, speed);
+            	   mCallback.onEditInfoSelected(start_time, end_time, volume, speed, bass, treble);
                }
            })
            .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {

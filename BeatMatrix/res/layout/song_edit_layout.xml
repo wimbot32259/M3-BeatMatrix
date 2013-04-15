@@ -25,21 +25,39 @@
         android:layout_height="wrap_content"
         android:max="100" />
     <TextView 
-        android:id="@+id/VolumeText"        
-        android:text="@string/volume"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"/>
-    <SeekBar
-        android:id="@+id/VolSeek"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content" />
-    <TextView 
         android:id="@+id/SpeedText"
         android:text="@string/speed"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"/>
     <SeekBar
         android:id="@+id/SpeedSeek"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" />
+    <TextView 
+        android:id="@+id/BassText"
+        android:text="@string/bass"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"/>
+    <SeekBar
+        android:id="@+id/BassSeek"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" />
+    <TextView 
+        android:id="@+id/TrebleText"
+        android:text="@string/treble"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"/>
+    <SeekBar
+        android:id="@+id/TrebleSeek"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" />
+    <TextView 
+        android:id="@+id/VolumeText"        
+        android:text="@string/volume"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"/>
+    <SeekBar
+        android:id="@+id/VolSeek"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content" />
 </LinearLayout>

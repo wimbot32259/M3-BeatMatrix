@@ -33,6 +33,8 @@ public class MyAudioDevice
 	
 	private double volume = 1; //volume as a multiplicative factor
 	private double playbackSpeed = 1; //play speed as a multiplicative factor?
+	private double bass = 1;
+	private double treble = 1;
 	private int startPosition = 0; //offset of first sample to play, in bytes (SHOULD BE EVEN)
 	private int endPosition; //equals 1 + offset of last sample to play, in bytes (SHOULD BE EVEN)
 	private int currentPosition; // offset of current sample, in bytes
@@ -300,12 +302,22 @@ public class MyAudioDevice
 	
 	//Equalizer methods
 	//NOTE: bass and treble gains should be in dB. Absolute desired gain = 10^(gain/20)
-	public void setBass (double bass) {
+	public void setBass (double new_bass) {
+		bass = new_bass;
 		eq.setBass(bass);
 	}
 	
-	public void setTreble (double treble) {
+	public void setTreble (double new_treble) {
+		treble = new_treble;
 		eq.setTreble(treble);
+	}
+	
+	public double getBass() {
+		return bass;
+	}
+	
+	public double getTreble() {
+		return treble;
 	}
 
 /*	public void writeSamples(byte[] samples) 

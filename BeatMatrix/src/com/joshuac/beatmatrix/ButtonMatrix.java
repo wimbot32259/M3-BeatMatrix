@@ -98,12 +98,12 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 		showSongEditDialog();
     }
 	
-	public void onEditInfoSelected(double start_time, double end_time, double volume, double speed) {
+	public void onEditInfoSelected(double start_time, double end_time, double volume, double speed, double bass, double treble) {
 		
 		//chooseButton.setImageDrawable(getResources().getDrawable(R.drawable.playlist_off)); 
 		//Consider deleting
-		Toast toast = Toast.makeText(getApplicationContext(), ""+start_time+" "+end_time+" "+volume+" "+speed/*Double.toString(start_time)*/, Toast.LENGTH_SHORT);
-		toast.show();
+//		Toast toast = Toast.makeText(getApplicationContext(), ""+start_time+" "+end_time+" "+volume+" "+speed/*Double.toString(start_time)*/, Toast.LENGTH_SHORT);
+//		toast.show();
 
 		//now call setters for audio device
 		if (end_time > start_time) {
@@ -120,6 +120,8 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 		} else {
 			manager.setPlaybackSpeed(speed, editingButtonId);
 		}
+		manager.setBass(bass, editingButtonId);
+		manager.setTreble(treble, editingButtonId);
     }
 
 	@Override
@@ -426,7 +428,9 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 	}
 	
 	void showSongEditDialog() {
-		SongEditDialog.initialize(editingButtonId, manager.getTrackLength(editingButtonId), manager.getStartTime(editingButtonId), manager.getEndTime(editingButtonId), manager.getPlaybackSpeed(editingButtonId), manager.getVolume(editingButtonId));
+		SongEditDialog.initialize(editingButtonId, manager.getTrackLength(editingButtonId), manager.getStartTime(editingButtonId),
+				manager.getEndTime(editingButtonId), manager.getPlaybackSpeed(editingButtonId), manager.getVolume(editingButtonId),
+				manager.getBass(editingButtonId), manager.getTreble(editingButtonId));
 		SongEditDialog.setContext(this);
 		DialogFragment newFragment = SongEditDialog.newInstance(R.string.songEditDialogTitle);
 	    newFragment.show(getFragmentManager(), "dialog");   

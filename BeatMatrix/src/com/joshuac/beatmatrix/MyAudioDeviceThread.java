@@ -123,6 +123,22 @@ public class MyAudioDeviceThread extends Thread implements Runnable
 		return myAudio.getPlaybackSpeed();
 	}
 	
+	public void setBass(double bass) {
+		myAudio.setBass(bass);
+	}
+	
+	public double getBass() {
+		return myAudio.getBass();
+	}
+	
+	public void setTreble(double treble) {
+		myAudio.setTreble(treble);
+	}
+	
+	public double getTreble() {
+		return myAudio.getTreble();
+	}
+	
 	public double getTrackLength() {
 		return myAudio.getTrackLength();
 	}
