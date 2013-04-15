@@ -75,6 +75,9 @@ public class SongEditDialog extends DialogFragment {
 		public void onStartTrackingTouch(SeekBar seekBar) {
 		}
 		public void onStopTrackingTouch(SeekBar seekBar) {
+			if (start_time > end_time) {
+				start_time = end_time;
+			}
 			seekBar.setProgress((int)((start_time/songLength)*100));
 		}
 	};
@@ -91,6 +94,9 @@ public class SongEditDialog extends DialogFragment {
 		public void onStartTrackingTouch(SeekBar seekBar) {
 		}
 		public void onStopTrackingTouch(SeekBar seekBar) {
+			if (end_time < start_time) {
+				end_time = start_time;
+			}
 			seekBar.setProgress((int)((end_time/songLength)*100));
 		}
 	};
