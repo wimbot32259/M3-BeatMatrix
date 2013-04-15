@@ -22,8 +22,8 @@ public class SongEditDialog extends DialogFragment {
 
 	private static Context context;
 	
-	private double start_time, end_time, speed;
-	private float volume;
+	private double start_time, end_time;
+	private float volume, speed;
 	private static int buttonId;
 	
 	//Text views
@@ -36,7 +36,7 @@ public class SongEditDialog extends DialogFragment {
 	//the onFileSelected() method (or other methods in this interface) 
 	//using the mCallback instance of the OnChooseFileSelectedListener interface
     public interface OnSongEditSelectedListener {
-        public void onEditInfoSelected(double start_time, double end_time, float volume, double speed);
+        public void onEditInfoSelected(double start_time, double end_time, float volume, float speed);
     }
     
     //creates a new instance of the dialog
@@ -102,14 +102,14 @@ public class SongEditDialog extends DialogFragment {
 	};
 	private OnSeekBarChangeListener speedSeekBarListener = new OnSeekBarChangeListener() {
 		public void onProgressChanged(SeekBar seekBar, int progress, boolean fromuser) {
-			speed = seekBar.getProgress()/50;
+			speed = (float) (((float)seekBar.getProgress())/50.0);
 			System.out.println("Speed: " + speed);
 			SpeedText.setText("Speed: " + speed);
 		}
 		public void onStartTrackingTouch(SeekBar seekBar) {
 		}
 		public void onStopTrackingTouch(SeekBar seekBar) {
-			seekBar.setProgress((int)speed*50);
+			seekBar.setProgress((int)(speed*50));
 		}
 	};
 	

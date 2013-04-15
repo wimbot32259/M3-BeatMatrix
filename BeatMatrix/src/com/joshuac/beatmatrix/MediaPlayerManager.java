@@ -137,7 +137,7 @@ public class MediaPlayerManager
 		}
 	}
 	
-	public void setPlaybackSpeed(double speed, int i) {
+	public void setPlaybackSpeed(float speed, int i) {
 		if (mapped_buttons[i] == 1) {
 			threads[i].setPlaybackSpeed(speed);
 		}

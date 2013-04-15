@@ -31,7 +31,7 @@ public class MyAudioDevice
 	private OnCompletionListener onCompletionListener;
 	
 	private float volume = 1; //volume as a multiplicative factor
-	private double playbackSpeed = 1; //play speed as a multiplicative factor?
+	private float playbackSpeed = 1; //play speed as a multiplicative factor?
 	private int startPosition = 0; //offset of first sample to play, in bytes (SHOULD BE EVEN)
 	private int endPosition; //equals 1 + offset of last sample to play, in bytes (SHOULD BE EVEN)
 	private int currentPosition; // offset of current sample, in bytes
@@ -295,11 +295,11 @@ public class MyAudioDevice
 		track.setStereoVolume(volume, volume);
 	}
 
-	public double getPlaybackSpeed() {
+	public float getPlaybackSpeed() {
 		return playbackSpeed;
 	}
 
-	public void setPlaybackSpeed(double playbackSpeed) {
+	public void setPlaybackSpeed(float playbackSpeed) {
 		this.playbackSpeed = playbackSpeed;
 		track.setPlaybackRate((int) Math.round(info.rate*playbackSpeed));
 	}

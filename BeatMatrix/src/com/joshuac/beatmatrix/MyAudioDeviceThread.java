@@ -103,7 +103,7 @@ public class MyAudioDeviceThread extends Thread implements Runnable
 		myAudio.setVolume(volume);
 	}
 	
-	public void setPlaybackSpeed(double speed) {
+	public void setPlaybackSpeed(float speed) {
 		myAudio.setPlaybackSpeed(speed);
 	}
 	
