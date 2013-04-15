@@ -24,11 +24,12 @@ public class MyAudioDevice
 	private int bufferSize;
 	private AudioReader reader;
 	private FileInfo info;
-	private byte[] buffer = new byte[bufferSize];
-	private byte[] bufferCopy = new byte[bufferSize];
+	private byte[] buffer;
+//	private byte[] bufferCopy = new byte[bufferSize];
 	private boolean playing = false;
 	private boolean looping = false;
 	private OnCompletionListener onCompletionListener;
+	private EqualizingFilter eq;
 	
 	private double volume = 1; //volume as a multiplicative factor
 	private double playbackSpeed = 1; //play speed as a multiplicative factor?
@@ -37,10 +38,10 @@ public class MyAudioDevice
 	private int currentPosition; // offset of current sample, in bytes
 	private double trackLength; //end time of file in seconds, stored so we know when to set endPosition to exact end
 	
-	private boolean editTreble = false;
-	private boolean editVolume = false;
-	byte buffn1 = 0; //buffer[-1]	
-	byte buffn2 = 0; //buffer[-2]
+//	private boolean editTreble = false;
+//	private boolean editVolume = false;
+//	byte buffn1 = 0; //buffer[-1]	
+//	byte buffn2 = 0; //buffer[-2]
 	
 	public static abstract class OnCompletionListener {
 		public OnCompletionListener(){}
@@ -64,6 +65,8 @@ public class MyAudioDevice
 		trackLength = endPosition/(2.0*info.rate*info.channels);
 		
 		createAT();
+		
+		eq = new EqualizingFilter(info.rate, info.channels);
 	}
 
 	private void createAT() {
@@ -73,7 +76,6 @@ public class MyAudioDevice
 		track = new AudioTrack(AudioManager.STREAM_MUSIC, info.rate,
 			(info.channels==1)? AudioFormat.CHANNEL_OUT_MONO:AudioFormat.CHANNEL_OUT_STEREO,
 			AudioFormat.ENCODING_PCM_16BIT, bufferSize, AudioTrack.MODE_STREAM);
-		bufferCopy = new byte[bufferSize];
 	}
 
 	public void start() {
@@ -88,7 +90,8 @@ public class MyAudioDevice
 				try {
 					if (dis.available() > 0 && bufferSize < (endPosition - currentPosition)) {
 						buffer = reader.readToPcm(info, dis, bufferSize);
-						preprocessBuffer();
+						//preprocessBuffer();
+						buffer = eq.filter(buffer);
 						track.write( buffer, 0, buffer.length );
 						currentPosition += buffer.length;
 					}
@@ -96,7 +99,8 @@ public class MyAudioDevice
 						//write any remaining bits to the track
 						if (endPosition - currentPosition > 0){
 							buffer = reader.readToPcm(info, dis, endPosition - currentPosition);
-							preprocessBuffer();
+							//preprocessBuffer();
+							buffer = eq.filter(buffer);
 							track.write( buffer, 0, buffer.length );
 						}
 						
@@ -125,75 +129,7 @@ public class MyAudioDevice
 			}
 		}
 	}
-
-	private void preprocessBuffer() 
-	{
-		if (editVolume|| editTreble) //add effects below
-		{
-			//copy buffer before editing
-			System.arraycopy(buffer,0,bufferCopy,0,bufferSize);
-			
-			for (int i = 0; i < buffer.length; i+=2) 
-			{
-				//need to distinguish between two and one stream still
-				
-				//Modify buffer for volume
-				//Note: volume increase results in poor sound quality
-				if(editVolume)
-				{
-					short newValue = (short) ((buffer[i+1]<<8)|(buffer[i]));
-					newValue = (short) Math.round(newValue*volume);
-					buffer[i+1] = (byte) (newValue>>8);
-					buffer[i] = (byte) newValue;
-				}//end edit volume
-				
-				//modify treble
-				//need to test with two streams still..
-				if(editTreble)
-				{
-					if(info.channels == 1)	//mono
-					{ 
-						if(i==0)
-						{
-							buffer[i]	=	(byte) (bufferCopy[i]	- buffn1);
-							buffer[i+1]	=	(byte) (bufferCopy[i+1]	- bufferCopy[i]);
-						}
-						else
-						{
-							buffer[i]	=	(byte) (bufferCopy[i]	- bufferCopy[i-1]);
-							buffer[i+1]	=	(byte) (bufferCopy[i+1]	- bufferCopy[i]);
-						}
-						//check for greater than byte or less than zero
-						//0 to 255 or -32768 to 32767 ?
-					}
-					else 					//stereo
-					{
-						if(i==0)
-						{
-							buffer[i]	=	(byte) (bufferCopy[i]	- buffn2);
-							buffer[i+1]	=	(byte) (bufferCopy[i+1]	- buffn1);
-						}
-						else
-						{
-							buffer[i]	=	(byte) (bufferCopy[i]	- bufferCopy[i-2]);
-							buffer[i+1]	=	(byte) (bufferCopy[i+1]	- bufferCopy[i-1]);
-						}
-						//check for greater than byte or less than zero
-						//0 to 255 or -32768 to 32767 ?
-					}
-				}//end edit treble
-				
-				//store buffer[-1] and buffer[-2]
-				if(i==bufferSize-1)
-				{
-					buffn1 = buffer[i];
-					buffn2 = buffer[i-1];
-				}
-			}//end for loop
-		}//end adding effects
-
-	}//end preprocessBuffer
-
+	
 	private void restartStream() {
 		try {
 			dis.close();
@@ -360,6 +296,17 @@ public class MyAudioDevice
 		//current track position, at default speed
 		return endPosition/(2.0*info.rate*info.channels);
 	}
+	
+	
+	//Equalizer methods
+	//NOTE: bass and treble gains should be in dB. Absolute desired gain = 10^(gain/20)
+	public void setBass (double bass) {
+		eq.setBass(bass);
+	}
+	
+	public void setTreble (double treble) {
+		eq.setTreble(treble);
+	}
 
 /*	public void writeSamples(byte[] samples) 
 	{	
@@ -376,4 +323,72 @@ public class MyAudioDevice
 			buffer[i] = samples[i];
 	}
 */
+
+	/*private void preprocessBuffer() 
+	{
+		if (editVolume|| editTreble) //add effects below
+		{
+			//copy buffer before editing
+			System.arraycopy(buffer,0,bufferCopy,0,bufferSize);
+			
+			for (int i = 0; i < buffer.length; i+=2) 
+			{
+				//need to distinguish between two and one stream still
+				
+				//Modify buffer for volume
+				//Note: volume increase results in poor sound quality
+				if(editVolume)
+				{
+					short newValue = (short) ((buffer[i+1]<<8)|(buffer[i]));
+					newValue = (short) Math.round(newValue*volume);
+					buffer[i+1] = (byte) (newValue>>8);
+					buffer[i] = (byte) newValue;
+				}//end edit volume
+				
+				//modify treble
+				//need to test with two streams still..
+				if(editTreble)
+				{
+					if(info.channels == 1)	//mono
+					{ 
+						if(i==0)
+						{
+							buffer[i]	=	(byte) (bufferCopy[i]	- buffn1);
+							buffer[i+1]	=	(byte) (bufferCopy[i+1]	- bufferCopy[i]);
+						}
+						else
+						{
+							buffer[i]	=	(byte) (bufferCopy[i]	- bufferCopy[i-1]);
+							buffer[i+1]	=	(byte) (bufferCopy[i+1]	- bufferCopy[i]);
+						}
+						//check for greater than byte or less than zero
+						//0 to 255 or -32768 to 32767 ?
+					}
+					else 					//stereo
+					{
+						if(i==0)
+						{
+							buffer[i]	=	(byte) (bufferCopy[i]	- buffn2);
+							buffer[i+1]	=	(byte) (bufferCopy[i+1]	- buffn1);
+						}
+						else
+						{
+							buffer[i]	=	(byte) (bufferCopy[i]	- bufferCopy[i-2]);
+							buffer[i+1]	=	(byte) (bufferCopy[i+1]	- bufferCopy[i-1]);
+						}
+						//check for greater than byte or less than zero
+						//0 to 255 or -32768 to 32767 ?
+					}
+				}//end edit treble
+				
+				//store buffer[-1] and buffer[-2]
+				if(i==bufferSize-1)
+				{
+					buffn1 = buffer[i];
+					buffn2 = buffer[i-1];
+				}
+			}//end for loop
+		}//end adding effects
+
+	}//end preprocessBuffer*/
 }

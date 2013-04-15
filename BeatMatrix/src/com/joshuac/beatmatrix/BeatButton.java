@@ -59,8 +59,8 @@ public class BeatButton extends ImageButton
 		
 		//set thread manager
 		manager = ButtonMatrix.getMediaPlayerManager();
-		this.buttonId = currentId++;
-		//currentId = (currentId+1)%manager.getTotalButtons();
+		this.buttonId = currentId;
+		currentId = (currentId+1)%manager.getTotalButtons();
 		//set gesture detector
 		mGestureListener = new GestureListener(context, this, buttonId);
 		mGestureDetector = new GestureDetector(context, mGestureListener);
@@ -77,8 +77,8 @@ public class BeatButton extends ImageButton
 		
 		//set thread manager
 		manager = ButtonMatrix.getMediaPlayerManager();
-		this.buttonId = currentId++;
-		//currentId = (currentId+1)%manager.getTotalButtons();
+		this.buttonId = currentId;
+		currentId = (currentId+1)%manager.getTotalButtons();
 		//set gesture detector
 		mGestureListener = new GestureListener(context, this, buttonId);
 		mGestureDetector = new GestureDetector(context, mGestureListener);
