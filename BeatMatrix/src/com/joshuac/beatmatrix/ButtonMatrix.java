@@ -138,6 +138,10 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.button_matrix_activity);
+		
+		//TESTING RAW FILES
+		MyAudioDevice mp = new MyAudioDevice(this, R.raw.toot);
+		mp.start();
 		  
 		manager = new MediaPlayerManager(this, TOTAL_BUTTONS);
 		manager.resetThreads();
