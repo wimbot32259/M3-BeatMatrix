@@ -98,6 +98,15 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 		showSongEditDialog();
     }
 	
+	@Override
+	public void onEditAction(int buttonId) {
+		System.out.println("in buttonmatrix, callback just got called");
+		editingButtonId = buttonId;
+		waitingId = false;
+		System.out.println("test");
+		showSongEditDialog();
+	}
+	
 	public void onEditInfoSelected(double start_time, double end_time, double volume, double speed, double bass, double treble) {
 		
 		//chooseButton.setImageDrawable(getResources().getDrawable(R.drawable.playlist_off)); 
@@ -155,6 +164,7 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 			{
 				//init button and set scaling
 				BeatButton newButton = (BeatButton) getLayoutInflater().inflate(R.layout.beat_button, null);
+				newButton.onAttach(this);
 				buttonList.add(newButton);
 				
 				//reset current id when building each time
@@ -414,7 +424,7 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 	}
 	
 	void showSongSelectDialog() {
-		// pass list of songs mapped for picking
+		/*// pass list of songs mapped for picking
 		// gonna pick button ID for now
 		
 		SongSelectDialog.setContext(this);
@@ -423,7 +433,7 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 	    newFragment.show(getFragmentManager(), "dialog");
 	    //with returned chosen song, move on to set time, etc
 	    
-	    //with returned info, call setters for audio player
+	    //with returned info, call setters for audio player*/
 	    
 	}
 	
@@ -443,16 +453,6 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 		System.out.println("test");
 		showSongEditDialog();
 	}*/
-	
-	@Override
-	public void onEditAction(int buttonId) {
-		// TODO Auto-generated method stub
-		System.out.println("in buttonmatrix, callback just got called");
-		editingButtonId = buttonId;
-		waitingId = false;
-		System.out.println("test");
-		showSongEditDialog();
-	}
 	
 	//stops all button sounds
 	//changes state of buttons as well

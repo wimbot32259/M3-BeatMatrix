@@ -2,6 +2,9 @@ package com.joshuac.beatmatrix;
 
 //import java.io.File;
 
+import com.joshuac.beatmatrix.GestureListener.OnEditActionListener;
+
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
@@ -95,8 +98,8 @@ public class BeatButton extends ImageButton
 		
 		//set thread manager
 		manager = ButtonMatrix.getMediaPlayerManager();
-		this.buttonId = currentId++;
-		//currentId = (currentId+1)%manager.getTotalButtons();
+		this.buttonId = currentId;
+		currentId = (currentId+1)%manager.getTotalButtons();
 		//set gesture detector
 		mGestureListener = new GestureListener(context, this, buttonId);
 		mGestureDetector = new GestureDetector(context, mGestureListener);
@@ -197,6 +200,11 @@ public class BeatButton extends ImageButton
 		currentId = 0;
 		buttonId = currentId++;
 	}
+	
+
+    public void onAttach(Activity activity) {
+        mGestureListener.onAttach(activity);
+    }//end onAttach
 		
 }//end class BeatButton
 
