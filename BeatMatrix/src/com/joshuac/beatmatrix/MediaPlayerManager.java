@@ -39,29 +39,41 @@ public class MediaPlayerManager
 	public void setMapping(int i, File f, OnCompletionListener completionListener)
 	{
 		System.out.println("mapping " + f.getAbsolutePath());
-		  mapped_buttons[i] = 1;
-		  filepaths[i] = f.getAbsolutePath();
-		  MyAudioDeviceThread thread = threads[i];
-		  if(thread == null){
-			  System.out.println("manager: creating new thread for " + i);
-			  thread = new MyAudioDeviceThread(context, f, completionListener);
-			  threads[i] = thread;
-			  System.out.println("thread " + i + "created: " + threads[i].getTrackPath());
-			  ButtonMatrix.setPath(i, f.getAbsolutePath());
-			  run(i);
-		  }
-		  else 
-		  {
-			  System.out.println("manager: thread exists for " + i);
-			  thread.setTrack(f);
-			  thread.setOnCompletionListener(completionListener);
-		  }
+		mapped_buttons[i] = 1;
+		filepaths[i] = f.getAbsolutePath();
+		MyAudioDeviceThread thread = threads[i];
+		if(thread == null){
+			System.out.println("manager: creating new thread for " + i);
+			thread = new MyAudioDeviceThread(context, f, completionListener);
+			threads[i] = thread;
+			System.out.println("thread " + i + "created: " + threads[i].getTrackPath());
+			ButtonMatrix.setPath(i, f.getAbsolutePath());
+			run(i);
+		}
+		else 
+		{
+			System.out.println("manager: thread exists for " + i);
+			System.out.println("manager: quitting thread for " + i);
+			threads[i].quit();
+			try {
+				threads[i].join();
+				System.out.println("manager: starting new thread for " + i);
+				thread = new MyAudioDeviceThread(context, f, completionListener);
+				threads[i] = thread;
+				System.out.println("thread " + i + "created: " + threads[i].getTrackPath());
+				ButtonMatrix.setPath(i, f.getAbsolutePath());
+				run(i);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 
-		  String msg = f.getName();
-		  Toast toast = Toast.makeText(context, msg + " mapped", Toast.LENGTH_SHORT);
-		  toast.show();
+		String msg = f.getName();
+		Toast toast = Toast.makeText(context, msg + " mapped", Toast.LENGTH_SHORT);
+		toast.show();
 	}//end setMapping
-	
+
 	public void run(int i)
 	{
 			threads[i].start();

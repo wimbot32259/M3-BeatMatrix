@@ -77,14 +77,14 @@ public class MyAudioDeviceThread extends Thread implements Runnable
 	 * Getters / Setters
 	 */
 	
-	public void setTrack(File f)
+	/*public void setTrack(File f)
 	{
 		this.track = f;
 		if (myAudio != null) {
-            myAudio.release();
+            myAudio.quit();
         }
 		myAudio = new MyAudioDevice(track);
-	}
+	}*/ //Note: could be done, but we might as well just make new MADthreads
 
 	public void setOnCompletionListener(OnCompletionListener completionListener) {
 		// sets the completion listener for this media player
@@ -155,4 +155,7 @@ public class MyAudioDeviceThread extends Thread implements Runnable
 			return "";
 	}
 	
+	public void quit() {
+		myAudio.quit();
+	}
 }

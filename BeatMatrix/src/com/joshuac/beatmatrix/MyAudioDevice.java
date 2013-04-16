@@ -40,6 +40,8 @@ public class MyAudioDevice
 	private int currentPosition; // offset of current sample, in bytes
 	private double trackLength; //end time of file in seconds, stored so we know when to set endPosition to exact end
 	
+	private boolean quittingTime = false; //time to pack it up and go home
+	
 //	private boolean editTreble = false;
 //	private boolean editVolume = false;
 //	byte buffn1 = 0; //buffer[-1]	
@@ -83,7 +85,7 @@ public class MyAudioDevice
 	public void start() {
 		track.play();
 		
-		while(true) {
+		while(!quittingTime) {
 			if (playing) {
 				if (track.getPlayState() == AudioTrack.PLAYSTATE_PAUSED) {
 					track.play();
@@ -130,6 +132,8 @@ public class MyAudioDevice
 				}
 			}
 		}
+		
+		release();
 	}
 	
 	private void restartStream() {
@@ -318,6 +322,10 @@ public class MyAudioDevice
 	
 	public double getTreble() {
 		return treble;
+	}
+
+	public void quit() {
+		quittingTime = true;
 	}
 
 /*	public void writeSamples(byte[] samples) 
