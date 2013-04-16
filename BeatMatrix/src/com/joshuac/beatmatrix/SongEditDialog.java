@@ -129,27 +129,27 @@ public class SongEditDialog extends DialogFragment {
 	
 	private OnSeekBarChangeListener bassSeekBarListener = new OnSeekBarChangeListener() {
 		public void onProgressChanged(SeekBar seekBar, int progress, boolean fromuser) {
-			bass = (seekBar.getProgress()/50.0);
+			bass = ((seekBar.getProgress()-50.0)/2.5);
 			System.out.println("Bass: " + bass);
-			BassText.setText("Bass: " + bass);
+			BassText.setText("Bass: " + bass + " dB");
 		}
 		public void onStartTrackingTouch(SeekBar seekBar) {
 		}
 		public void onStopTrackingTouch(SeekBar seekBar) {
-			seekBar.setProgress((int)(bass*50));
+			seekBar.setProgress((int)((bass*25)+50));
 		}
 	};
 	
 	private OnSeekBarChangeListener trebleSeekBarListener = new OnSeekBarChangeListener() {
 		public void onProgressChanged(SeekBar seekBar, int progress, boolean fromuser) {
-			treble = (seekBar.getProgress()/50.0);
+			treble = ((seekBar.getProgress()-50.0)/2.5);
 			System.out.println("Treble: " + treble);
-			TrebleText.setText("Treble: " + treble);
+			TrebleText.setText("Treble: " + treble + " dB");
 		}
 		public void onStartTrackingTouch(SeekBar seekBar) {
 		}
 		public void onStopTrackingTouch(SeekBar seekBar) {
-			seekBar.setProgress((int)(treble*50));
+			seekBar.setProgress((int)((treble*25)+50));
 		}
 	};
 	
@@ -210,22 +210,22 @@ public class SongEditDialog extends DialogFragment {
  	   //Set treble listener
  	   SeekBar TrebleSeek = (SeekBar)v.findViewById(R.id.TrebleSeek);
  	   if (treble == 0) {
- 		   treble = 1;
+ 		   treble = 0;
  	   }
- 	   TrebleSeek.setProgress((int)(treble*50));
+ 	   TrebleSeek.setProgress((int)((treble*2.5)+50));
  	   TrebleSeek.setOnSeekBarChangeListener(trebleSeekBarListener);
  	   TrebleText = (TextView) v.findViewById(R.id.TrebleText);
- 	   TrebleText.setText("Treble: " + treble);
+ 	   TrebleText.setText("Treble: " + treble + " dB");
  	   
  	   //Set bass listener
  	   SeekBar BassSeek = (SeekBar)v.findViewById(R.id.BassSeek);
  	   if (bass == 0) {
- 		   bass = 1;
+ 		   bass = 0;
  	   }
- 	   BassSeek.setProgress((int)(bass*50));
+ 	   BassSeek.setProgress((int)((bass*2.5)+50));
  	   BassSeek.setOnSeekBarChangeListener(bassSeekBarListener);
  	   BassText = (TextView) v.findViewById(R.id.BassText);
- 	   BassText.setText("Bass: " + bass);
+ 	   BassText.setText("Bass: " + bass + " dB");
  	   
         builder.setTitle(R.string.songEditDialogTitle)
     		.setView(v/*inflater.inflate(R.layout.song_edit_layout, null)*/)
