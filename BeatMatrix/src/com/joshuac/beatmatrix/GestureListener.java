@@ -88,7 +88,7 @@ public class GestureListener extends GestureDetector.SimpleOnGestureListener{
     	}
     	else if( ButtonMatrix.getMapButtonStatus() ) {
     		mapAction();
-    	} else if (ButtonMatrix.getEditButtonStatus()) {
+    	} else if (MAPPED && ButtonMatrix.getEditButtonStatus()) {
     		if (buttonId != -1) {
     			System.out.println(buttonId);
     			System.out.println("trying callback");
