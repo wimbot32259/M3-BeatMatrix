@@ -34,8 +34,8 @@ public class MyAudioDevice
 	
 	private double volume = 1; //volume as a multiplicative factor
 	private double playbackSpeed = 1; //play speed as a multiplicative factor?
-	private double bass = 1;
-	private double treble = 1;
+	private double bass = 0; //bass in dB
+	private double treble = 0; //treble in dB
 	private int startPosition = 0; //offset of first sample to play, in bytes (SHOULD BE EVEN)
 	private int endPosition; //equals 1 + offset of last sample to play, in bytes (SHOULD BE EVEN)
 	private int currentPosition; // offset of current sample, in bytes
