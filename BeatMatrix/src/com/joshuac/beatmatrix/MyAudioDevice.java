@@ -130,7 +130,6 @@ public class MyAudioDevice
 							//preprocessBuffer();
 							buffer = eq.filter(buffer);
 							track.write( buffer, 0, buffer.length );
-							quittingTime = true;
 						}
 						
 						//restart the input stream if looping
@@ -140,10 +139,7 @@ public class MyAudioDevice
 						currentPosition += bufferSize;*/
 					}
 					else {
-						//TODO remove
-						if(usingRawResource) {
-							quittingTime = true;
-						}
+						playing = false;
 						if (onCompletionListener != null) {
 							onCompletionListener.myActivity.runOnUiThread(new Runnable() {
 								public void run() {
@@ -181,7 +177,6 @@ public class MyAudioDevice
 		try {
 			if (usingRawResource){
 				is = context.getResources().openRawResource(resourceName);
-				playing = true;
 			}
 			else {
 				is = new FileInputStream(file);

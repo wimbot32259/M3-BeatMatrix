@@ -2,6 +2,7 @@ package com.joshuac.beatmatrix;
 
 import java.io.File;
 
+import com.joshuac.beatmatrix.ChooseFileDialog.FileOrRes;
 import com.joshuac.beatmatrix.MyAudioDevice.OnCompletionListener;
 import com.joshuac.beatmatrix.SongEditDialog.OnSongEditSelectedListener;
 
@@ -166,7 +167,7 @@ public class GestureListener extends GestureDetector.SimpleOnGestureListener{
 	
 	
 	private void mapAction() {
-		File chosenFile = ButtonMatrix.getChosenFile();
+		FileOrRes chosenFile = ButtonMatrix.getChosenFile();
 		if(chosenFile != null)
 		{
 			manager.setMapping(buttonId, chosenFile, soundListener);
@@ -235,7 +236,7 @@ public class GestureListener extends GestureDetector.SimpleOnGestureListener{
 		MAPPED = b;
 	}
 
-	public void setTrack(File f)
+	public void setTrack(FileOrRes f)
 	{
 		manager.setMapping(buttonId, f, soundListener);
 		thisButton.changeState(STOPPED);

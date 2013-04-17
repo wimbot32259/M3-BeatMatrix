@@ -1,6 +1,7 @@
 package com.joshuac.beatmatrix;
 
 import java.io.File;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 
 import android.app.Activity;
@@ -30,6 +31,24 @@ public class ChooseFileDialog extends DialogFragment {
 			isFile = false;
 			file = null;
 			resid = rid;
+		}
+
+		public String getName() {
+			if (isFile) {
+				return file.getName();
+			}
+			else {
+				return context.getResources().getResourceEntryName(resid);
+			}
+		}
+
+		public String getAbsolutePath() {
+			if (isFile) {
+				return file.getAbsolutePath();
+			}
+			else {
+				return null;
+			}
 		}
 	}
 
@@ -64,6 +83,16 @@ public class ChooseFileDialog extends DialogFragment {
     	for (int i = 0; i < fileList.size(); i++) {
     		fileRes.add(new FileOrRes(fileList.get(i)));
     	}
+    	Field[] fields=R.raw.class.getFields();
+		for(int count=0; count < fields.length; count++){
+			try {
+				fileRes.add(new FileOrRes(fields[count].getInt(fields[count])));
+			} catch (IllegalArgumentException e) {
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			}
+		}
 		return fileRes;
 	}
 
@@ -82,7 +111,7 @@ public class ChooseFileDialog extends DialogFragment {
 		context = c;
 	}
 
-	//recursively generate a list of mp3 files to add to the dialog fragment
+	//recursively generate a list of files to add to the dialog fragment
 	private ArrayList<File> generateFileList(final File baseDir) {
 
 		ArrayList<File> files; //return
