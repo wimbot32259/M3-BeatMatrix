@@ -3,6 +3,7 @@ package com.joshuac.beatmatrix;
 import java.io.File;
 import java.util.ArrayList;
 
+import com.joshuac.beatmatrix.ChooseFileDialog.FileOrRes;
 import com.joshuac.beatmatrix.GestureListener.SoundCompletionListener;
 import com.joshuac.beatmatrix.GestureListener.OnEditActionListener;
 
@@ -34,7 +35,7 @@ import android.widget.Toast;
 
 public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseFileSelectedListener, SongEditDialog.OnSongEditSelectedListener, SongSelectDialog.OnSongSelectedListener, GestureListener.OnEditActionListener
 {
-	private static File chosenFile; 	//file chosen to map
+	private static FileOrRes chosenFile; 	//file chosen to map
 	
 	private static int editingButtonId;
 	static boolean waitingId = true;
@@ -80,7 +81,7 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 	//enables ButtonMatrix to communicate with the ChooseFileDialog
 	//called when user selects a File from the storage device
 	//now do something with the File...
-	public void onFileSelected(File f)
+	public void onFileSelected(FileOrRes f)
 	{
 		chosenFile = f;
 		//chooseButton.setImageDrawable(getResources().getDrawable(R.drawable.playlist_off)); 
@@ -138,6 +139,10 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.button_matrix_activity);
+		
+		//TESTING RAW FILES
+		/*MyAudioDevice mp = new MyAudioDevice(this, R.raw.toot);
+		mp.start();*/
 		  
 		manager = new MediaPlayerManager(this, TOTAL_BUTTONS);
 		manager.resetThreads();
@@ -564,7 +569,7 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 		return manager;
 	}
 	
-	public static File getChosenFile()
+	public static FileOrRes getChosenFile()
 	{
 		return chosenFile;
 	}

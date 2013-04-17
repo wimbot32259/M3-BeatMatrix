@@ -13,10 +13,22 @@ public class MyAudioDeviceThread extends Thread implements Runnable
 	MyAudioDevice myAudio;
 	Context context;			//context of the application
 	File track = null; 		//file descriptor of the track
+	int resid;
 	
 	/*
 	 * Constructor(s)
 	 */
+	
+	public MyAudioDeviceThread(Context c, int resource)
+	{
+	    super();
+	    context = c;
+	    resid = resource;
+	    System.out.println(this.toString() + ": in MADT(c,r) ");
+	    
+	    //Start Audio Device here
+		myAudio = new MyAudioDevice(c,resource);
+	}
 	
 	public MyAudioDeviceThread(Context c, File f)
 	{
@@ -32,6 +44,12 @@ public class MyAudioDeviceThread extends Thread implements Runnable
 	public MyAudioDeviceThread(Context c, File f, OnCompletionListener completionListener) {
 		this(c,f);
 		System.out.println("MADT creating thread with file " + track.getAbsolutePath());
+		setOnCompletionListener(completionListener);
+	}
+	
+	public MyAudioDeviceThread(Context c, int resource, OnCompletionListener completionListener) {
+		this(c,resource);
+		System.out.println("MADT creating thread with resource " + resid);
 		setOnCompletionListener(completionListener);
 	}
 	

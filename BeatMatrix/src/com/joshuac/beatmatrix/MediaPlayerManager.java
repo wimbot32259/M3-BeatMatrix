@@ -6,6 +6,7 @@ import android.util.SparseArray;
 import android.widget.Toast;
 import java.io.File;
 
+import com.joshuac.beatmatrix.ChooseFileDialog.FileOrRes;
 import com.joshuac.beatmatrix.MyAudioDevice.OnCompletionListener;
 
 
@@ -36,18 +37,23 @@ public class MediaPlayerManager
 	
 	//i - id of the ViewS
 	//f - chosenFile (file chosen from 'ChooseFileDialog')
-	public void setMapping(int i, File f, OnCompletionListener completionListener)
+	public void setMapping(int i, FileOrRes chosenFile, OnCompletionListener completionListener)
 	{
-		System.out.println("mapping " + f.getAbsolutePath());
+		System.out.println("mapping " + chosenFile.getAbsolutePath());
 		mapped_buttons[i] = 1;
-		filepaths[i] = f.getAbsolutePath();
+		filepaths[i] = chosenFile.getAbsolutePath();
 		MyAudioDeviceThread thread = threads[i];
 		if(thread == null){
 			System.out.println("manager: creating new thread for " + i);
-			thread = new MyAudioDeviceThread(context, f, completionListener);
+			if (chosenFile.isFile) {
+				thread = new MyAudioDeviceThread(context, chosenFile.file, completionListener);
+			}
+			else {
+				thread = new MyAudioDeviceThread(context, chosenFile.resid, completionListener);
+			}
 			threads[i] = thread;
 			System.out.println("thread " + i + "created: " + threads[i].getTrackPath());
-			ButtonMatrix.setPath(i, f.getAbsolutePath());
+			ButtonMatrix.setPath(i, chosenFile.getAbsolutePath());
 			run(i);
 		}
 		else 
@@ -58,10 +64,15 @@ public class MediaPlayerManager
 			try {
 				threads[i].join();
 				System.out.println("manager: starting new thread for " + i);
-				thread = new MyAudioDeviceThread(context, f, completionListener);
+				if (chosenFile.isFile) {
+					thread = new MyAudioDeviceThread(context, chosenFile.file, completionListener);
+				}
+				else {
+					thread = new MyAudioDeviceThread(context, chosenFile.resid, completionListener);
+				}
 				threads[i] = thread;
 				System.out.println("thread " + i + "created: " + threads[i].getTrackPath());
-				ButtonMatrix.setPath(i, f.getAbsolutePath());
+				ButtonMatrix.setPath(i, chosenFile.getAbsolutePath());
 				run(i);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
@@ -69,7 +80,7 @@ public class MediaPlayerManager
 			}
 		}
 
-		String msg = f.getName();
+		String msg = chosenFile.getName();
 		Toast toast = Toast.makeText(context, msg + " mapped", Toast.LENGTH_SHORT);
 		toast.show();
 	}//end setMapping

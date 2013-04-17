@@ -12,6 +12,7 @@ import com.joshuac.beatmatrix.AudioReader.FileInfo;
 import com.joshuac.beatmatrix.WavReader.WavException;
 
 import android.app.Activity;
+import android.content.Context;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
@@ -41,6 +42,9 @@ public class MyAudioDevice
 	private double trackLength; //end time of file in seconds, stored so we know when to set endPosition to exact end
 	
 	private boolean quittingTime = false; //time to pack it up and go home
+	private boolean usingRawResource = false; //created from resource in raw
+	private Context context;
+	private int resourceName;
 	
 //	private boolean editTreble = false;
 //	private boolean editVolume = false;
@@ -58,6 +62,26 @@ public class MyAudioDevice
 	public MyAudioDevice(File openFile)
 	{
 		file = openFile;
+		
+		reader = new WavReader();
+		
+		playbackSpeed = 1;
+		volume = 1;
+		startPosition = 0;
+
+		startStream();
+		endPosition = info.dataSize;
+		trackLength = endPosition/(2.0*info.rate*info.channels);
+		
+		createAT();
+		
+		eq = new EqualizingFilter(info.rate, info.channels);
+	}
+
+	public MyAudioDevice(Context c, int resid) {
+		usingRawResource = true;
+		resourceName = resid;
+		context = c;
 		reader = new WavReader();
 		
 		playbackSpeed = 1;
@@ -116,11 +140,13 @@ public class MyAudioDevice
 					}
 					else {
 						playing = false;
-						onCompletionListener.myActivity.runOnUiThread(new Runnable() {
-							public void run() {
-								onCompletionListener.onCompletion();
-							}
-					    });
+						if (onCompletionListener != null) {
+							onCompletionListener.myActivity.runOnUiThread(new Runnable() {
+								public void run() {
+									onCompletionListener.onCompletion();
+								}
+							});
+						}
 					}
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -149,7 +175,12 @@ public class MyAudioDevice
 		
 		InputStream is;
 		try {
-			is = new FileInputStream(file);
+			if (usingRawResource){
+				is = context.getResources().openRawResource(resourceName);
+			}
+			else {
+				is = new FileInputStream(file);
+			}
 			BufferedInputStream bis = new BufferedInputStream(is);
 			dis = new DataInputStream(bis);
 			info = reader.readHeader(dis);
