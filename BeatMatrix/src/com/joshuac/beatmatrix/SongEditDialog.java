@@ -147,7 +147,7 @@ public class SongEditDialog extends DialogFragment {
 		public void onStartTrackingTouch(SeekBar seekBar) {
 		}
 		public void onStopTrackingTouch(SeekBar seekBar) {
-			seekBar.setProgress((int)((bass*25)+50));
+			seekBar.setProgress((int)((bass*2.5)+50));
 		}
 	};
 	
@@ -160,7 +160,7 @@ public class SongEditDialog extends DialogFragment {
 		public void onStartTrackingTouch(SeekBar seekBar) {
 		}
 		public void onStopTrackingTouch(SeekBar seekBar) {
-			seekBar.setProgress((int)((treble*25)+50));
+			seekBar.setProgress((int)((treble*2.5)+50));
 		}
 	};
 	
