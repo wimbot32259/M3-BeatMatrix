@@ -156,7 +156,7 @@ public class EqualizingFilter {
 					bb.put(0,output[i]);
 					bb.put(1,output[i+1]);
 					short xi = bb.getShort(0);
-					short yi = (short) (-aCoeffsBass[1]*ylastBassL[0] - aCoeffsBass[2]*ylastBassL[1]
+					int yi = (int) (-aCoeffsBass[1]*ylastBassL[0] - aCoeffsBass[2]*ylastBassL[1]
 							+ bCoeffsBass[0]*xi + bCoeffsBass[1]*xlastBassL[0] +
 							bCoeffsBass[2]*xlastBassL[1]);
 					//if(dumbvar) System.out.println("[" + lyi + "," + ylastBassL[0] + "," + ylastBassL[1] + "], ["
@@ -165,9 +165,9 @@ public class EqualizingFilter {
 					xlastBassL[1] = xlastBassL[0];
 					ylastBassL[0] = yi;
 					xlastBassL[0] = xi;
-					//lyi = Math.min(lyi, Short.MAX_VALUE);
-					//lyi = Math.max(lyi, Short.MIN_VALUE);
-					bb.putShort(0,yi);
+					yi = Math.min(yi, Short.MAX_VALUE);
+					yi = Math.max(yi, Short.MIN_VALUE);
+					bb.putShort(0,(short)yi);
 					output[i] = bb.get(0);
 					output[i+1] = bb.get(1);
 				}
@@ -176,14 +176,16 @@ public class EqualizingFilter {
 					bb.put(0,output[i]);
 					bb.put(1,output[i+1]);
 					short xi = bb.getShort(0);
-					short yi = (short) (-aCoeffsTreble[1]*ylastTrebleL[0] - aCoeffsTreble[2]*ylastTrebleL[1]
+					int yi = (int) (-aCoeffsTreble[1]*ylastTrebleL[0] - aCoeffsTreble[2]*ylastTrebleL[1]
 							+ bCoeffsTreble[0]*xi + bCoeffsTreble[1]*xlastTrebleL[0] +
 							bCoeffsTreble[2]*xlastTrebleL[1]);
 					ylastTrebleL[1] = ylastTrebleL[0];
 					xlastTrebleL[1] = xlastTrebleL[0];
 					ylastTrebleL[0] = yi;
 					xlastTrebleL[0] = xi;
-					bb.putShort(0,yi);
+					yi = Math.min(yi, Short.MAX_VALUE);
+					yi = Math.max(yi, Short.MIN_VALUE);
+					bb.putShort(0,(short)yi);
 					output[i] = bb.get(0);
 					output[i+1] = bb.get(1);
 				}
@@ -201,14 +203,16 @@ public class EqualizingFilter {
 					bb.put(0,output[i]);
 					bb.put(1,output[i+1]);
 					short xi = bb.getShort(0);
-					short yi = (short) (-aCoeffsBass[1]*ylastBassL[0] - aCoeffsBass[2]*ylastBassL[1]
+					int yi = (int) (-aCoeffsBass[1]*ylastBassL[0] - aCoeffsBass[2]*ylastBassL[1]
 							+ bCoeffsBass[0]*xi + bCoeffsBass[1]*xlastBassL[0] +
 							bCoeffsBass[2]*xlastBassL[1]);
 					ylastBassL[1] = ylastBassL[0];
 					xlastBassL[1] = xlastBassL[0];
 					ylastBassL[0] = yi;
 					xlastBassL[0] = xi;
-					bb.putShort(0,yi);
+					yi = Math.min(yi, Short.MAX_VALUE);
+					yi = Math.max(yi, Short.MIN_VALUE);
+					bb.putShort(0,(short)yi);
 					output[i] = bb.get(0);
 					output[i+1] = bb.get(1);
 				}
@@ -217,14 +221,16 @@ public class EqualizingFilter {
 					bb.put(0,output[i]);
 					bb.put(1,output[i+1]);
 					short xi = bb.getShort(0);
-					short yi = (short) (-aCoeffsTreble[1]*ylastTrebleL[0] - aCoeffsTreble[2]*ylastTrebleL[1]
+					int yi = (int) (-aCoeffsTreble[1]*ylastTrebleL[0] - aCoeffsTreble[2]*ylastTrebleL[1]
 							+ bCoeffsTreble[0]*xi + bCoeffsTreble[1]*xlastTrebleL[0] +
 							bCoeffsTreble[2]*xlastTrebleL[1]);
 					ylastTrebleL[1] = ylastTrebleL[0];
 					xlastTrebleL[1] = xlastTrebleL[0];
 					ylastTrebleL[0] = yi;
 					xlastTrebleL[0] = xi;
-					bb.putShort(0,yi);
+					yi = Math.min(yi, Short.MAX_VALUE);
+					yi = Math.max(yi, Short.MIN_VALUE);
+					bb.putShort(0,(short)yi);
 					output[i] = bb.get(0);
 					output[i+1] = bb.get(1);
 				}
@@ -239,14 +245,16 @@ public class EqualizingFilter {
 					bb.put(0,output[i]);
 					bb.put(1,output[i+1]);
 					short xi = bb.getShort(0);
-					short yi = (short) (-aCoeffsBass[1]*ylastBassR[0] - aCoeffsBass[2]*ylastBassR[1]
+					int yi = (int) (-aCoeffsBass[1]*ylastBassR[0] - aCoeffsBass[2]*ylastBassR[1]
 							+ bCoeffsBass[0]*xi + bCoeffsBass[1]*xlastBassR[0] +
 							bCoeffsBass[2]*xlastBassR[1]);
 					ylastBassR[1] = ylastBassR[0];
 					xlastBassR[1] = xlastBassR[0];
 					ylastBassR[0] = yi;
 					xlastBassR[0] = xi;
-					bb.putShort(0,yi);
+					yi = Math.min(yi, Short.MAX_VALUE);
+					yi = Math.max(yi, Short.MIN_VALUE);
+					bb.putShort(0,(short)yi);
 					output[i] = bb.get(0);
 					output[i+1] = bb.get(1);
 				}
@@ -255,14 +263,16 @@ public class EqualizingFilter {
 					bb.put(0,output[i]);
 					bb.put(1,output[i+1]);
 					short xi = bb.getShort(0);
-					short yi = (short) (-aCoeffsTreble[1]*ylastTrebleR[0] - aCoeffsTreble[2]*ylastTrebleR[1]
+					int yi = (int) (-aCoeffsTreble[1]*ylastTrebleR[0] - aCoeffsTreble[2]*ylastTrebleR[1]
 							+ bCoeffsTreble[0]*xi + bCoeffsTreble[1]*xlastTrebleR[0] +
 							bCoeffsTreble[2]*xlastTrebleR[1]);
 					ylastTrebleR[1] = ylastTrebleR[0];
 					xlastTrebleR[1] = xlastTrebleR[0];
 					ylastTrebleR[0] = yi;
 					xlastTrebleR[0] = xi;
-					bb.putShort(0,yi);
+					yi = Math.min(yi, Short.MAX_VALUE);
+					yi = Math.max(yi, Short.MIN_VALUE);
+					bb.putShort(0,(short)yi);
 					output[i] = bb.get(0);
 					output[i+1] = bb.get(1);
 				}
