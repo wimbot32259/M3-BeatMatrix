@@ -106,7 +106,7 @@ public class SongEditDialog extends DialogFragment {
 		public void onProgressChanged(SeekBar seekBar, int progress, boolean fromuser) {
 			volume = (seekBar.getProgress()/100.0);
 			System.out.println("Volume: " + volume);
-			VolumeText.setText("Volume: " + volume);
+			VolumeText.setText("Volume: " + volume*100 + "%");
 		}
 		public void onStartTrackingTouch(SeekBar seekBar) {
 		}
@@ -195,7 +195,7 @@ public class SongEditDialog extends DialogFragment {
  	   VolSeek.setProgress((int)(volume*100));
  	   VolSeek.setOnSeekBarChangeListener(volSeekBarListener);
  	   VolumeText = (TextView) v.findViewById(R.id.VolumeText);
- 	   VolumeText.setText("Volume: " + volume);
+ 	   VolumeText.setText("Volume: " + volume*100 + "%");
  	   
  	   //Set speed listener
  	   SeekBar SpeedSeek = (SeekBar)v.findViewById(R.id.SpeedSeek);

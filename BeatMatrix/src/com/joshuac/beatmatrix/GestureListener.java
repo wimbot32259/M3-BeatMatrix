@@ -101,7 +101,7 @@ public class GestureListener extends GestureDetector.SimpleOnGestureListener{
 	
 	@Override
 	//long press event
-	public void onLongPress(MotionEvent e) 
+	public void onLongPress(MotionEvent e)
 	{
 		//!ButtonMatrix.getMapButtonStatus()&& MAPPED && ButtonMatrix.getPlayButtonStatus()
     	if(MAPPED)
