@@ -65,19 +65,26 @@ public class SongEditDialog extends DialogFragment {
 	}
 	
 	private OnSeekBarChangeListener startSeekBarListener = new OnSeekBarChangeListener() {
-		public void onProgressChanged(SeekBar seekBar, int progress, boolean fromuser) {
-			if (start_time > end_time) {
+		public void onProgressChanged(SeekBar seekBar, int progress, boolean fromuser) 
+		{
+			if (start_time > end_time) 
+			{
 				start_time = end_time;
-			} else {
+			} 
+			else 
+			{
 				start_time = (seekBar.getProgress()/100.0)*songLength;
 			}
 			System.out.println("Start time: " + start_time);
-			StartText.setText("Start Time: " + (int)(start_time/60) + ":" + (int)(start_time%60) + "." + (int)(((start_time%60)/0.01)%60));
+			StartText.setText("Start Time: " + (int)(start_time/60) + ":" + (int)(start_time%60) + ":" + (int)(((start_time%60)/0.01)%60));
 		}
-		public void onStartTrackingTouch(SeekBar seekBar) {
+		public void onStartTrackingTouch(SeekBar seekBar) 
+		{
 		}
-		public void onStopTrackingTouch(SeekBar seekBar) {
-			if (start_time > end_time) {
+		public void onStopTrackingTouch(SeekBar seekBar) 
+		{
+			if (start_time > end_time) 
+			{
 				start_time = end_time;
 			}
 			seekBar.setProgress((int)((start_time/songLength)*100));
@@ -87,11 +94,15 @@ public class SongEditDialog extends DialogFragment {
 		public void onProgressChanged(SeekBar seekBar, int progress, boolean fromuser) {
 			if (end_time < start_time) {
 				end_time = start_time;
-			} else {
+			} 
+			else 
+			{
 				end_time = (seekBar.getProgress()/100.0)*songLength;
 			}
+			System.out.println(songLength);
 			System.out.println("End time: " + end_time);
-			EndText.setText("End Time: " + (int)(end_time/60) + ":" + (int)(end_time%60) + "." + (int)(((end_time%60)/0.01)%60));
+		 	EndText.setText("End Time: " + (int)(end_time/60) + ":" + (int)(end_time%60) + ":" + (int)(((end_time%60)/0.01)%60));
+
 		}
 		public void onStartTrackingTouch(SeekBar seekBar) {
 		}
@@ -167,7 +178,8 @@ public class SongEditDialog extends DialogFragment {
        //Set start listener
  	   SeekBar StartSeek = (SeekBar)v.findViewById(R.id.StartSeek);
  	   System.out.println("about to set progress");
- 	   if (start_time == 0) {
+ 	   if (start_time == 0) 
+ 	   {
  		   start_time = 0;
  	   }
  	   StartSeek.setProgress((int)((start_time/songLength)*100));
@@ -175,17 +187,22 @@ public class SongEditDialog extends DialogFragment {
  	   StartSeek.setOnSeekBarChangeListener(startSeekBarListener);
  	   System.out.println("set listener");
  	   StartText = (TextView) v.findViewById(R.id.StartText);
- 	   StartText.setText("Start Time: " + (int)(start_time/60) + ":" + (int)(start_time%60) + "." + (int)(((start_time%60)/0.01)%60));
+ 	   StartText.setText("Start Time: " + (int)(start_time/60) + ":" + (int)(start_time%60) + ":" + (int)(((start_time%60)/0.01)%60));
   	 
  	   //Set end listener
  	   SeekBar EndSeek = (SeekBar)v.findViewById(R.id.EndSeek);
- 	   if (end_time == 0) {
+ 	   if (end_time == 0) 
+ 	   {
  		   end_time = songLength;
  	   }
  	   EndSeek.setProgress((int)((end_time/songLength)*100));
  	   EndSeek.setOnSeekBarChangeListener(endSeekBarListener);
  	   EndText = (TextView) v.findViewById(R.id.EndText);
- 	   EndText.setText("End Time: " + (int)(end_time/60) + ":" + (int)(end_time%60) + "." + (int)(((end_time%60)/0.01)%60));
+ 	   //System.out.println("End time minutes: " + (int)(end_time/60));
+ 	   System.out.println("End time minutes: " + (int)(end_time%60));
+ 	   //String endTimeText = "End Time: " + String.format("%.2f", (int)(end_time/60)) + ":" + String.format("%.2f", (int)(end_time%60)) + ":" + String.format("%.2f", (int)(((end_time%60)/0.01)%60));
+ 	   System.out.println("End Time: " + (int)(end_time/60) + ":" + (int)(end_time%60) + ":" + (int)(((end_time%60)/0.01)%60));
+ 	   EndText.setText("End Time: " + (int)(end_time/60) + ":" + (int)(end_time%60) + ":" + (int)(((end_time%60)/0.01)%60));
 
  	   //Set volume listener
  	   SeekBar VolSeek = (SeekBar)v.findViewById(R.id.VolSeek);
