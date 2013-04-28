@@ -73,6 +73,12 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 	 public static String PREFS_BUTTON_ISFILE = "BeatMatrixButtonIsFile";
 	 public static String PREFS_BUTTON_FILENAME = "BeatMatrixButtonFilename";
 	 public static String PREFS_BUTTON_RESID = "BeatMatrixButtonResid";
+	 public static String PREFS_BUTTON_START = "BeatMatrixButtonStartTime";
+	 public static String PREFS_BUTTON_END = "BeatMatrixButtonEndTime";
+	 public static String PREFS_BUTTON_VOLUME = "BeatMatrixButtonVolume";
+	 public static String PREFS_BUTTON_SPEED = "BeatMatrixButtonSpeed";
+	 public static String PREFS_BUTTON_BASS = "BeatMatrixButtonBass";
+	 public static String PREFS_BUTTON_TREBLE = "BeatMatrixButtonTreble";
 	 //private static String[] paths;
 	 private static boolean restored = false;
 
@@ -518,6 +524,12 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 				edit.putBoolean( PREFS_BUTTON_ISFILE + i , fileorres.isFile() );
 				edit.putInt( PREFS_BUTTON_RESID + i , fileorres.getResid() );
 				edit.putString( PREFS_BUTTON_FILENAME + i , fileorres.getAbsolutePath() );
+				edit.putLong( PREFS_BUTTON_START + i , Double.doubleToLongBits(manager.getStartTime(i)));
+				edit.putLong( PREFS_BUTTON_END + i , Double.doubleToLongBits(manager.getEndTime(i)));
+				edit.putLong( PREFS_BUTTON_VOLUME + i , Double.doubleToLongBits(manager.getVolume(i)));
+				edit.putLong( PREFS_BUTTON_SPEED + i , Double.doubleToLongBits(manager.getPlaybackSpeed(i)));
+				edit.putLong( PREFS_BUTTON_BASS + i , Double.doubleToLongBits(manager.getBass(i)));
+				edit.putLong( PREFS_BUTTON_TREBLE + i , Double.doubleToLongBits(manager.getTreble(i)));
 			}
 			//edit.putString( PREFS_BUTTON_FILENAME + i, paths[i] );
 		}
@@ -548,6 +560,12 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 				}
 				if (fileorres != null) {
 					buttonList.get(i).mapAction(fileorres);
+					setButtonStart(Double.longBitsToDouble(settings.getLong(PREFS_BUTTON_START + i, -1)),i);
+					setButtonEnd(Double.longBitsToDouble(settings.getLong(PREFS_BUTTON_END + i, -1)),i);
+					setButtonVolume(Double.longBitsToDouble(settings.getLong(PREFS_BUTTON_VOLUME + i, -1)),i);
+					setButtonSpeed(Double.longBitsToDouble(settings.getLong(PREFS_BUTTON_SPEED + i, -1)),i);
+					setButtonBass(Double.longBitsToDouble(settings.getLong(PREFS_BUTTON_BASS + i, -1)),i);
+					setButtonTreble(Double.longBitsToDouble(settings.getLong(PREFS_BUTTON_TREBLE + i, -1)),i);
 				}
 				//GestureListener listener = buttonList.get(i).getGestureListener();
 				//listener.setTrack( new File(settings.getString(PREFS_BUTTON_TRACK + i, "")) );
@@ -569,6 +587,46 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 	 * 
 	 */
 	
+	private void setButtonTreble(double treble, int i) {
+		manager.setTreble(treble, i);
+		
+	}
+
+	private void setButtonBass(double bass, int i) {
+		manager.setBass(bass, i);
+		
+	}
+
+	private void setButtonSpeed(double speed, int i) {
+		if (speed <= 0 || speed > 4) {
+			manager.setPlaybackSpeed(1, i);
+		} else {
+			manager.setPlaybackSpeed(speed, i);
+		}
+	}
+
+	private void setButtonVolume(double volume, int i) {
+		if (volume < 0) {
+			manager.setVolume(1, i);
+		} else {
+			manager.setVolume(volume, i);
+		}
+	}
+
+	private void setButtonEnd(double end_time, int i) {
+		if (end_time > manager.getStartTime(i)) {
+			manager.setEndTime(end_time, i);
+		}
+		
+	}
+
+	private void setButtonStart(double start_time, int i) {
+		if (manager.getEndTime(i) > start_time) {
+			manager.setStartTime(start_time, i);
+		}
+		
+	}
+
 	public static void setMapButtonStatus(boolean status)
 	{
 		mapButtonOn = status;
