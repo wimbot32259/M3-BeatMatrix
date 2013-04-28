@@ -271,8 +271,8 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
             	}
             	else
             	{
-            		t.setImageDrawable(getResources().getDrawable(R.drawable.playicon_off));
-            		setPlayButtonStatus(false);
+            		/*t.setImageDrawable(getResources().getDrawable(R.drawable.playicon_off));
+            		setPlayButtonStatus(false);*/
             		CHOOSING = false;
             		//playButtonOn = false;
             	}
@@ -392,8 +392,6 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 		super.onStart();
 		ChooseFileDialog.setContext(this);
 		chooseFileDialog = ChooseFileDialog.newInstance(R.string.chooseFileDialogTitle);
-	    playButton.setImageDrawable(getResources().getDrawable(R.drawable.playicon_on));
-		setPlayButtonStatus(true);
 	}//end onStart
 	
 	//save preferences
@@ -419,12 +417,20 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 	{
 		super.onResume();
 		readyForThreads = false;
-		System.out.println("RESTORING!!");
 		restoreState();
 		restored = true;
 		readyForThreads = true;
 		ChooseFileDialog.setContext(this);
+	    //turn map button off
+	    mapButton.setImageDrawable(getResources().getDrawable(R.drawable.mapbutton_off));
+		setMapButtonStatus(false);
+		//turn edit button off
+	    editButton.setImageDrawable(getResources().getDrawable(R.drawable.editbutton_off));
+		setEditButtonStatus(false);
+		//turp play button on
 		newFragment = ChooseFileDialog.newInstance(R.string.chooseFileDialogTitle);
+	    playButton.setImageDrawable(getResources().getDrawable(R.drawable.playicon_on));
+		setPlayButtonStatus(true);
 	}
 	
 	//show the choose file dialog

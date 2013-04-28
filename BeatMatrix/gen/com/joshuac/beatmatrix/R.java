@@ -66,26 +66,33 @@ public final class R {
         public static final int activity_button_matrix=0x7f080000;
     }
     public static final class raw {
-        public static final int arpeggio=0x7f040000;
-        public static final int dance_sidechain=0x7f040001;
-        public static final int drums_v1_128bpm=0x7f040002;
-        public static final int drums_v2_128bpm=0x7f040003;
-        public static final int drums_v3_128bpm=0x7f040004;
-        public static final int freak_loop_1=0x7f040005;
-        public static final int freak_loop_2=0x7f040006;
-        public static final int house_lead_1=0x7f040007;
-        public static final int house_lead_2=0x7f040008;
-        public static final int house_piano=0x7f040009;
-        public static final int main_strings=0x7f04000a;
-        public static final int maya_accordion=0x7f04000b;
-        public static final int maya_pluck=0x7f04000c;
-        public static final int romanian_accordion=0x7f04000d;
-        public static final int romanian_style=0x7f04000e;
-        public static final int romanian_style_complex=0x7f04000f;
-        public static final int uplifter_melody=0x7f040010;
-        public static final int uplifter_melody_2=0x7f040011;
-        public static final int uplifter_melody_4=0x7f040012;
-        public static final int woop=0x7f040013;
+        public static final int drums_v1_128bpm=0x7f040000;
+        public static final int drums_v2_128bpm=0x7f040001;
+        public static final int drums_v3_128bpm=0x7f040002;
+        public static final int freak_loop_1=0x7f040003;
+        public static final int freak_loop_2=0x7f040004;
+        public static final int genius_inside_loop=0x7f040005;
+        public static final int genius_inside_piano=0x7f040006;
+        public static final int house_club_accordion=0x7f040007;
+        public static final int house_club_pluck=0x7f040008;
+        public static final int house_lead_1=0x7f040009;
+        public static final int house_lead_2=0x7f04000a;
+        public static final int house_piano=0x7f04000b;
+        public static final int maya_accordion=0x7f04000c;
+        public static final int maya_pluck=0x7f04000d;
+        public static final int pyhuita_bass=0x7f04000e;
+        public static final int pyhuita_lead=0x7f04000f;
+        public static final int pyhuita_piano=0x7f040010;
+        public static final int romanian_accordion=0x7f040011;
+        public static final int romanian_style=0x7f040012;
+        public static final int romanian_style_complex=0x7f040013;
+        public static final int tswbyh_arpeggio=0x7f040014;
+        public static final int tswbyh_bass=0x7f040015;
+        public static final int tswbyh_organ=0x7f040016;
+        public static final int uplifter_melody=0x7f040017;
+        public static final int uplifter_melody_2=0x7f040018;
+        public static final int uplifter_melody_4=0x7f040019;
+        public static final int woop=0x7f04001a;
     }
     public static final class string {
         public static final int app_name=0x7f060000;
