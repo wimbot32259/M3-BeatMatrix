@@ -156,6 +156,7 @@ public class MyAudioDevice
 				if (track.getPlayState() == AudioTrack.PLAYSTATE_PLAYING) {
 					track.pause();
 				}
+				Thread.yield();
 			}
 		}
 		
@@ -357,6 +358,18 @@ public class MyAudioDevice
 
 	public void quit() {
 		quittingTime = true;
+	}
+
+	public boolean usingRes() {
+		return usingRawResource;
+	}
+
+	public File getFile() {
+		return file.getAbsoluteFile();
+	}
+
+	public int getResid() {
+		return resourceName;
 	}
 
 /*	public void writeSamples(byte[] samples) 
