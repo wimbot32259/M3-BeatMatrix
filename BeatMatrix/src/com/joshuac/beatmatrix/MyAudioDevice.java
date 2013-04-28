@@ -45,6 +45,7 @@ public class MyAudioDevice
 	private boolean usingRawResource = false; //created from resource in raw
 	private Context context;
 	private int resourceName;
+	private int defaultPriority;
 	
 //	private boolean editTreble = false;
 //	private boolean editVolume = false;
@@ -61,6 +62,7 @@ public class MyAudioDevice
 
 	public MyAudioDevice(File openFile)
 	{
+		defaultPriority = Thread.currentThread().getPriority();
 		file = openFile;
 		
 		reader = new WavReader();
@@ -79,6 +81,7 @@ public class MyAudioDevice
 	}
 
 	public MyAudioDevice(Context c, int resid) {
+		defaultPriority = Thread.currentThread().getPriority();
 		usingRawResource = true;
 		resourceName = resid;
 		context = c;
@@ -111,6 +114,7 @@ public class MyAudioDevice
 		
 		while(!quittingTime) {
 			if (playing) {
+				Thread.currentThread().setPriority(defaultPriority);
 				if (track.getPlayState() == AudioTrack.PLAYSTATE_PAUSED) {
 					track.play();
 				}
@@ -156,6 +160,7 @@ public class MyAudioDevice
 				if (track.getPlayState() == AudioTrack.PLAYSTATE_PLAYING) {
 					track.pause();
 				}
+				Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
 				Thread.yield();
 			}
 		}

@@ -75,6 +75,8 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 	 public static String PREFS_BUTTON_RESID = "BeatMatrixButtonResid";
 	 //private static String[] paths;
 	 private static boolean restored = false;
+
+	private static boolean readyForThreads;
 	 
 	//static button playing states
 	private final static int WAITING = 0; 	//button is waiting to be played
@@ -414,9 +416,11 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 	protected void onResume()
 	{
 		super.onResume();
+		readyForThreads = false;
 		System.out.println("RESTORING!!");
 		restoreState();
 		restored = true;
+		readyForThreads = true;
 		ChooseFileDialog.setContext(this);
 		newFragment = ChooseFileDialog.newInstance(R.string.chooseFileDialogTitle);
 	}
@@ -597,6 +601,10 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 	public static FileOrRes getChosenFile()
 	{
 		return chosenFile;
+	}
+
+	public static boolean notReady() {
+		return !readyForThreads;
 	}
 	
 	/*public static void setPath(int i, String f)

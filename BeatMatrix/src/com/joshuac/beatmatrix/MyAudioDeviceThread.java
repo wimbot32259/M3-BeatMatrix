@@ -63,6 +63,9 @@ public class MyAudioDeviceThread extends Thread implements Runnable
 	//starts the thread
 	public void run()
 	{
+		while (ButtonMatrix.notReady()) {
+			yield();
+		}
 		myAudio.start();
 	}//end run
 	
