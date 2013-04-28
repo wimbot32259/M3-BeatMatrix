@@ -124,7 +124,7 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 			manager.setStartTime(start_time, editingButtonId);
 			manager.setEndTime(end_time, editingButtonId);
 		}
-		if (volume <= 0) {
+		if (volume < 0) {
 			manager.setVolume(1, editingButtonId);
 		} else {
 			manager.setVolume(volume, editingButtonId);
@@ -300,9 +300,9 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 	        		//turn edit button off
 		    	    editButton.setImageDrawable(getResources().getDrawable(R.drawable.editbutton_off));
 	        		setEditButtonStatus(false);
-	        		//turn play button off
-            		playButton.setImageDrawable(getResources().getDrawable(R.drawable.playicon_off));
-            		setPlayButtonStatus(false);
+	        		//turn play button on (default mode)
+		    	    playButton.setImageDrawable(getResources().getDrawable(R.drawable.playicon_on));
+            		setPlayButtonStatus(true);
             		CHOOSING = false;
 	            }
 			}
@@ -361,8 +361,8 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
             		setPlayButtonStatus(false);
             		mapButton.setImageDrawable(getResources().getDrawable(R.drawable.mapbutton_off));
             		setMapButtonStatus(false);
-            		stopAllButtons();
-    	    	    showSongSelectDialog();
+            		//stopAllButtons();
+    	    	    //showSongSelectDialog();
     	    	    waitingId = true;
     	    	    CHOOSING = true;
 
@@ -392,6 +392,8 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 		super.onStart();
 		ChooseFileDialog.setContext(this);
 		chooseFileDialog = ChooseFileDialog.newInstance(R.string.chooseFileDialogTitle);
+	    playButton.setImageDrawable(getResources().getDrawable(R.drawable.playicon_on));
+		setPlayButtonStatus(true);
 	}//end onStart
 	
 	//save preferences
@@ -605,6 +607,52 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 
 	public static boolean notReady() {
 		return !readyForThreads;
+	}
+
+	@Override
+	public void onSetStart(double start_time) {
+		if (manager.getEndTime(editingButtonId) > start_time) {
+			manager.setStartTime(start_time, editingButtonId);
+		}
+	}
+
+	@Override
+	public void onSetEnd(double end_time) {
+		if (end_time > manager.getStartTime(editingButtonId)) {
+			manager.setEndTime(end_time, editingButtonId);
+		}
+	}
+
+	@Override
+	public void onSetVolume(double volume) {
+		if (volume < 0) {
+			manager.setVolume(1, editingButtonId);
+		} else {
+			manager.setVolume(volume, editingButtonId);
+		}
+		
+	}
+
+	@Override
+	public void onSetSpeed(double speed) {
+		if (speed <= 0 || speed > 4) {
+			manager.setPlaybackSpeed(1, editingButtonId);
+		} else {
+			manager.setPlaybackSpeed(speed, editingButtonId);
+		}
+		
+	}
+
+	@Override
+	public void onSetBass(double bass) {
+		manager.setBass(bass, editingButtonId);
+		
+	}
+
+	@Override
+	public void onSetTreble(double treble) {
+		manager.setTreble(treble, editingButtonId);
+		
 	}
 	
 	/*public static void setPath(int i, String f)

@@ -26,6 +26,18 @@ public class SongEditDialog extends DialogFragment {
 	private static double volume, speed, bass, treble;
 	private static int buttonId;
 	private static double songLength;
+
+	private static double oldstart;
+
+	private static double oldend;
+
+	private static double oldvol;
+
+	private static double oldspeed;
+
+	private static double oldbass;
+
+	private static double oldtreble;
 	
 	//Text views
 	private TextView SpeedText, VolumeText, StartText, EndText, BassText, TrebleText;
@@ -38,6 +50,12 @@ public class SongEditDialog extends DialogFragment {
 	//using the mCallback instance of the OnChooseFileSelectedListener interface
     public interface OnSongEditSelectedListener {
         public void onEditInfoSelected(double start_time, double end_time, double volume, double speed, double bass, double treble);
+        public void onSetStart(double start_time);
+        public void onSetEnd(double end_time);
+        public void onSetVolume(double volume);
+        public void onSetSpeed(double speed);
+        public void onSetBass(double bass);
+        public void onSetTreble(double treble);
     }
     
     //creates a new instance of the dialog
@@ -56,12 +74,12 @@ public class SongEditDialog extends DialogFragment {
 	public static void initialize(int Id, double length, double curr_start, double curr_end, double curr_speed, double curr_volume, double curr_bass, double curr_treble) {
 		buttonId = Id;
 		songLength = length;
-		start_time = curr_start;
-		end_time = curr_end;
-		volume = curr_volume;
-		speed = curr_speed;
-		bass = curr_bass;
-		treble = curr_treble;
+		oldstart = start_time = curr_start;
+		oldend = end_time = curr_end;
+		oldvol = volume = curr_volume;
+		oldspeed = speed = curr_speed;
+		oldbass = bass = curr_bass;
+		oldtreble = treble = curr_treble;
 	}
 	
 	private OnSeekBarChangeListener startSeekBarListener = new OnSeekBarChangeListener() {
@@ -88,6 +106,7 @@ public class SongEditDialog extends DialogFragment {
 				start_time = end_time;
 			}
 			seekBar.setProgress((int)((start_time/songLength)*100));
+			mCallback.onSetStart(start_time);
 		}
 	};
 	private OnSeekBarChangeListener endSeekBarListener = new OnSeekBarChangeListener() {
@@ -111,6 +130,7 @@ public class SongEditDialog extends DialogFragment {
 				end_time = start_time;
 			}
 			seekBar.setProgress((int)((end_time/songLength)*100));
+			mCallback.onSetEnd(end_time);
 		}
 	};
 	private OnSeekBarChangeListener volSeekBarListener = new OnSeekBarChangeListener() {
@@ -118,6 +138,7 @@ public class SongEditDialog extends DialogFragment {
 			volume = (seekBar.getProgress()/100.0);
 			System.out.println("Volume: " + volume);
 			VolumeText.setText("Volume: " + volume*100 + "%");
+			mCallback.onSetVolume(volume);
 		}
 		public void onStartTrackingTouch(SeekBar seekBar) {
 		}
@@ -130,6 +151,7 @@ public class SongEditDialog extends DialogFragment {
 			speed = (seekBar.getProgress()/50.0);
 			System.out.println("Speed: " + speed);
 			SpeedText.setText("Speed: " + speed);
+			mCallback.onSetSpeed(speed);
 		}
 		public void onStartTrackingTouch(SeekBar seekBar) {
 		}
@@ -143,6 +165,7 @@ public class SongEditDialog extends DialogFragment {
 			bass = ((seekBar.getProgress()-50.0)/2.5);
 			System.out.println("Bass: " + bass);
 			BassText.setText("Bass: " + bass + " dB");
+			mCallback.onSetBass(bass);
 		}
 		public void onStartTrackingTouch(SeekBar seekBar) {
 		}
@@ -156,6 +179,7 @@ public class SongEditDialog extends DialogFragment {
 			treble = ((seekBar.getProgress()-50.0)/2.5);
 			System.out.println("Treble: " + treble);
 			TrebleText.setText("Treble: " + treble + " dB");
+			mCallback.onSetTreble(treble);
 		}
 		public void onStartTrackingTouch(SeekBar seekBar) {
 		}
@@ -257,6 +281,7 @@ public class SongEditDialog extends DialogFragment {
            })
            .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                public void onClick(DialogInterface dialog, int id) {
+            	   mCallback.onEditInfoSelected(oldstart, oldend, oldvol, oldspeed, oldbass, oldtreble);
                    SongEditDialog.this.getDialog().cancel();
                }
            });
