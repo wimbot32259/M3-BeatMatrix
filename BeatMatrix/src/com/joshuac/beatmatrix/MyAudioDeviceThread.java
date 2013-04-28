@@ -63,9 +63,12 @@ public class MyAudioDeviceThread extends Thread implements Runnable
 	//starts the thread
 	public void run()
 	{
+		int defaultPriority = Thread.currentThread().getPriority();
 		while (ButtonMatrix.notReady()) {
+			Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
 			yield();
 		}
+		Thread.currentThread().setPriority(defaultPriority);
 		myAudio.start();
 	}//end run
 	
