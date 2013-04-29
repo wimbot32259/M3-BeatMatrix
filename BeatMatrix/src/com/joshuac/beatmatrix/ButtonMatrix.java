@@ -200,8 +200,7 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 		songnametext.setSingleLine();
 		songnametext.setEllipsize(TextUtils.TruncateAt.END);
 		inforow.addView(songnametext, textlp);
-        songnametext.setText("Testing a really really really really really really long name for a song that a user may have");
-        
+		
         //Song time
 		timetext1 = new TextView(this);
 		LinearLayout.LayoutParams timelp = new LinearLayout.LayoutParams(
@@ -210,21 +209,18 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 		timetext1.setTextColor(this.getResources().getColor(R.color.light_gray));
 		timetext1.setTextSize(24);
 		inforow.addView(timetext1, timelp);
-        timetext1.setText("00:00");
         
 		timetext2 = new TextView(this);
 		timetext2.setGravity(Gravity.RIGHT);
 		timetext2.setTextColor(this.getResources().getColor(R.color.light_gray));
 		timetext2.setTextSize(24);
 		inforow.addView(timetext2, timelp);
-        timetext2.setText("/");
         
 		timetext3 = new TextView(this);
 		timetext3.setGravity(Gravity.RIGHT);
 		timetext3.setTextColor(this.getResources().getColor(R.color.light_gray));
 		timetext3.setTextSize(24);
 		inforow.addView(timetext3, timelp);
-        timetext3.setText("00:01");
 		
         for(int i = 0; i < NUM_ROWS; i++)
 		{
