@@ -2,6 +2,7 @@ package com.joshuac.beatmatrix;
 
 //import java.io.File;
 
+import com.joshuac.beatmatrix.ChooseFileDialog.FileOrRes;
 import com.joshuac.beatmatrix.GestureListener.OnEditActionListener;
 
 import android.app.Activity;
@@ -117,9 +118,9 @@ public class BeatButton extends ImageButton
 	}
 	
 	public void stop() {
+		stopButtonSound();
 		if (state != WAITING) {
 			changeState(STOPPED);
-			stopButtonSound();
 		}
 	}
 	
@@ -185,7 +186,7 @@ public class BeatButton extends ImageButton
 		return buttonId;
 	}
 	
-	public void setState(int i)
+	/*public void setState(int i)
 	{
 		changeState(i);
 	}
@@ -193,7 +194,7 @@ public class BeatButton extends ImageButton
 	public void setMapped(boolean b)
 	{
 		mGestureListener.setMapped(b);
-	}
+	}*/
 
 	public void resetCurrentId()
 	{
@@ -205,6 +206,10 @@ public class BeatButton extends ImageButton
     public void onAttach(Activity activity) {
         mGestureListener.onAttach(activity);
     }//end onAttach
+	
+	public void mapAction(FileOrRes chosenFile) {
+		mGestureListener.mapAction(chosenFile);
+	}
 		
 }//end class BeatButton
 

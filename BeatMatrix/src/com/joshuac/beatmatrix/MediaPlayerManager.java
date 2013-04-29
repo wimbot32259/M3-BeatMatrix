@@ -2,9 +2,7 @@
 package com.joshuac.beatmatrix;
 
 import android.content.Context;
-import android.util.SparseArray;
 import android.widget.Toast;
-import java.io.File;
 
 import com.joshuac.beatmatrix.ChooseFileDialog.FileOrRes;
 import com.joshuac.beatmatrix.MyAudioDevice.OnCompletionListener;
@@ -15,21 +13,19 @@ public class MediaPlayerManager
 	
 	Context context;
 	MyAudioDeviceThread[] threads = null;
-	Thread a;
-	MyAudioDeviceThread b;
 	private int total_buttons;
 	private int[] mapped_buttons;
-	private String[] filepaths;
+	//private String[] filepaths;
 
 	MediaPlayerManager(Context c, int buttons){
 		System.out.println("creating new manager");
 		total_buttons = buttons;
 		mapped_buttons = new int[total_buttons];
-		filepaths = new String[total_buttons];
+		//filepaths = new String[total_buttons];
 		threads = new MyAudioDeviceThread[total_buttons];
 		for (int i = 0; i < total_buttons; i++) {
 			mapped_buttons[i] = 0;
-			filepaths[i] = "";
+			//filepaths[i] = "";
 			threads[i] = null;
 		}
 		this.context = c;
@@ -39,43 +35,42 @@ public class MediaPlayerManager
 	//f - chosenFile (file chosen from 'ChooseFileDialog')
 	public void setMapping(int i, FileOrRes chosenFile, OnCompletionListener completionListener)
 	{
-		System.out.println("mapping " + chosenFile.getAbsolutePath());
+		//System.out.println("mapping " + chosenFile.getAbsolutePath());
 		mapped_buttons[i] = 1;
-		filepaths[i] = chosenFile.getAbsolutePath();
+		//filepaths[i] = chosenFile.getAbsolutePath();
 		MyAudioDeviceThread thread = threads[i];
 		if(thread == null){
-			System.out.println("manager: creating new thread for " + i);
-			if (chosenFile.isFile) {
-				thread = new MyAudioDeviceThread(context, chosenFile.file, completionListener);
+			//System.out.println("manager: creating new thread for " + i);
+			if (chosenFile.isFile()) {
+				thread = new MyAudioDeviceThread(context, chosenFile.getFile(), completionListener);
 			}
 			else {
-				thread = new MyAudioDeviceThread(context, chosenFile.resid, completionListener);
+				thread = new MyAudioDeviceThread(context, chosenFile.getResid(), completionListener);
 			}
 			threads[i] = thread;
-			System.out.println("thread " + i + "created: " + threads[i].getTrackPath());
-			ButtonMatrix.setPath(i, chosenFile.getAbsolutePath());
+			//System.out.println("thread " + i + "created: " + threads[i].getTrackPath());
+			//ButtonMatrix.setPath(i, chosenFile.getAbsolutePath());
 			run(i);
 		}
 		else 
 		{
-			System.out.println("manager: thread exists for " + i);
-			System.out.println("manager: quitting thread for " + i);
+			//System.out.println("manager: thread exists for " + i);
+			//System.out.println("manager: quitting thread for " + i);
 			threads[i].quit();
 			try {
 				threads[i].join();
 				System.out.println("manager: starting new thread for " + i);
-				if (chosenFile.isFile) {
-					thread = new MyAudioDeviceThread(context, chosenFile.file, completionListener);
+				if (chosenFile.isFile()) {
+					thread = new MyAudioDeviceThread(context, chosenFile.getFile(), completionListener);
 				}
 				else {
-					thread = new MyAudioDeviceThread(context, chosenFile.resid, completionListener);
+					thread = new MyAudioDeviceThread(context, chosenFile.getResid(), completionListener);
 				}
 				threads[i] = thread;
 				System.out.println("thread " + i + "created: " + threads[i].getTrackPath());
-				ButtonMatrix.setPath(i, chosenFile.getAbsolutePath());
+				//ButtonMatrix.setPath(i, chosenFile.getAbsolutePath());
 				run(i);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -94,11 +89,17 @@ public class MediaPlayerManager
 	
 	public void play(int i)
 	{
-		threads[i].play();
+		System.out.println("calling play " + i);
+		System.out.println((threads[i]==null) + " " + this);
+		if (mapped_buttons[i] == 1) {
+			threads[i].play();
+		}
 	}
 	
 	public void loop(int i) {
-		threads[i].loop();
+		if (mapped_buttons[i] == 1) {
+			threads[i].loop();
+		}
 	}
 	
 	public void pause(int i){
@@ -107,28 +108,16 @@ public class MediaPlayerManager
 		}
 	}
 	
-	public void stopAll() {
-		for (int i = 0; i < total_buttons; i++) {
-			pause(i);
-			//otherwise there's no song mapped to it, so no thread exists for it yet
-			//(so it won't be playing anything)
-		}
-	}
-	
-	//kills thread
-	public void kill(int i)
-	{
-		if(threads[i] != null)
-			threads[i].interrupt();
-		threads[i] = null;
-	}
-	
-	public void resetThreads()
-	{
-		for (int i = 0; i < total_buttons; i++)
-		{
-			kill(i);
+	public void stopThread(int i) {
+		if(threads[i] != null){
+			threads[i].quit();
+			try {
+				threads[i].join();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 			threads[i] = null;
+			mapped_buttons[i] = 0;
 		}
 	}
 	
@@ -237,10 +226,61 @@ public class MediaPlayerManager
 	public String getTrackPath(int i)
 	{
 		if(threads[i] != null){
-			System.out.println("thread " + i + " is not null");
+			//System.out.println("thread " + i + " is not null");
 			return threads[i].getTrackPath();
 		}
 		else return "";
 	}
 
+	public FileOrRes getFileOrRes(int i) {
+		System.out.println("calling getFOR " + i);
+		System.out.println((threads[i]==null) + " " + this);
+		if(threads[i] != null){
+			System.out.println("Thread "+ i +" is not null, thread's FOR is null? " + (threads[i].getFileOrRes()==null));
+			return threads[i].getFileOrRes();
+		}
+		else return null;
+	}
+
+	public String getTrackName(int i) {
+		if(threads[i] != null){
+			//System.out.println("thread " + i + " is not null");
+			return threads[i].getTrackName();
+		}
+		else return "";
+	}
+
+	public double getCurrentTime(int i) {
+		if(threads[i] != null){
+			//System.out.println("thread " + i + " is not null");
+			return threads[i].getCurrentTime();
+		}
+		else return 0;
+	}
+
 }
+
+/*public void stopAll() {
+	for (int i = 0; i < total_buttons; i++) {
+		pause(i);
+		//otherwise there's no song mapped to it, so no thread exists for it yet
+		//(so it won't be playing anything)
+	}
+}
+
+//kills thread
+public void kill(int i)
+{
+	if(threads[i] != null)
+		threads[i].interrupt();
+	threads[i] = null;
+}
+
+public void resetThreads()
+{
+	for (int i = 0; i < total_buttons; i++)
+	{
+		kill(i);
+		threads[i] = null;
+	}
+}*/

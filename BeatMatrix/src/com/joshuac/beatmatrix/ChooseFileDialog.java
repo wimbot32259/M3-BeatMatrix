@@ -12,25 +12,36 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Environment;
-import android.provider.MediaStore;
 
 public class ChooseFileDialog extends DialogFragment {
 	
-	public class FileOrRes {
-		public final boolean isFile;
-		public final File file;
-		public final int resid;
+	public static final class FileOrRes {
+		private final boolean isFile;
+		private final File file;
+		private final int resid;
 		
 		public FileOrRes(File f) {
 			isFile = true;
 			file = f;
 			resid = 0;
 		}
-		
+
 		public FileOrRes(int rid) {
 			isFile = false;
 			file = null;
 			resid = rid;
+		}
+		
+		public boolean isFile() {
+			return isFile;
+		}
+
+		public File getFile() {
+			return file.getAbsoluteFile();
+		}
+
+		public int getResid() {
+			return resid;
 		}
 
 		public String getName() {

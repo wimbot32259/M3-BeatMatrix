@@ -4,6 +4,7 @@ package com.joshuac.beatmatrix;
 import android.content.Context;
 import java.io.File;
 
+import com.joshuac.beatmatrix.ChooseFileDialog.FileOrRes;
 import com.joshuac.beatmatrix.MyAudioDevice.OnCompletionListener;
 
 public class MyAudioDeviceThread extends Thread implements Runnable
@@ -62,6 +63,12 @@ public class MyAudioDeviceThread extends Thread implements Runnable
 	//starts the thread
 	public void run()
 	{
+		int defaultPriority = Thread.currentThread().getPriority();
+		while (ButtonMatrix.notReady()) {
+			Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
+			yield();
+		}
+		Thread.currentThread().setPriority(defaultPriority);
 		myAudio.start();
 	}//end run
 	
@@ -175,5 +182,29 @@ public class MyAudioDeviceThread extends Thread implements Runnable
 	
 	public void quit() {
 		myAudio.quit();
+	}
+
+	public FileOrRes getFileOrRes() {
+		if (myAudio.usingRes()) {
+			return new FileOrRes(myAudio.getResid());
+		}
+		else {
+			return new FileOrRes(myAudio.getFile());
+		}
+	}
+
+	public String getTrackName() {
+		if(!myAudio.usingRes() && track != null) {
+			return track.getName();
+		}
+		else if(myAudio.usingRes()) {
+			return context.getResources().getResourceEntryName(resid);
+		}
+		else
+			return "";
+	}
+
+	public double getCurrentTime() {
+		return myAudio.getCurrentTime();
 	}
 }

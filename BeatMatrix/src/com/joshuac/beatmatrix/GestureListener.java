@@ -61,8 +61,7 @@ public class GestureListener extends GestureDetector.SimpleOnGestureListener{
 	{
 		thisButton = b;
 		buttonId = i;
-		if(manager == null)
-			manager = ButtonMatrix.getMediaPlayerManager();
+		manager = ButtonMatrix.getMediaPlayerManager();
 		if(resources == null)
 			resources = c.getResources();
 		soundListener = new SoundCompletionListener((Activity) thisButton.getContext());
@@ -77,14 +76,14 @@ public class GestureListener extends GestureDetector.SimpleOnGestureListener{
 	//SMALL LATENCY - JOSH
 	//change to SingleTapUp and remove DoubleTap for speed
 	//single tap confirmed take a while to confirm, recommend remove double tap action
-	public boolean onSingleTapConfirmed(MotionEvent e)
+	public boolean onSingleTapUp(MotionEvent e)
 	{
 		//!ButtonMatrix.getMapButtonStatus()&& MAPPED && ButtonMatrix.getPlayButtonStatus()
     	if(!ButtonMatrix.getMapButtonStatus() && MAPPED && !ButtonMatrix.getEditButtonStatus())
     	{
 			thisButton.changeState(PLAYING);
 		    playButtonSound();
-		    System.out.println("playing!!!!!!!!!!!!!!!!!!!!!!");
+		    //System.out.println("playing!!!!!!!!!!!!!!!!!!!!!!");
     	}
     	else if( ButtonMatrix.getMapButtonStatus() ) {
     		mapAction();
@@ -95,6 +94,13 @@ public class GestureListener extends GestureDetector.SimpleOnGestureListener{
     			mCallback.onEditAction(buttonId);
     			System.out.println("Just called callback from gesturelistener");
     		}
+    	}
+    	
+    	if (MAPPED) {
+		    ButtonMatrix.infoFocus = buttonId;
+    	}
+    	else {
+		    ButtonMatrix.infoFocus = -1;
     	}
 		return true;
 	}//end onSingleTapUp
@@ -108,16 +114,20 @@ public class GestureListener extends GestureDetector.SimpleOnGestureListener{
     	{
 			thisButton.changeState(LOOPING);
 	    	loopButtonSound();
+		    ButtonMatrix.infoFocus = buttonId;
+    	}
+    	else {
+		    ButtonMatrix.infoFocus = -1;
     	}
 	}//end onLongPress
 	
-	@Override
+	/*@Override
 	//double tap event
 	public boolean onDoubleTap(MotionEvent e)
 	{
 
 		return true;
-	}//end onDoubleTap
+	}//end onDoubleTap*/
 	
 	@Override
 	//swipe event
@@ -128,6 +138,10 @@ public class GestureListener extends GestureDetector.SimpleOnGestureListener{
     	{
 			thisButton.changeState(STOPPED);
 			stopButtonSound();
+		    ButtonMatrix.infoFocus = buttonId;
+    	}
+    	else {
+		    ButtonMatrix.infoFocus = -1;
     	}
 		return true;
 	}//end onFling
@@ -171,6 +185,17 @@ public class GestureListener extends GestureDetector.SimpleOnGestureListener{
 		if(chosenFile != null)
 		{
 			manager.setMapping(buttonId, chosenFile, soundListener);
+			thisButton.stop();
+			thisButton.changeState(STOPPED);
+			MAPPED = true;
+		}
+	}
+	
+	public void mapAction(FileOrRes chosenFile) {
+		if(chosenFile != null)
+		{
+			manager.setMapping(buttonId, chosenFile, soundListener);
+			thisButton.stop();
 			thisButton.changeState(STOPPED);
 			MAPPED = true;
 		}
@@ -184,7 +209,7 @@ public class GestureListener extends GestureDetector.SimpleOnGestureListener{
 	
 	public void soundEndAction() {
 		//This may be used by another object when a sound ends
-		thisButton.changeState(STOPPED);
+		thisButton.stop();
 	}
 	
 	
@@ -231,10 +256,10 @@ public class GestureListener extends GestureDetector.SimpleOnGestureListener{
     	return MAPPED;
     }
     
-	public void setMapped(boolean b)
-	{
-		MAPPED = b;
-	}
+	//public void setMapped(boolean b)
+	//{
+	//	MAPPED = b;
+	//}
 
 	public void setTrack(FileOrRes f)
 	{

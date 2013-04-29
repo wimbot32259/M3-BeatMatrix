@@ -63,7 +63,7 @@ public class WavReader extends AudioReader {
 		checkFormat(bits == 16, "Unsupported bits: " + bits);
 		int dataSize = 0;
 		while (buffer.getInt() != 0x61746164) { // "data" marker
-			Log.d(LOG_TAG, "Skipping non-data chunk");
+			//Log.d(LOG_TAG, "Skipping non-data chunk");
 			int size = buffer.getInt();
 			wavStream.skip(size);
 
