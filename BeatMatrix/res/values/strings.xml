@@ -16,5 +16,20 @@
     <string name="treble">Treble:</string>
 	<string name="ok">OK</string>
 	<string name="done">Done</string>
+	<string name="next">Next</string>
 	<string name="cancel">Cancel</string>
+	<string name="tutorialTitle">BeatMatrix Mini Tutorial</string>
+	<string name="image1">Tutorial Image 1</string>
+	<string name="image2">Tutorial Image 2</string>
+	<string name="tutorial1">The goal of this application is to allow you to mix and mash all styles of music together, putting your DJ skills to the test!</string>
+	<string name="tutorial2">How to map a song to a button:</string>
+	<string name="tutorial3">1. Press the mapping button as seen above. A menu of the default music library on your device will appear.</string>
+	<string name="tutorial4">2. Select desired song to be mapped.</string>
+	<string name="tutorial5">3. Select desired button for song to be mapped onto.</string>
+	<string name="tutorial6">4. Press play to hear song. Press pause if you want to stop playing song.</string>
+	<string name="tutorial7">How to edit tracks:</string>
+	<string name="tutorial8">1. Press the edit button as seen above. Press the button with the song that you desire to edit. A menu will appear with all the settings you can adjust.</string>
+	<string name="tutorial9">2. Adjust your desired settings, then press done.</string>
+	<string name="tutorial10">3. Press play and then press the mapped button that you’ve edited. The same process can be repeated for every song that has been mapped.</string>
+	
 </resources>

@@ -33,7 +33,7 @@ import android.widget.Toast;
 
 
 
-public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseFileSelectedListener, SongEditDialog.OnSongEditSelectedListener, SongSelectDialog.OnSongSelectedListener, GestureListener.OnEditActionListener
+public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseFileSelectedListener, SongEditDialog.OnSongEditSelectedListener, tutorialDialog2.OnTutorialDoneSelectedListener, tutorialDialog.OnTutorialNextSelectedListener, SongSelectDialog.OnSongSelectedListener, GestureListener.OnEditActionListener
 {
 	private static FileOrRes chosenFile; 	//file chosen to map
 	
@@ -44,6 +44,7 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 	private static boolean playButtonOn = false; 	//is the play button on?
 	private static boolean mapButtonOn = false; 	// is the map button on?
 	private static boolean editButtonOn = false; 	// is the edit button on?
+	private static boolean tutorialButtonOn = false; 	// is the edit button on?
 	
 	final int NUM_BUTTONS = 5; 	//number of buttons
 	final int NUM_ROWS = 5;    	//number of rows (for the buttons)
@@ -57,6 +58,7 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 	private ImageView mapButton;
 	private DialogFragment newFragment;
 	private ImageView editButton;
+	private ImageView tutorialButton;
 	
 	//choose file dialog
 	private DialogFragment chooseFileDialog;
@@ -132,6 +134,13 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 		}
 		manager.setBass(bass, editingButtonId);
 		manager.setTreble(treble, editingButtonId);
+    }
+	
+	public void onTutorialDoneSelected() {
+    }
+	
+	public void onTutorialNextSelected() {
+		showTutorialDialog2();
     }
 
 	@Override
@@ -243,6 +252,12 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 		//add file chooser ImageView to extra row
 		trow_extra1.addView(editButton,parms);
 		
+		tutorialButton = new ImageView(this);
+		tutorialButton.setImageDrawable(getResources().getDrawable(R.drawable.tutorialbutton_off));
+		tutorialButton.setScaleType(ScaleType.FIT_XY);
+		//add file chooser ImageView to extra row
+		trow_extra1.addView(tutorialButton,parms);
+		
 		/*
 		 * Add Listeners
 		 */
@@ -267,6 +282,8 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
             		setMapButtonStatus(false);
             		editButton.setImageDrawable(getResources().getDrawable(R.drawable.editbutton_off));
             		setEditButtonStatus(false);
+            		tutorialButton.setImageDrawable(getResources().getDrawable(R.drawable.tutorialbutton_off));
+            		setTutorialButtonStatus(false);
             		CHOOSING = false;
             	}
             	else
@@ -300,6 +317,8 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 	        		//turn edit button off
 		    	    editButton.setImageDrawable(getResources().getDrawable(R.drawable.editbutton_off));
 	        		setEditButtonStatus(false);
+		    	    tutorialButton.setImageDrawable(getResources().getDrawable(R.drawable.tutorialbutton_off));
+	        		setTutorialButtonStatus(false);
 	        		//turn play button off
             		playButton.setImageDrawable(getResources().getDrawable(R.drawable.playicon_off));
             		setPlayButtonStatus(false);
@@ -329,6 +348,8 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
             		setPlayButtonStatus(false);
             		editButton.setImageDrawable(getResources().getDrawable(R.drawable.editbutton_off));
             		setEditButtonStatus(false);
+            		tutorialButton.setImageDrawable(getResources().getDrawable(R.drawable.tutorialbutton_off));
+            		setTutorialButtonStatus(false);
             		
             		//Open choose song menu
     	    	    showChooseFileDialog();
@@ -371,6 +392,31 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
             		setEditButtonStatus(false);
             		CHOOSING = false;
             	}
+	    	    
+            }//end onClick
+        });
+		
+		tutorialButton.setOnClickListener(new OnClickListener()
+		{
+            public void onClick(View v)
+            {
+//            	ImageView t = (ImageView) v;
+
+//            	TransitionDrawable transition;
+//        		transition = (TransitionDrawable)
+//	    	            getResources().getDrawable(R.drawable.turn_tutorial_on);
+//            	t.setImageDrawable(transition);
+//	    	    transition.startTransition(400);
+//        		setTutorialButtonStatus(true);
+        		//turn play button off
+	    	    playButton.setImageDrawable(getResources().getDrawable(R.drawable.playicon_off));
+        		setPlayButtonStatus(false);
+	    	    editButton.setImageDrawable(getResources().getDrawable(R.drawable.editbutton_off));
+        		setEditButtonStatus(false);
+        		mapButton.setImageDrawable(getResources().getDrawable(R.drawable.mapbutton_off));
+        		setMapButtonStatus(false);
+        		stopAllButtons();
+	    	    showTutorialDialog();
 	    	    
             }//end onClick
         });
@@ -449,6 +495,18 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 		SongEditDialog.setContext(this);
 		DialogFragment newFragment = SongEditDialog.newInstance(R.string.songEditDialogTitle);
 	    newFragment.show(getFragmentManager(), "dialog");   
+	}
+	
+	void showTutorialDialog() {
+		tutorialDialog.setContext(this);
+		DialogFragment newFragment = tutorialDialog.newInstance(R.string.tutorialTitle);
+	    newFragment.show(getFragmentManager(), "dialog");   
+	}
+	
+	void showTutorialDialog2() {
+		tutorialDialog2.setContext(this);
+		DialogFragment newFragment = tutorialDialog2.newInstance(R.string.tutorialTitle);
+	    newFragment.show(getFragmentManager(), "dialog");
 	}
 	
 /*	public void editAction(int buttonId) {
@@ -552,6 +610,18 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 	public static boolean getEditButtonStatus()
 	{
 		return editButtonOn;
+	}
+	
+
+	public static void setTutorialButtonStatus(boolean status)
+	{
+		tutorialButtonOn = status;
+	}
+	
+	
+	public static boolean getTutorialButtonStatus()
+	{
+		return tutorialButtonOn;
 	}
 	
 	public static void setPlayButtonStatus(boolean status)
