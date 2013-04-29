@@ -1,14 +1,24 @@
 package com.joshuac.beatmatrix;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
+
+import com.joshuac.beatmatrix.ChooseFileDialog.FileOrRes;
+import com.joshuac.beatmatrix.GestureListener.SoundCompletionListener;
+import com.joshuac.beatmatrix.GestureListener.OnEditActionListener;
 
 import android.app.Activity;
 import android.app.DialogFragment;
-import android.database.Cursor;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.graphics.Point;
 import android.graphics.drawable.TransitionDrawable;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
+import android.os.Environment;
+import android.os.Handler;
+import android.text.InputType;
+import android.text.TextUtils;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.Menu;
@@ -17,54 +27,212 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
+import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
+import android.widget.TextView;
 import android.widget.Toast;
-import java.io.File;
+//import android.database.Cursor;
+//import android.net.Uri;
+//import android.provider.MediaStore;
+//import java.util.List;
 
 
 
-public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseFileSelectedListener
+public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseFileSelectedListener, SongEditDialog.OnSongEditSelectedListener, tutorialDialog2.OnTutorialDoneSelectedListener, tutorialDialog.OnTutorialNextSelectedListener, SongSelectDialog.OnSongSelectedListener, GestureListener.OnEditActionListener
 {
-	private static File chosenFile; 	//file chosen to map
+	private static FileOrRes chosenFile; 	//file chosen to map
 	
+	private static int editingButtonId;
+	static boolean waitingId = true;
+	boolean CHOOSING = false;
 	
 	private static boolean playButtonOn = false; 	//is the play button on?
 	private static boolean mapButtonOn = false; 	// is the map button on?
+	private static boolean editButtonOn = false; 	// is the edit button on?
+	private static boolean tutorialButtonOn = false; 	// is the edit button on?
 	
-	final int NUM_BUTTONS = 5; 	//number of buttons
+	final int NUM_COLUMNS = 5; 	//number of buttons
 	final int NUM_ROWS = 5;    	//number of rows (for the buttons)
+	final int TOTAL_BUTTONS = NUM_COLUMNS*NUM_ROWS;
+	//add scaling for sprint 2? ^^^
 	
 	//references to the actual buttons
 	private ImageView playButton;
-	private ImageView chooseButton;
+	private ImageView stopButton;
+	//private ImageView chooseButton;
 	private ImageView mapButton;
+	private DialogFragment newFragment;
+	private ImageView editButton;
+	private ImageView tutorialButton;
+	
+	//choose file dialog
+	private DialogFragment chooseFileDialog;
+	
+	//List of existing beat buttons
+	private ArrayList<BeatButton> buttonList;
+
+	private TextView songnametext;
+
+	private TextView timetext1;
+	private TextView timetext2;
+	private TextView timetext3;
+	
+	private final Handler infoTimerHandler = new Handler();
 	
 	private static MediaPlayerManager manager; //manages the music threads
+	
+	//static values for saving/restoring state
+	 public static final String PREFS_NAME = "BeatMatrixPreferences";
+	 //public static String PREFS_BUTTON_STATE = "BeatMatrixButtonState";
+	 public static String PREFS_BUTTON_MAPPED = "BeatMatrixButtonMapped";
+	 public static String PREFS_BUTTON_ISFILE = "BeatMatrixButtonIsFile";
+	 public static String PREFS_BUTTON_FILENAME = "BeatMatrixButtonFilename";
+	 public static String PREFS_BUTTON_RESID = "BeatMatrixButtonResid";
+	 public static String PREFS_BUTTON_START = "BeatMatrixButtonStartTime";
+	 public static String PREFS_BUTTON_END = "BeatMatrixButtonEndTime";
+	 public static String PREFS_BUTTON_VOLUME = "BeatMatrixButtonVolume";
+	 public static String PREFS_BUTTON_SPEED = "BeatMatrixButtonSpeed";
+	 public static String PREFS_BUTTON_BASS = "BeatMatrixButtonBass";
+	 public static String PREFS_BUTTON_TREBLE = "BeatMatrixButtonTreble";
+	 //private static String[] paths;
+	 private static boolean restored = false;
+
+	private static boolean readyForThreads;
+
+	public static int infoFocus = -1;
+	public static boolean toastless = true;
+	 
+	//static button playing states
+	private final static int WAITING = 0; 	//button is waiting to be played
+	private final static int STOPPED = 1; 	//button is not playing	
+
+	private static final int INFOPADDINGSIDES = 60;
+	private static final int INFOPADDINGBOTTOM = 20;
 	
 	//enables ButtonMatrix to communicate with the ChooseFileDialog
 	//called when user selects a File from the storage device
 	//now do something with the File...
-	public void onFileSelected(File f)
+	public void onFileSelected(FileOrRes f)
 	{
 		chosenFile = f;
-		chooseButton.setImageDrawable(getResources().getDrawable(R.drawable.playlist_off));
+		//chooseButton.setImageDrawable(getResources().getDrawable(R.drawable.playlist_off)); 
+		//Consider deleting
 		Toast toast = Toast.makeText(getApplicationContext(), chosenFile.getName(), Toast.LENGTH_SHORT);
 		toast.show();
+    }
+	
+	public void onSongSelected(int buttonId) {
+		editingButtonId = buttonId;
+		//chooseButton.setImageDrawable(getResources().getDrawable(R.drawable.playlist_off)); 
+		//Consider deleting
+		Toast toast = Toast.makeText(getApplicationContext(), Integer.toString(buttonId), Toast.LENGTH_SHORT);
+		toast.show();
+		showSongEditDialog();
+    }
+	
+	@Override
+	public void onEditAction(int buttonId) {
+		System.out.println("in buttonmatrix, callback just got called");
+		editingButtonId = buttonId;
+		waitingId = false;
+		System.out.println("test");
+		showSongEditDialog();
+	}
+	
+	public void onEditInfoSelected(double start_time, double end_time, double volume, double speed, double bass, double treble) {
+		
+		//chooseButton.setImageDrawable(getResources().getDrawable(R.drawable.playlist_off)); 
+		//Consider deleting
+//		Toast toast = Toast.makeText(getApplicationContext(), ""+start_time+" "+end_time+" "+volume+" "+speed/*Double.toString(start_time)*/, Toast.LENGTH_SHORT);
+//		toast.show();
+
+		//now call setters for audio device
+		if (end_time > start_time) {
+			manager.setStartTime(start_time, editingButtonId);
+			manager.setEndTime(end_time, editingButtonId);
+		}
+		if (volume < 0) {
+			manager.setVolume(1, editingButtonId);
+		} else {
+			manager.setVolume(volume, editingButtonId);
+		}
+		if (speed <= 0 || speed > 4) {
+			manager.setPlaybackSpeed(1, editingButtonId);
+		} else {
+			manager.setPlaybackSpeed(speed, editingButtonId);
+		}
+		manager.setBass(bass, editingButtonId);
+		manager.setTreble(treble, editingButtonId);
+    }
+	
+	public void onTutorialDoneSelected() {
+    }
+	
+	public void onTutorialNextSelected() {
+		showTutorialDialog2();
     }
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
+		System.out.println("in onCreate");
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.button_matrix_activity);
-        
-		manager = new MediaPlayerManager(this);
-        
+
+		manager = new MediaPlayerManager(this, TOTAL_BUTTONS);
+		buttonList = new ArrayList<BeatButton>(TOTAL_BUTTONS);
+		//paths = new String[TOTAL_BUTTONS];
+		
+		//for(int i = 0; i < TOTAL_BUTTONS; i++)
+		//	paths[i] = "";
 		
 		//dynamically add TableRows and BeatButtons
 		TableLayout bmh = (TableLayout) findViewById(R.id.beatMatrixHolder);
-		for(int i = 0; i < NUM_ROWS; i++)
+		
+		
+		//add row for song info
+		LinearLayout inforow = new LinearLayout(this);
+		TableLayout.LayoutParams info_lp = new TableLayout.LayoutParams(
+				LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+		inforow.setGravity(Gravity.CENTER);
+		inforow.setOrientation(LinearLayout.HORIZONTAL);
+		inforow.setPadding(INFOPADDINGSIDES, 0, INFOPADDINGSIDES, INFOPADDINGBOTTOM);
+		bmh.addView(inforow, info_lp);
+		
+		//Song name
+		songnametext = new TextView(this);
+		LinearLayout.LayoutParams textlp = new LinearLayout.LayoutParams(
+				LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT,1);
+		songnametext.setGravity(Gravity.LEFT);
+		songnametext.setTextColor(this.getResources().getColor(R.color.light_gray));
+		songnametext.setTextSize(24);
+		songnametext.setSingleLine();
+		songnametext.setEllipsize(TextUtils.TruncateAt.END);
+		inforow.addView(songnametext, textlp);
+		
+        //Song time
+		timetext1 = new TextView(this);
+		LinearLayout.LayoutParams timelp = new LinearLayout.LayoutParams(
+				LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT,0);
+		timetext1.setGravity(Gravity.RIGHT);
+		timetext1.setTextColor(this.getResources().getColor(R.color.light_gray));
+		timetext1.setTextSize(24);
+		inforow.addView(timetext1, timelp);
+        
+		timetext2 = new TextView(this);
+		timetext2.setGravity(Gravity.RIGHT);
+		timetext2.setTextColor(this.getResources().getColor(R.color.light_gray));
+		timetext2.setTextSize(24);
+		inforow.addView(timetext2, timelp);
+        
+		timetext3 = new TextView(this);
+		timetext3.setGravity(Gravity.RIGHT);
+		timetext3.setTextColor(this.getResources().getColor(R.color.light_gray));
+		timetext3.setTextSize(24);
+		inforow.addView(timetext3, timelp);
+		
+        for(int i = 0; i < NUM_ROWS; i++)
 		{
 			//init new row, layout params, and gravity
 			TableRow trow = new TableRow(this);
@@ -75,17 +243,24 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 			bmh.addView(trow, lp);
 			
 			//add BeatButtons
-			for(int j = 0; j < NUM_BUTTONS; j++)
+			for(int j = 0; j < NUM_COLUMNS; j++)
 			{
 				//init button and set scaling
 				BeatButton newButton = (BeatButton) getLayoutInflater().inflate(R.layout.beat_button, null);
+				newButton.onAttach(this);
+				buttonList.add(newButton);
+				
+				//reset current id when building each time
+				if(i==0 && j==0)
+					newButton.resetCurrentId();
+				
 				newButton.setScaleType(ScaleType.FIT_XY);
 				//create layout BeatButton params
 				Display display = getWindowManager().getDefaultDisplay();
 				Point point = new Point();
 				display.getSize(point);
 				//dynamic width
-				int width = (point.y)/(2*NUM_BUTTONS);
+				int width = (point.y)/(2*NUM_COLUMNS);
 				TableRow.LayoutParams parms = new TableRow.LayoutParams(width,width);
 				trow.addView(newButton,parms);
 			}
@@ -107,7 +282,7 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 		Point point = new Point();
 		display.getSize(point);
 		//dynamic width
-		int width = (point.y)/(2*NUM_BUTTONS);
+		int width = (point.y)/(2*NUM_COLUMNS);
 		TableRow.LayoutParams parms = new TableRow.LayoutParams(width,width);
 		
 		//init play ImageView
@@ -117,12 +292,21 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 		//add file chooser ImageView to extra row
 		trow_extra1.addView(playButton,parms);
 		
+		//init stop ImageView
+		stopButton = new ImageView(this);
+		stopButton.setImageDrawable(getResources().getDrawable(R.drawable.stopicon_off));
+		stopButton.setScaleType(ScaleType.FIT_XY);
+		//add file chooser ImageView to extra row
+		trow_extra1.addView(stopButton,parms);
+		
+		/*
 		//init file chooser ImageView
 		chooseButton = new ImageView(this);
 		chooseButton.setImageDrawable(getResources().getDrawable(R.drawable.playlist_off));
 		chooseButton.setScaleType(ScaleType.FIT_XY);
 		//add file chooser ImageView to extra row
 		trow_extra1.addView(chooseButton,parms);
+		*/
 		
 		//init map button ImageView
 		mapButton = new ImageView(this);
@@ -131,6 +315,17 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 		//add file chooser ImageView to extra row
 		trow_extra1.addView(mapButton,parms);
 		
+		editButton = new ImageView(this);
+		editButton.setImageDrawable(getResources().getDrawable(R.drawable.editbutton_off));
+		editButton.setScaleType(ScaleType.FIT_XY);
+		//add file chooser ImageView to extra row
+		trow_extra1.addView(editButton,parms);
+		
+		tutorialButton = new ImageView(this);
+		tutorialButton.setImageDrawable(getResources().getDrawable(R.drawable.tutorialbutton_off));
+		tutorialButton.setScaleType(ScaleType.FIT_XY);
+		//add file chooser ImageView to extra row
+		trow_extra1.addView(tutorialButton,parms);
 		
 		/*
 		 * Add Listeners
@@ -143,45 +338,67 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
             public void onClick(View v)
             {
             	ImageView t = (ImageView) v;
-            	if(!playButtonOn)
+            	if(!getPlayButtonStatus())
             	{
             		//turn play button on w/ transition
 	        		TransitionDrawable transition = (TransitionDrawable)
 		    	            getResources().getDrawable(R.drawable.turn_play_on);
 		    	    t.setImageDrawable(transition);
 		    	    transition.startTransition(400);
-		    	    playButtonOn = true;
+		    	    setPlayButtonStatus(true);	//playButtonOn = true;
 		    	    //turn map button off
 		    	    mapButton.setImageDrawable(getResources().getDrawable(R.drawable.mapbutton_off));
-            		mapButtonOn = false;
+            		setMapButtonStatus(false);
+            		editButton.setImageDrawable(getResources().getDrawable(R.drawable.editbutton_off));
+            		setEditButtonStatus(false);
+            		tutorialButton.setImageDrawable(getResources().getDrawable(R.drawable.tutorialbutton_off));
+            		setTutorialButtonStatus(false);
+            		CHOOSING = false;
             	}
             	else
             	{
-            		t.setImageDrawable(getResources().getDrawable(R.drawable.playicon_off));
-            		playButtonOn = false;
+            		/*t.setImageDrawable(getResources().getDrawable(R.drawable.playicon_off));
+            		setPlayButtonStatus(false);*/
+            		CHOOSING = false;
+            		//playButtonOn = false;
             	}
             	
             	
             }
         });
 		
-		//register the choose-file-dialog-button's click method
+		//register the stop button's click listener
 		//responsible for changing this button's image on click
-		chooseButton.setOnClickListener(new OnClickListener()
-		{
-            public void onClick(View v)
-            {
-            	ImageView t = (ImageView) v;
-        		TransitionDrawable transition = (TransitionDrawable)
-	    	            getResources().getDrawable(R.drawable.turn_playlist_on);
-	    	    t.setImageDrawable(transition);
-	    	    transition.startTransition(400);
-            	
-	    	    showChooseFileDialog();
-            	
-            }//end onClick
-        });
-		
+		stopButton.setOnClickListener(
+			new OnClickListener() {
+	            public void onClick(View v) {
+	            	ImageView t = (ImageView) v;
+	        		//flash stop button red w/ transition
+	        		TransitionDrawable transition = (TransitionDrawable)
+		    	            getResources().getDrawable(R.drawable.turn_stop_on);
+		    	    t.setImageDrawable(transition);
+		    	    transition.startTransition(400);
+		    	    //pause music
+		    	    stopAllButtons();
+		    	    //turn map button off
+		    	    mapButton.setImageDrawable(getResources().getDrawable(R.drawable.mapbutton_off));
+	        		setMapButtonStatus(false);
+	        		//turn edit button off
+		    	    editButton.setImageDrawable(getResources().getDrawable(R.drawable.editbutton_off));
+	        		setEditButtonStatus(false);
+
+		    	    tutorialButton.setImageDrawable(getResources().getDrawable(R.drawable.tutorialbutton_off));
+	        		setTutorialButtonStatus(false);
+
+	        		//turn play button on (default mode)
+		    	    playButton.setImageDrawable(getResources().getDrawable(R.drawable.playicon_on));
+            		setPlayButtonStatus(true);
+
+            		CHOOSING = false;
+            		infoFocus = -1;
+	            }
+			}
+		);
 		
 		//register the map button's click listener
 		//responsible for changing this button's image on click
@@ -191,29 +408,122 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
             {
             	ImageView t = (ImageView) v;
 
-            	if(!mapButtonOn){
+            	if(!getMapButtonStatus() && !CHOOSING){
             		//turn map button on w/ transition
                 	TransitionDrawable transition;
 	        		transition = (TransitionDrawable)
 		    	            getResources().getDrawable(R.drawable.turn_map_on);
 	            	t.setImageDrawable(transition);
 		    	    transition.startTransition(400);
-	        		mapButtonOn = true;
+	        		setMapButtonStatus(true);
 	        		//turn play button off
 		    	    playButton.setImageDrawable(getResources().getDrawable(R.drawable.playicon_off));
-            		playButtonOn = false;
-	        		
-            	}
-            	else{
+            		setPlayButtonStatus(false);
+            		editButton.setImageDrawable(getResources().getDrawable(R.drawable.editbutton_off));
+            		setEditButtonStatus(false);
+            		tutorialButton.setImageDrawable(getResources().getDrawable(R.drawable.tutorialbutton_off));
+            		setTutorialButtonStatus(false);
+            		
+            		//Open choose song menu
+    	    	    showChooseFileDialog();
+    	    	    CHOOSING = false;
+            	} else {
             		t.setImageDrawable(getResources().getDrawable(R.drawable.mapbutton_off));
-            		mapButtonOn = false;
+            		setMapButtonStatus(false);
+            		CHOOSING = false;
             	}
 	    	    
             }//end onClick
         });
 		
-	}//end onCreate
+		editButton.setOnClickListener(new OnClickListener()
+		{
+            public void onClick(View v)
+            {
+            	ImageView t = (ImageView) v;
 
+            	if(!getEditButtonStatus()){
+            		//turn map button on w/ transition
+                	TransitionDrawable transition;
+	        		transition = (TransitionDrawable)
+		    	            getResources().getDrawable(R.drawable.turn_edit_on);
+	            	t.setImageDrawable(transition);
+		    	    transition.startTransition(400);
+	        		setEditButtonStatus(true);
+	        		//turn play button off
+		    	    playButton.setImageDrawable(getResources().getDrawable(R.drawable.playicon_off));
+            		setPlayButtonStatus(false);
+            		mapButton.setImageDrawable(getResources().getDrawable(R.drawable.mapbutton_off));
+            		setMapButtonStatus(false);
+            		//stopAllButtons();
+    	    	    //showSongSelectDialog();
+    	    	    waitingId = true;
+    	    	    CHOOSING = true;
+
+            	} else {
+            		t.setImageDrawable(getResources().getDrawable(R.drawable.editbutton_off));
+            		setEditButtonStatus(false);
+            		CHOOSING = false;
+            	}
+	    	    
+            }//end onClick
+        });
+		
+		tutorialButton.setOnClickListener(new OnClickListener()
+		{
+            public void onClick(View v)
+            {
+//            	ImageView t = (ImageView) v;
+
+//            	TransitionDrawable transition;
+//        		transition = (TransitionDrawable)
+//	    	            getResources().getDrawable(R.drawable.turn_tutorial_on);
+//            	t.setImageDrawable(transition);
+//	    	    transition.startTransition(400);
+//        		setTutorialButtonStatus(true);
+        		//turn play button off
+	    	    playButton.setImageDrawable(getResources().getDrawable(R.drawable.playicon_off));
+        		setPlayButtonStatus(false);
+	    	    editButton.setImageDrawable(getResources().getDrawable(R.drawable.editbutton_off));
+        		setEditButtonStatus(false);
+        		mapButton.setImageDrawable(getResources().getDrawable(R.drawable.mapbutton_off));
+        		setMapButtonStatus(false);
+        		stopAllButtons();
+        		infoFocus = -1;
+	    	    showTutorialDialog();
+	    	    
+            }//end onClick
+        });
+			   
+	    //restore persistent state
+		//if(!restored)
+		//{
+		//System.out.println("RESTORING!!");
+		//restoreState();
+		//restored = true;
+		//}
+		
+	}//end onCreate
+	
+	
+	//preloads song list
+	protected void onStart()
+	{
+		super.onStart();
+		ChooseFileDialog.setContext(this);
+		chooseFileDialog = ChooseFileDialog.newInstance(R.string.chooseFileDialogTitle);
+	}//end onStart
+	
+	//save preferences
+	protected void onPause()
+	{
+		saveState();
+		stopAllThreads();
+		infoTimerHandler.removeCallbacks(updateInfoDisplayTask);
+		super.onPause();
+	}//end onPause
+	
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu)
 	{
@@ -221,49 +531,305 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 		getMenuInflater().inflate(R.menu.activity_button_matrix, menu);
 		return true;
 	}
-	
 
+	
+	//load song list
+	protected void onResume()
+	{
+		super.onResume();
+		readyForThreads = false;
+		toastless = true;
+		restoreState();
+		toastless = false;
+		restored = true;
+		readyForThreads = true;
+		ChooseFileDialog.setContext(this);
+	    //turn map button off
+	    mapButton.setImageDrawable(getResources().getDrawable(R.drawable.mapbutton_off));
+		setMapButtonStatus(false);
+		//turn edit button off
+	    editButton.setImageDrawable(getResources().getDrawable(R.drawable.editbutton_off));
+		setEditButtonStatus(false);
+		//turp play button on
+		newFragment = ChooseFileDialog.newInstance(R.string.chooseFileDialogTitle);
+	    playButton.setImageDrawable(getResources().getDrawable(R.drawable.playicon_on));
+		setPlayButtonStatus(true);
+		
+		infoFocus = -1;
+		//Start timer for updater
+		infoTimerHandler.postDelayed(updateInfoDisplayTask, 100);
+	}
+	
 	//show the choose file dialog
 	//set context and title, then show
 	void showChooseFileDialog()
 	{
-		ChooseFileDialog.setContext(this);
-		DialogFragment newFragment = ChooseFileDialog.newInstance(R.string.chooseFileDialogTitle);
-	    newFragment.show(getFragmentManager(), "dialog");
-	 }
+		//ChooseFileDialog.setContext(this);
+		//DialogFragment newFragment = ChooseFileDialog.newInstance(R.string.chooseFileDialogTitle);
+	    chooseFileDialog.show(getFragmentManager(), "dialog");
+	}
 	
-	//DELETE test
-	void playAudio2()
-	{
-		String[] STAR = { "*" };     
-		Uri allaudiosong = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-		String audioselection = MediaStore.Audio.Media.IS_MUSIC + " != 0";
-		Cursor cursor;
-		cursor = managedQuery(allaudiosong, STAR, audioselection, null, null);
-
-		if (cursor != null) {
-		    if (cursor.moveToFirst()) {
-		        do {
-		           
-		            String fullpath = cursor.getString(cursor
-		                    .getColumnIndex(MediaStore.Audio.Media.DATA));
-		            System.out.println("Audio Song FullPth= "+fullpath); 
-		            Toast toast = Toast.makeText(getApplicationContext(), fullpath, Toast.LENGTH_SHORT);
-		    		toast.show();
-
-		        } while (cursor.moveToNext());
-		    }
+	void showSongSelectDialog() {
+		/*// pass list of songs mapped for picking
+		// gonna pick button ID for now
+		
+		SongSelectDialog.setContext(this);
+		DialogFragment newFragment = SongSelectDialog.newInstance(R.string.songSelectDialogTitle);
+		//newFragment = ChooseFileDialog.newInstance(R.string.chooseFileDialogTitle);
+	    newFragment.show(getFragmentManager(), "dialog");
+	    //with returned chosen song, move on to set time, etc
+	    
+	    //with returned info, call setters for audio player*/
+	    
+	}
+	
+	void showSongEditDialog() {
+		SongEditDialog.initialize(editingButtonId, manager.getTrackLength(editingButtonId), manager.getStartTime(editingButtonId),
+				manager.getEndTime(editingButtonId), manager.getPlaybackSpeed(editingButtonId), manager.getVolume(editingButtonId),
+				manager.getBass(editingButtonId), manager.getTreble(editingButtonId));
+		SongEditDialog.setContext(this);
+		DialogFragment newFragment = SongEditDialog.newInstance(R.string.songEditDialogTitle);
+	    newFragment.show(getFragmentManager(), "dialog");   
+	}
+	
+	void showTutorialDialog() {
+		tutorialDialog.setContext(this);
+		DialogFragment newFragment = tutorialDialog.newInstance(R.string.tutorialTitle);
+	    newFragment.show(getFragmentManager(), "dialog");   
+	}
+	
+	void showTutorialDialog2() {
+		tutorialDialog2.setContext(this);
+		DialogFragment newFragment = tutorialDialog2.newInstance(R.string.tutorialTitle);
+	    newFragment.show(getFragmentManager(), "dialog");
+	}
+	
+/*	public void editAction(int buttonId) {
+		System.out.println("in buttonmatrix, callback just got called");
+		editingButtonId = buttonId;
+		waitingId = false;
+		System.out.println("test");
+		showSongEditDialog();
+	}*/
+	
+	//stops all button sounds
+	//changes state of buttons as well
+	public void stopAllButtons() {
+		
+		for (int i=0; i<buttonList.size();i++) {
+			buttonList.get(i).stop();
 		}
-	}//end playAudio2
+	}
+
+	private void stopAllThreads() {
+		for (int i=0; i<buttonList.size();i++) {
+			manager.stopThread(i);
+		}
+	}
+	
+	//save persistent state
+	public void saveState()
+	{
+		//get settings
+		SharedPreferences settings = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+		Editor edit = settings.edit();
+		//edit.clear();
+		
+		//store button state, mapped value, track path
+		for(int i = 0; i < TOTAL_BUTTONS; i++)
+		{
+			/*//if not WAITING, store STOPPED
+			if( buttonList.get(i).getState() != WAITING)
+			{
+				edit.putBool( PREFS_BUTTON_STATE + i, STOPPED );
+				System.out.println(i + " was mapped.. in saveState");
+				System.out.println( i +" path = " +  paths[i] + " in saveState");
+				//manager.kill(i);
+			}
+			else
+			{
+				edit.putInt( PREFS_BUTTON_STATE + i, WAITING );
+			}*/
+			edit.putBoolean( PREFS_BUTTON_MAPPED + i, buttonList.get(i).getMapped() );
+			if (buttonList.get(i).getMapped()) {
+				FileOrRes fileorres = manager.getFileOrRes(i);
+				System.out.println("Trying to save the fileorres for "+i);
+				edit.putBoolean( PREFS_BUTTON_ISFILE + i , fileorres.isFile() );
+				edit.putInt( PREFS_BUTTON_RESID + i , fileorres.getResid() );
+				edit.putString( PREFS_BUTTON_FILENAME + i , fileorres.getAbsolutePath() );
+				edit.putLong( PREFS_BUTTON_START + i , Double.doubleToLongBits(manager.getStartTime(i)));
+				edit.putLong( PREFS_BUTTON_END + i , Double.doubleToLongBits(manager.getEndTime(i)));
+				edit.putLong( PREFS_BUTTON_VOLUME + i , Double.doubleToLongBits(manager.getVolume(i)));
+				edit.putLong( PREFS_BUTTON_SPEED + i , Double.doubleToLongBits(manager.getPlaybackSpeed(i)));
+				edit.putLong( PREFS_BUTTON_BASS + i , Double.doubleToLongBits(manager.getBass(i)));
+				edit.putLong( PREFS_BUTTON_TREBLE + i , Double.doubleToLongBits(manager.getTreble(i)));
+			}
+			//edit.putString( PREFS_BUTTON_FILENAME + i, paths[i] );
+		}
+		//commit settings
+		edit.commit();	
+	}
+	
+	//restore persistent state
+	public void restoreState()
+	{
+		//paths = new String[TOTAL_BUTTONS];
+		SharedPreferences settings = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+		//restore button state, mapped value, track path
+		for(int i = 0; i < TOTAL_BUTTONS; i++)
+		{
+			//set button mappings depending on saved values
+			if(settings.getBoolean(PREFS_BUTTON_MAPPED + i,false))
+			{
+				FileOrRes fileorres = null;
+				if (settings.getBoolean(PREFS_BUTTON_ISFILE + i, true)) {
+					File file = new File(settings.getString(PREFS_BUTTON_FILENAME + i, ""));
+					if (file.canRead()) {
+						fileorres = new FileOrRes(file);
+					}
+				}
+				else {
+					fileorres = new FileOrRes(settings.getInt(PREFS_BUTTON_RESID + i, 0));
+				}
+				if (fileorres != null) {
+					buttonList.get(i).mapAction(fileorres);
+					setButtonStart(Double.longBitsToDouble(settings.getLong(PREFS_BUTTON_START + i, -1)),i);
+					setButtonEnd(Double.longBitsToDouble(settings.getLong(PREFS_BUTTON_END + i, -1)),i);
+					setButtonVolume(Double.longBitsToDouble(settings.getLong(PREFS_BUTTON_VOLUME + i, -1)),i);
+					setButtonSpeed(Double.longBitsToDouble(settings.getLong(PREFS_BUTTON_SPEED + i, -1)),i);
+					setButtonBass(Double.longBitsToDouble(settings.getLong(PREFS_BUTTON_BASS + i, -1)),i);
+					setButtonTreble(Double.longBitsToDouble(settings.getLong(PREFS_BUTTON_TREBLE + i, -1)),i);
+				}
+				//GestureListener listener = buttonList.get(i).getGestureListener();
+				//listener.setTrack( new File(settings.getString(PREFS_BUTTON_TRACK + i, "")) );
+				//paths[i] = settings.getString(PREFS_BUTTON_FILENAME + i, "");
+			}
+			/*else
+			{
+				buttonList.get(i).setState( WAITING );
+			}
+			buttonList.get(i).setState( WAITING );
+			buttonList.get(i).setMapped( false );*/
+		}
+	}
+	
+	private final Runnable updateInfoDisplayTask = new Runnable() {
+	    public void run() {
+	    	if (infoFocus != -1) {
+		    	//System.out.println("Info Update");
+		    	String songname = manager.getTrackName(ButtonMatrix.infoFocus);
+		        songnametext.setText(songname);
+		        
+		    	int currentTime = (int) manager.getCurrentTime(ButtonMatrix.infoFocus);
+		    	String time1 = String.format("%02d:%02d", 
+			        TimeUnit.SECONDS.toMinutes(currentTime),
+			        currentTime - TimeUnit.MINUTES.toSeconds(TimeUnit.SECONDS.toMinutes(currentTime))
+			    );
+		        timetext1.setText(time1);
+		        
+		        timetext2.setText("/");
+		        
+		    	int totalTime = (int) manager.getTrackLength(ButtonMatrix.infoFocus);
+		    	String time2 = String.format("%02d:%02d", 
+			        TimeUnit.SECONDS.toMinutes(totalTime),
+			        totalTime - TimeUnit.MINUTES.toSeconds(TimeUnit.SECONDS.toMinutes(totalTime))
+			    );
+		        timetext3.setText(time2);
+	    	}
+	    	else {
+	    		songnametext.setText("");
+	    		timetext1.setText("");
+	    		timetext2.setText("");
+	    		timetext3.setText("");
+	    	}
+			infoTimerHandler.postDelayed(updateInfoDisplayTask, 100);
+	    }
+	};
 	
 	
 	/*
+	 * 
 	 * Getters / Setters
+	 * 
 	 */
+	
+	private void setButtonTreble(double treble, int i) {
+		manager.setTreble(treble, i);
+		
+	}
+
+	private void setButtonBass(double bass, int i) {
+		manager.setBass(bass, i);
+		
+	}
+
+	private void setButtonSpeed(double speed, int i) {
+		if (speed <= 0 || speed > 4) {
+			manager.setPlaybackSpeed(1, i);
+		} else {
+			manager.setPlaybackSpeed(speed, i);
+		}
+	}
+
+	private void setButtonVolume(double volume, int i) {
+		if (volume < 0) {
+			manager.setVolume(1, i);
+		} else {
+			manager.setVolume(volume, i);
+		}
+	}
+
+	private void setButtonEnd(double end_time, int i) {
+		if (end_time > manager.getStartTime(i)) {
+			manager.setEndTime(end_time, i);
+		}
+		
+	}
+
+	private void setButtonStart(double start_time, int i) {
+		if (manager.getEndTime(i) > start_time) {
+			manager.setStartTime(start_time, i);
+		}
+		
+	}
+
+	public static void setMapButtonStatus(boolean status)
+	{
+		mapButtonOn = status;
+	}
+	
 	
 	public static boolean getMapButtonStatus()
 	{
 		return mapButtonOn; 
+	}
+	
+	public static void setEditButtonStatus(boolean status)
+	{
+		editButtonOn = status;
+	}
+	
+	
+	public static boolean getEditButtonStatus()
+	{
+		return editButtonOn;
+	}
+	
+
+	public static void setTutorialButtonStatus(boolean status)
+	{
+		tutorialButtonOn = status;
+	}
+	
+	
+	public static boolean getTutorialButtonStatus()
+	{
+		return tutorialButtonOn;
+	}
+	
+	public static void setPlayButtonStatus(boolean status)
+	{
+		playButtonOn = status;
 	}
 	
 	public static boolean getPlayButtonStatus()
@@ -276,9 +842,66 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 		return manager;
 	}
 	
-	public static File getChosenFile()
+	public static FileOrRes getChosenFile()
 	{
 		return chosenFile;
 	}
+
+	public static boolean notReady() {
+		return !readyForThreads;
+	}
+
+	@Override
+	public void onSetStart(double start_time) {
+		if (manager.getEndTime(editingButtonId) > start_time) {
+			manager.setStartTime(start_time, editingButtonId);
+		}
+	}
+
+	@Override
+	public void onSetEnd(double end_time) {
+		if (end_time > manager.getStartTime(editingButtonId)) {
+			manager.setEndTime(end_time, editingButtonId);
+		}
+	}
+
+	@Override
+	public void onSetVolume(double volume) {
+		if (volume < 0) {
+			manager.setVolume(1, editingButtonId);
+		} else {
+			manager.setVolume(volume, editingButtonId);
+		}
+		
+	}
+
+	@Override
+	public void onSetSpeed(double speed) {
+		if (speed <= 0 || speed > 4) {
+			manager.setPlaybackSpeed(1, editingButtonId);
+		} else {
+			manager.setPlaybackSpeed(speed, editingButtonId);
+		}
+		
+	}
+
+	@Override
+	public void onSetBass(double bass) {
+		manager.setBass(bass, editingButtonId);
+		
+	}
+
+	@Override
+	public void onSetTreble(double treble) {
+		manager.setTreble(treble, editingButtonId);
+		
+	}
+	
+	/*public static void setPath(int i, String f)
+	{
+		paths[i] = f;
+	}*/
+
+
 
 }//end class ButtonMatrix

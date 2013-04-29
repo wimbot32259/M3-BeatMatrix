@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:orientation="vertical" >
+    <TextView
+        android:id="@+id/Tutorial1Text"
+        android:text="@string/tutorial1"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/black"/>
+    <TextView
+        android:id="@+id/Tutorial2Text"
+        android:text="@string/tutorial2"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/red"/>
+    <ImageView
+        android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:adjustViewBounds="true"
+	    android:contentDescription="@string/image1"
+	    android:src="@drawable/mapbutton_off_tutorial"
+	    android:scaleType="center"/>
+    <TextView
+        android:id="@+id/Tutorial3Text"
+        android:text="@string/tutorial3"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/black"/>
+    <TextView
+        android:id="@+id/Tutorial4Text"
+        android:text="@string/tutorial4"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/black"/>
+    <TextView
+        android:id="@+id/Tutorial5Text"
+        android:text="@string/tutorial5"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/black"/>
+    <TextView
+        android:id="@+id/Tutorial6Text"
+        android:text="@string/tutorial6"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/black"/>
+
+</LinearLayout>
