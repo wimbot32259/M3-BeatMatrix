@@ -101,6 +101,7 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 	private static boolean readyForThreads;
 
 	public static int infoFocus = -1;
+	public static boolean toastless = true;
 	 
 	//static button playing states
 	private final static int WAITING = 0; 	//button is waiting to be played
@@ -488,6 +489,7 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
         		mapButton.setImageDrawable(getResources().getDrawable(R.drawable.mapbutton_off));
         		setMapButtonStatus(false);
         		stopAllButtons();
+        		infoFocus = -1;
 	    	    showTutorialDialog();
 	    	    
             }//end onClick
@@ -536,7 +538,9 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 	{
 		super.onResume();
 		readyForThreads = false;
+		toastless = true;
 		restoreState();
+		toastless = false;
 		restored = true;
 		readyForThreads = true;
 		ChooseFileDialog.setContext(this);

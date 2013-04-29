@@ -74,10 +74,11 @@ public class MediaPlayerManager
 				e.printStackTrace();
 			}
 		}
-
-		String msg = chosenFile.getName();
-		Toast toast = Toast.makeText(context, msg + " mapped", Toast.LENGTH_SHORT);
-		toast.show();
+		if (!ButtonMatrix.toastless) {
+			String msg = chosenFile.getName();
+			Toast toast = Toast.makeText(context, msg + " mapped", Toast.LENGTH_SHORT);
+			toast.show();
+		}
 	}//end setMapping
 
 	public void run(int i)
