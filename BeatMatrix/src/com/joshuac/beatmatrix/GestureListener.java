@@ -95,6 +95,13 @@ public class GestureListener extends GestureDetector.SimpleOnGestureListener{
     			System.out.println("Just called callback from gesturelistener");
     		}
     	}
+    	
+    	if (MAPPED) {
+		    ButtonMatrix.infoFocus = buttonId;
+    	}
+    	else {
+		    ButtonMatrix.infoFocus = -1;
+    	}
 		return true;
 	}//end onSingleTapUp
 	
@@ -107,6 +114,10 @@ public class GestureListener extends GestureDetector.SimpleOnGestureListener{
     	{
 			thisButton.changeState(LOOPING);
 	    	loopButtonSound();
+		    ButtonMatrix.infoFocus = buttonId;
+    	}
+    	else {
+		    ButtonMatrix.infoFocus = -1;
     	}
 	}//end onLongPress
 	
@@ -127,6 +138,10 @@ public class GestureListener extends GestureDetector.SimpleOnGestureListener{
     	{
 			thisButton.changeState(STOPPED);
 			stopButtonSound();
+		    ButtonMatrix.infoFocus = buttonId;
+    	}
+    	else {
+		    ButtonMatrix.infoFocus = -1;
     	}
 		return true;
 	}//end onFling

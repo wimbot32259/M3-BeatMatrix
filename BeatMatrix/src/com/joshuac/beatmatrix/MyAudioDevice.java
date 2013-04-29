@@ -337,7 +337,7 @@ public class MyAudioDevice
 	
 	public double getCurrentTime() {
 		//current track position, at default speed
-		return endPosition/(2.0*info.rate*info.channels);
+		return currentPosition/(2.0*info.rate*info.channels);
 	}
 	
 	

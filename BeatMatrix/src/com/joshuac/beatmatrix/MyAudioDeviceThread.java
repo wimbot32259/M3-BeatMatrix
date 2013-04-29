@@ -192,4 +192,19 @@ public class MyAudioDeviceThread extends Thread implements Runnable
 			return new FileOrRes(myAudio.getFile());
 		}
 	}
+
+	public String getTrackName() {
+		if(!myAudio.usingRes() && track != null) {
+			return track.getName();
+		}
+		else if(myAudio.usingRes()) {
+			return context.getResources().getResourceEntryName(resid);
+		}
+		else
+			return "";
+	}
+
+	public double getCurrentTime() {
+		return myAudio.getCurrentTime();
+	}
 }

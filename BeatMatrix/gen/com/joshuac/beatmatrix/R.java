@@ -13,6 +13,9 @@ public final class R {
     }
     public static final class attr {
     }
+    public static final class color {
+        public static final int light_gray=0x7f060000;
+    }
     public static final class drawable {
         public static final int editbutton_off=0x7f020000;
         public static final int editbutton_on=0x7f020001;
@@ -42,20 +45,20 @@ public final class R {
         public static final int yellowbutton=0x7f020019;
     }
     public static final class id {
-        public static final int BassSeek=0x7f090008;
-        public static final int BassText=0x7f090007;
-        public static final int EndSeek=0x7f090004;
-        public static final int EndText=0x7f090003;
-        public static final int SpeedSeek=0x7f090006;
-        public static final int SpeedText=0x7f090005;
-        public static final int StartSeek=0x7f090002;
-        public static final int StartText=0x7f090001;
-        public static final int TrebleSeek=0x7f09000a;
-        public static final int TrebleText=0x7f090009;
-        public static final int VolSeek=0x7f09000c;
-        public static final int VolumeText=0x7f09000b;
-        public static final int beatMatrixHolder=0x7f090000;
-        public static final int menu_settings=0x7f09000d;
+        public static final int BassSeek=0x7f0a0008;
+        public static final int BassText=0x7f0a0007;
+        public static final int EndSeek=0x7f0a0004;
+        public static final int EndText=0x7f0a0003;
+        public static final int SpeedSeek=0x7f0a0006;
+        public static final int SpeedText=0x7f0a0005;
+        public static final int StartSeek=0x7f0a0002;
+        public static final int StartText=0x7f0a0001;
+        public static final int TrebleSeek=0x7f0a000a;
+        public static final int TrebleText=0x7f0a0009;
+        public static final int VolSeek=0x7f0a000c;
+        public static final int VolumeText=0x7f0a000b;
+        public static final int beatMatrixHolder=0x7f0a0000;
+        public static final int menu_settings=0x7f0a000d;
     }
     public static final class layout {
         public static final int beat_button=0x7f030000;
@@ -63,7 +66,7 @@ public final class R {
         public static final int song_edit_layout=0x7f030002;
     }
     public static final class menu {
-        public static final int activity_button_matrix=0x7f080000;
+        public static final int activity_button_matrix=0x7f090000;
     }
     public static final class raw {
         public static final int drums_v1_128bpm=0x7f040000;
@@ -95,22 +98,22 @@ public final class R {
         public static final int woop=0x7f04001a;
     }
     public static final class string {
-        public static final int app_name=0x7f060000;
-        public static final int bass=0x7f06000b;
-        public static final int cancel=0x7f06000f;
-        public static final int chooseFileDialogTitle=0x7f060003;
-        public static final int done=0x7f06000e;
-        public static final int end_time=0x7f060008;
-        public static final int hello_world=0x7f060001;
-        public static final int menu_settings=0x7f060002;
-        public static final int ok=0x7f06000d;
-        public static final int pick_buttonId=0x7f060006;
-        public static final int songEditDialogTitle=0x7f060005;
-        public static final int songSelectDialogTitle=0x7f060004;
-        public static final int speed=0x7f06000a;
-        public static final int start_time=0x7f060007;
-        public static final int treble=0x7f06000c;
-        public static final int volume=0x7f060009;
+        public static final int app_name=0x7f070000;
+        public static final int bass=0x7f07000b;
+        public static final int cancel=0x7f07000f;
+        public static final int chooseFileDialogTitle=0x7f070003;
+        public static final int done=0x7f07000e;
+        public static final int end_time=0x7f070008;
+        public static final int hello_world=0x7f070001;
+        public static final int menu_settings=0x7f070002;
+        public static final int ok=0x7f07000d;
+        public static final int pick_buttonId=0x7f070006;
+        public static final int songEditDialogTitle=0x7f070005;
+        public static final int songSelectDialogTitle=0x7f070004;
+        public static final int speed=0x7f07000a;
+        public static final int start_time=0x7f070007;
+        public static final int treble=0x7f07000c;
+        public static final int volume=0x7f070009;
     }
     public static final class style {
         /** 
@@ -134,9 +137,9 @@ public final class R {
     
  API 14 theme customizations can go here. 
          */
-        public static final int AppBaseTheme=0x7f070000;
+        public static final int AppBaseTheme=0x7f080000;
         /**  Application theme. 
          */
-        public static final int AppTheme=0x7f070001;
+        public static final int AppTheme=0x7f080001;
     }
 }

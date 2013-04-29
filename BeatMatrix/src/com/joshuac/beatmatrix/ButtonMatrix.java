@@ -2,6 +2,7 @@ package com.joshuac.beatmatrix;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 import com.joshuac.beatmatrix.ChooseFileDialog.FileOrRes;
 import com.joshuac.beatmatrix.GestureListener.SoundCompletionListener;
@@ -15,6 +16,9 @@ import android.graphics.Point;
 import android.graphics.drawable.TransitionDrawable;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.text.InputType;
+import android.text.TextUtils;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.Menu;
@@ -23,8 +27,10 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
+import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
+import android.widget.TextView;
 import android.widget.Toast;
 //import android.database.Cursor;
 //import android.net.Uri;
@@ -63,6 +69,14 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 	
 	//List of existing beat buttons
 	private ArrayList<BeatButton> buttonList;
+
+	private TextView songnametext;
+
+	private TextView timetext1;
+	private TextView timetext2;
+	private TextView timetext3;
+	
+	private final Handler infoTimerHandler = new Handler();
 	
 	private static MediaPlayerManager manager; //manages the music threads
 	
@@ -83,10 +97,15 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 	 private static boolean restored = false;
 
 	private static boolean readyForThreads;
+
+	public static int infoFocus = -1;
 	 
 	//static button playing states
 	private final static int WAITING = 0; 	//button is waiting to be played
 	private final static int STOPPED = 1; 	//button is not playing	
+
+	private static final int INFOPADDINGSIDES = 60;
+	private static final int INFOPADDINGBOTTOM = 20;
 	
 	//enables ButtonMatrix to communicate with the ChooseFileDialog
 	//called when user selects a File from the storage device
@@ -160,7 +179,54 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 		
 		//dynamically add TableRows and BeatButtons
 		TableLayout bmh = (TableLayout) findViewById(R.id.beatMatrixHolder);
-		for(int i = 0; i < NUM_ROWS; i++)
+		
+		
+		//add row for song info
+		LinearLayout inforow = new LinearLayout(this);
+		TableLayout.LayoutParams info_lp = new TableLayout.LayoutParams(
+				LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+		inforow.setGravity(Gravity.CENTER);
+		inforow.setOrientation(LinearLayout.HORIZONTAL);
+		inforow.setPadding(INFOPADDINGSIDES, 0, INFOPADDINGSIDES, INFOPADDINGBOTTOM);
+		bmh.addView(inforow, info_lp);
+		
+		//Song name
+		songnametext = new TextView(this);
+		LinearLayout.LayoutParams textlp = new LinearLayout.LayoutParams(
+				LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT,1);
+		songnametext.setGravity(Gravity.LEFT);
+		songnametext.setTextColor(this.getResources().getColor(R.color.light_gray));
+		songnametext.setTextSize(24);
+		songnametext.setSingleLine();
+		songnametext.setEllipsize(TextUtils.TruncateAt.END);
+		inforow.addView(songnametext, textlp);
+        songnametext.setText("Testing a really really really really really really long name for a song that a user may have");
+        
+        //Song time
+		timetext1 = new TextView(this);
+		LinearLayout.LayoutParams timelp = new LinearLayout.LayoutParams(
+				LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT,0);
+		timetext1.setGravity(Gravity.RIGHT);
+		timetext1.setTextColor(this.getResources().getColor(R.color.light_gray));
+		timetext1.setTextSize(24);
+		inforow.addView(timetext1, timelp);
+        timetext1.setText("00:00");
+        
+		timetext2 = new TextView(this);
+		timetext2.setGravity(Gravity.RIGHT);
+		timetext2.setTextColor(this.getResources().getColor(R.color.light_gray));
+		timetext2.setTextSize(24);
+		inforow.addView(timetext2, timelp);
+        timetext2.setText("/");
+        
+		timetext3 = new TextView(this);
+		timetext3.setGravity(Gravity.RIGHT);
+		timetext3.setTextColor(this.getResources().getColor(R.color.light_gray));
+		timetext3.setTextSize(24);
+		inforow.addView(timetext3, timelp);
+        timetext3.setText("00:01");
+		
+        for(int i = 0; i < NUM_ROWS; i++)
 		{
 			//init new row, layout params, and gravity
 			TableRow trow = new TableRow(this);
@@ -310,6 +376,7 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 		    	    playButton.setImageDrawable(getResources().getDrawable(R.drawable.playicon_on));
             		setPlayButtonStatus(true);
             		CHOOSING = false;
+            		infoFocus = -1;
 	            }
 			}
 		);
@@ -405,6 +472,7 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 	{
 		saveState();
 		stopAllThreads();
+		infoTimerHandler.removeCallbacks(updateInfoDisplayTask);
 		super.onPause();
 	}//end onPause
 	
@@ -437,6 +505,10 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 		newFragment = ChooseFileDialog.newInstance(R.string.chooseFileDialogTitle);
 	    playButton.setImageDrawable(getResources().getDrawable(R.drawable.playicon_on));
 		setPlayButtonStatus(true);
+		
+		infoFocus = -1;
+		//Start timer for updater
+		infoTimerHandler.postDelayed(updateInfoDisplayTask, 100);
 	}
 	
 	//show the choose file dialog
@@ -579,6 +651,39 @@ public class ButtonMatrix extends Activity implements ChooseFileDialog.OnChooseF
 			buttonList.get(i).setMapped( false );*/
 		}
 	}
+	
+	private final Runnable updateInfoDisplayTask = new Runnable() {
+	    public void run() {
+	    	if (infoFocus != -1) {
+		    	//System.out.println("Info Update");
+		    	String songname = manager.getTrackName(ButtonMatrix.infoFocus);
+		        songnametext.setText(songname);
+		        
+		    	int currentTime = (int) manager.getCurrentTime(ButtonMatrix.infoFocus);
+		    	String time1 = String.format("%02d:%02d", 
+			        TimeUnit.SECONDS.toMinutes(currentTime),
+			        currentTime - TimeUnit.MINUTES.toSeconds(TimeUnit.SECONDS.toMinutes(currentTime))
+			    );
+		        timetext1.setText(time1);
+		        
+		        timetext2.setText("/");
+		        
+		    	int totalTime = (int) manager.getTrackLength(ButtonMatrix.infoFocus);
+		    	String time2 = String.format("%02d:%02d", 
+			        TimeUnit.SECONDS.toMinutes(totalTime),
+			        totalTime - TimeUnit.MINUTES.toSeconds(TimeUnit.SECONDS.toMinutes(totalTime))
+			    );
+		        timetext3.setText(time2);
+	    	}
+	    	else {
+	    		songnametext.setText("");
+	    		timetext1.setText("");
+	    		timetext2.setText("");
+	    		timetext3.setText("");
+	    	}
+			infoTimerHandler.postDelayed(updateInfoDisplayTask, 100);
+	    }
+	};
 	
 	
 	/*

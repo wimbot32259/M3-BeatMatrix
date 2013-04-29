@@ -242,6 +242,22 @@ public class MediaPlayerManager
 		else return null;
 	}
 
+	public String getTrackName(int i) {
+		if(threads[i] != null){
+			//System.out.println("thread " + i + " is not null");
+			return threads[i].getTrackName();
+		}
+		else return "";
+	}
+
+	public double getCurrentTime(int i) {
+		if(threads[i] != null){
+			//System.out.println("thread " + i + " is not null");
+			return threads[i].getCurrentTime();
+		}
+		else return 0;
+	}
+
 }
 
 /*public void stopAll() {
